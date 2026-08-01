@@ -253,6 +253,10 @@ function render(cfg) {
   const sessions = (cfg.sesiones || []).slice().sort((a, b) => a.n - b.n);
   const iteraciones = (cfg.estructura && cfg.estructura.iteraciones) || [];
   const entregas = (cfg.estructura && cfg.estructura.entregas) || [];
+  // Lo que se califica sin caer en una sesión —actividades, participación—:
+  // cuenta para la calificación pero no cierra ninguna iteración, así que no
+  // llega a la cinta ni a las tarjetas, sólo a la tabla de la portada.
+  const continuas = (cfg.estructura && cfg.estructura.continuas) || [];
   // El peso (% de la calificación) es opcional. Se resuelve aquí, con todas las
   // entregas a la vista, para que el nodo de cierre de la cinta pueda escalar con
   // él: la entrega que más pesa cierra más grueso.
@@ -270,7 +274,7 @@ function render(cfg) {
   document.title = [cfg.titulo, cfg.edicion].filter(Boolean).join(" · ") || "Curso";
 
   app.appendChild(h("div", { class: "grain", "aria-hidden": "true" }));
-  app.appendChild(masthead(cfg, sessions, entregas, dates, tIdx));
+  app.appendChild(masthead(cfg, sessions, entregas, continuas, dates, tIdx));
   app.appendChild(iterationsSection(cfg, sessions, iteraciones, entregaDe, dates, tIdx, breaks));
   app.appendChild(colophon(cfg));
 
@@ -313,27 +317,39 @@ function progress(dates, tIdx, n) {
 // La ponderación es el dato que más se busca en un programa, y vivía al final
 // del documento, detrás de dieciséis tarjetas. Aquí cierra la portada: mismo
 // registro mono que la meta y el avance, y el mapa no se desplaza.
-function evaluation(entregas, sessions, dates) {
-  if (!entregas.length) return null;
+function evaluation(entregas, continuas, sessions, dates) {
+  if (!entregas.length && !continuas.length) return null;
   const dateByN = {};
   sessions.forEach((s, i) => { if (dates[i]) dateByN[s.n] = dates[i]; });
   const rows = entregas.slice().sort((a, b) => a.sesion - b.sesion);
   // Una columna que no tiene nada que decir no se dibuja: sin calendario no hay
   // fechas, y sin 'peso' no hay porcentajes ni total que cuadrar.
   const conFecha = rows.some(e => dateByN[e.sesion]);
-  const suma = rows.reduce((t, e) => t + (Number(e.peso) || 0), 0);
+  const suma = rows.concat(continuas).reduce((t, e) => t + (Number(e.peso) || 0), 0);
 
-  const cols = [["Entrega", ""], ["Sesión", ""]];
-  if (conFecha) cols.push(["Fecha", ""]);
+  // Las columnas de en medio ubican cada rubro en el tiempo: por sesión y fecha
+  // si se entrega un día concreto, o de una sola vez —«Cuándo»— si el curso
+  // sólo califica cosas que corren a lo largo del semestre.
+  const mid = rows.length ? ["Sesión"].concat(conFecha ? ["Fecha"] : []) : ["Cuándo"];
+  // «Entrega» deja de ser exacto en cuanto la tabla mezcla lo que se entrega un
+  // día con lo que se califica todo el semestre
+  const cols = [[continuas.length ? "Concepto" : "Entrega", ""]].concat(mid.map(m => [m, ""]));
   if (suma) cols.push(["Peso", "peso"]);
 
+  const celdaPeso = e => {
+    const peso = Number(e.peso) || 0;
+    return suma ? `<td class="peso">${peso ? peso + "%" : "—"}</td>` : "";
+  };
   const body = rows.map(e => {
-    const dt = dateByN[e.sesion], peso = Number(e.peso) || 0;
+    const dt = dateByN[e.sesion];
     return `<tr><th scope="row">${esc(e.etiqueta)}</th><td>S${pad2(e.sesion)}</td>`
-      + (conFecha ? `<td>${dt ? fmtDate(dt) : "—"}</td>` : "")
-      + (suma ? `<td class="peso">${peso ? peso + "%" : "—"}</td>` : "")
-      + "</tr>";
-  }).join("");
+      + (conFecha ? `<td>${dt ? fmtDate(dt) : "—"}</td>` : "") + celdaPeso(e) + "</tr>";
+  }).concat(continuas.map(e =>
+    // sin sesión ni fecha que dar: las celdas de en medio se funden en el
+    // «cuándo», que por defecto es todo el semestre
+    `<tr><th scope="row">${esc(e.etiqueta)}</th>`
+    + `<td class="cuando" colspan="${mid.length}">${esc(e.cuando || "Todo el semestre")}</td>`
+    + celdaPeso(e) + "</tr>")).join("");
   // el total es el control que quien imparte necesita ver antes de publicar
   const foot = suma
     ? `<tfoot><tr><th scope="row">Total</th><td colspan="${cols.length - 2}"></td>`
@@ -351,7 +367,7 @@ function evaluation(entregas, sessions, dates) {
   return el;
 }
 
-function masthead(cfg, sessions, entregas, dates, tIdx) {
+function masthead(cfg, sessions, entregas, continuas, dates, tIdx) {
   const n = sessions.length;
   const el = h("header", { class: "masthead" });
   const eyebrow = [cfg.programa, cfg.edicion].filter(Boolean).join(" · ") || cfg.universidad || "";
@@ -369,7 +385,7 @@ function masthead(cfg, sessions, entregas, dates, tIdx) {
   el.appendChild(meta);
   const prog = progress(dates, tIdx, n);
   if (prog) el.appendChild(prog);
-  const ev = evaluation(entregas, sessions, dates);
+  const ev = evaluation(entregas, continuas, sessions, dates);
   if (ev) el.appendChild(ev);
   return el;
 }
@@ -534,8 +550,13 @@ function iterationsSection(cfg, sessions, iteraciones, entregaDe, dates, tIdx, b
   const root = h("main", { id: "iterations" });
   root.appendChild(gradientDefs());
 
-  const cap = cfg.caption || "El trazo se ensancha al explorar y se cierra al decidir. Las entregas caen donde el tramo se afina del todo.";
-  root.appendChild(h("p", { class: "map-caption" }, esc(cap)));
+  // Sin 'caption' va la frase por defecto; con 'caption' vacío no va ninguna.
+  // Antes no había forma de quitarla: una cadena en blanco pasaba el || y
+  // dejaba un renglón vacío entre la portada y la primera cinta.
+  const cap = cfg.caption == null
+    ? "El trazo se ensancha al explorar y se cierra al decidir. Las entregas caen donde el tramo se afina del todo."
+    : String(cfg.caption).trim();
+  if (cap) root.appendChild(h("p", { class: "map-caption" }, esc(cap)));
 
   const dateByN = {}, idxByN = {};
   sessions.forEach((s, i) => { idxByN[s.n] = i; if (dates[i]) dateByN[s.n] = dates[i]; });

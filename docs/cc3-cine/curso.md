@@ -1,6 +1,6 @@
 ---
 # ─────────────────────────────────────────────────────────────
-#  Código Creativo 3 · Cine — configuración del sitio.
+#  Código Creativo · Cine — configuración del sitio.
 #  Todo lo que ve el alumno sale de este frontmatter.
 #  Guía completa de campos: ../../../plantilla-curso/plantilla.md
 # ─────────────────────────────────────────────────────────────
@@ -14,25 +14,27 @@ imparte: "Emilio Ocelotl"
 grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
 
 intro: ""                           # una o dos frases de portada
-caption: ""                         # frase corta bajo el diagrama (hay una por defecto)
+caption: ""                         # vacío = sin frase bajo el diagrama; borra la línea para la de por defecto
 
-# 2 · CALENDARIO — descomenta y llena cuando tengas las fechas.
-#     Sin este bloque el sitio funciona igual, pero sin fechas ni marca de "hoy".
-# calendario:
-#   inicio: 2027-01-19                # primer día de clase
-#   dias: [martes]                    # [lunes, miercoles] si son dos por semana
-#   festivos: []                      # fechas sueltas sin clase (empujan el calendario)
-#   descansos:
-#     - {de: 2027-03-23, a: 2027-03-27, etiqueta: "Semana de receso"}
+# 2 · CALENDARIO
+calendario:
+  inicio: 2026-08-03                # primer día del semestre: la 1ª sesión es el
+                                    # primer martes a partir de esta fecha
+  dias: [martes]                    # [lunes, miercoles] si son dos por semana
+  festivos: []                      # fechas sueltas sin clase (empujan el calendario)
+  descansos:
+    - {de: 2026-10-05, a: 2026-10-09, etiqueta: "Receso"}
 
-# 3 · ESTRUCTURA — define la forma del diagrama y las entregas
+# 3 · ESTRUCTURA — define la forma del diagrama y la evaluación
 estructura:
   iteraciones:
     - {nombre: "Primera parte", sesiones: [1, 8],  nota: ""}
     - {nombre: "Segunda parte", sesiones: [9, 16], nota: ""}
-  entregas:
-    - {sesion: 8,  etiqueta: "Parcial"}   # añade  peso: 40  para publicar el %
-    - {sesion: 16, etiqueta: "Final"}     # añade  peso: 60
+  entregas:                         # caen en una sesión y cierran la iteración
+    - {sesion: 8,  etiqueta: "Parcial", peso: 30}
+    - {sesion: 16, etiqueta: "Final",   peso: 40}
+  continuas:                        # se califican sin fecha fija
+    - {etiqueta: "Actividades", peso: 30}
 
 # 4 · SESIONES — el número de sesiones define la duración del curso.
 sesiones:
@@ -53,10 +55,13 @@ sesiones:
   - {n: 15, titulo: "Sesión 15",        tool: "", desc: ""}
   - {n: 16, titulo: "Entrega final",    tool: "", desc: ""}
 
-# 5 · COLOFÓN — columnas del pie de página. Descomenta las que uses.
+# 5 · COLOFÓN — columnas del pie de página. Sin 'colofon' ni 'grupos' el pie no
+#     aparece en pantalla; impreso conserva la URL del sitio.
 # colofon:
 #   - {titulo: "Herramientas", texto: "…"}
-#   - {titulo: "Evaluación",   texto: "…"}
+#   - titulo: "Criterios"
+#     texto:
+#       - "…"
 ---
 
 <!-- El motor v1 sólo usa el frontmatter de arriba. -->
