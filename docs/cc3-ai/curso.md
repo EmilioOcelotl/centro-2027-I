@@ -18,12 +18,12 @@ caption: " "                         # frase corta bajo el diagrama (hay una por
 
 # 2 · CALENDARIO — descomenta y llena cuando tengas las fechas.
 #     Sin este bloque el sitio funciona igual, pero sin fechas ni marca de "hoy".
-# calendario:
-#   inicio: 2027-01-19                # primer día de clase
-#   dias: [martes]                    # [lunes, miercoles] si son dos por semana
-#   festivos: []                      # fechas sueltas sin clase (empujan el calendario)
-#   descansos:
-#     - {de: 2027-03-23, a: 2027-03-27, etiqueta: "Semana de receso"}
+calendario:
+  inicio: 2026-08-03                # primer día de clase
+  dias: [lunes]                     # [lunes, miercoles] si son dos por semana
+  festivos: [2026-11-16]            # fechas sueltas sin clase (empujan el calendario)
+  descansos:
+    - {de: 2026-10-05, a: 2026-10-09, etiqueta: "Receso"}
 
 # 3 · ESTRUCTURA — define la forma del diagrama y las entregas
 estructura:
@@ -36,7 +36,7 @@ estructura:
 
 # 4 · SESIONES — el número de sesiones define la duración del curso.
 sesiones:
-  - {n: 1,  titulo: "Sesión 1",         tool: "", desc: ""}
+  - {n: 1,  titulo: "Sesión 1",         tool: "", desc: "Presentaciones: curso, profesor, alumnxs.\nEvaluación\nUso de IA en el salón."}
   - {n: 2,  titulo: "Sesión 2",         tool: "", desc: ""}
   - {n: 3,  titulo: "Sesión 3",         tool: "", desc: ""}
   - {n: 4,  titulo: "Sesión 4",         tool: "", desc: ""}
