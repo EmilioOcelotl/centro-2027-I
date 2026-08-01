@@ -1,0 +1,401 @@
+:root {
+  --paper: #E9E7DE;
+  --paper-2: #DFDCD1;
+  --ink: #17171C;
+  --ink-2: #565660;
+  --line: #C7C4B8;
+  --signal: #2A24D6;
+
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --pad: clamp(1.25rem, 5vw, 4rem);
+  --maxw: 1120px;
+  --readw: 44rem;   /* medida de la columna de lectura (tarjetas y bandas) */
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.16;
+}
+
+/* ---------- masthead ---------- */
+.masthead {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: clamp(3rem, 9vw, 6rem) var(--pad) clamp(1.5rem, 4vw, 3rem);
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 1.4rem;
+}
+.title {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: clamp(2.35rem, 1.4rem + 4.6vw, 4.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.6rem;
+}
+.lede {
+  max-width: 48ch;
+  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.3rem);
+  color: var(--ink-2);
+  margin: 0 0 2.2rem;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+/* avance del semestre: responde «¿dónde vamos?» sin bajar a la cinta. La barra
+   toma la medida de la columna de lectura, como todo lo demás. */
+.progress { margin: 2.2rem 0 0; max-width: var(--readw); }
+.progress-line {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+  margin: 0 0 0.6rem;
+}
+.progress-line strong { color: var(--ink); font-weight: 600; }
+.progress-bar { height: 3px; background: var(--line); }
+.progress-bar span { display: block; height: 100%; background: var(--signal); }
+
+.meta li { position: relative; padding-left: 1.1rem; }
+.meta li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.62em;
+  width: 6px; height: 6px;
+  background: var(--signal);
+  transform: rotate(45deg);
+}
+
+/* ---------- cintas / diamantes ---------- */
+.defs-only { position: absolute; width: 0; height: 0; }
+.map-scroll { overflow-x: auto; overflow-y: hidden; margin-bottom: clamp(1.6rem, 4vw, 2.5rem); }
+/* todas las cintas comparten viewBox (ver app.js), así que a la medida de la
+   columna de lectura comparten alto: abren en el eje izquierdo del masthead,
+   cierran donde cierran las tarjetas y sólo se encogen al angostarse la
+   pantalla */
+.ribbon { display: block; width: 100%; max-width: var(--readw); height: auto; margin: 0; }
+.map-caption {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink-2);
+  max-width: 62ch;
+  margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.5;
+}
+
+.diamond { fill: url(#ribbon-fill); stroke: var(--ink); stroke-width: 1.25; stroke-linejoin: miter; }
+/* la cinta se "solidifica" al decidir: apertura casi vacía → cierre denso */
+.grad-open  { stop-color: var(--signal); stop-opacity: 0.05; }
+.grad-close { stop-color: var(--signal); stop-opacity: 0.24; }
+.spine { stroke: var(--line); stroke-width: 1; }
+.node { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; transition: fill 0.15s ease; }
+.node-num { font-family: var(--mono); font-size: 15px; fill: var(--ink-2); text-anchor: middle; }
+.node-date { font-family: var(--mono); font-size: 12px; fill: var(--ink-2); text-anchor: middle; opacity: 0.85; }
+.deliver { fill: var(--signal); stroke: var(--signal); }
+.deliver-label {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  letter-spacing: 0.18em; fill: var(--signal); text-anchor: middle;
+}
+.deliver-stem { stroke: var(--signal); stroke-width: 1; stroke-dasharray: 3 3; }
+
+/* receso / corte de eje */
+.break-mask { fill: var(--paper); }
+.break-cap { stroke: var(--ink); stroke-width: 1.25; }
+.break-slash { stroke: var(--ink-2); stroke-width: 1.5; }
+.break-eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  fill: var(--ink-2); text-anchor: middle;
+  paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round;
+}
+.break-dates {
+  font-family: var(--mono); font-size: 12px; fill: var(--ink); text-anchor: middle;
+  paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round;
+}
+
+/* hoy */
+.today-stem { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.6; }
+.today-label {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.16em; fill: var(--ink); text-anchor: middle;
+}
+.session-node.is-today .node { stroke: var(--signal); stroke-width: 2.5; }
+.session-node.is-today .node-num { fill: var(--ink); font-weight: 600; }
+.session-node.is-today .node-date { fill: var(--signal); opacity: 1; }
+
+/* etiquetas de los extremos: se anclan al eje de apertura y de cierre en vez de
+   centrarse sobre su nodo, para que la cinta abra y cierre a ras con las tarjetas */
+.ribbon text.at-start { text-anchor: start; }
+.ribbon text.at-end { text-anchor: end; }
+
+.session-node { cursor: pointer; }
+.session-node.is-active .node { fill: var(--signal); stroke: var(--signal); r: 8; }
+.session-node.is-active .node-num { fill: var(--ink); font-weight: 600; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .diamond.animate {
+    opacity: 0;
+    transform: scaleY(0.82);
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: bloom 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: var(--delay, 0s);
+  }
+}
+@keyframes bloom { to { opacity: 1; transform: scaleY(1); } }
+
+/* ---------- sessions ---------- */
+#iterations { max-width: var(--maxw); margin: 0 auto; padding: clamp(0.5rem, 2vw, 1.5rem) var(--pad) 0; }
+.iteration { margin: 0 0 clamp(3rem, 7vw, 5rem); }
+.iteration-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 1.2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--ink);
+}
+.iteration-index {
+  font-family: var(--mono);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 500;
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+}
+.iteration-name h2 {
+  margin: 0;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  letter-spacing: -0.01em;
+}
+.iteration-name p { margin: 0.2rem 0 0; font-size: 0.9rem; color: var(--ink-2); }
+
+/* Sesiones apiladas en una sola columna (desktop y mobile): cada tarjeta crece
+   con su propio contenido —sin acoplar alturas por fila— y el texto conserva
+   una medida legible. Columna de lectura al eje izquierdo del masthead, como
+   la lede y el caption: un solo eje vertical para toda la página. */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  max-width: var(--readw);
+  margin: 0;
+}
+.card {
+  background: var(--paper);
+  padding: 1.5rem 1.4rem 1.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  scroll-margin-top: 1.5rem;
+  transition: background 0.18s ease;
+}
+.card.is-active { background: var(--paper-2); }
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+}
+.card-num { color: var(--ink); font-weight: 600; }
+.card h3 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+.card p { margin: 0; font-size: 0.95rem; color: var(--ink-2); }
+.card .hoy { color: var(--signal); font-weight: 600; text-transform: uppercase; }
+.tool {
+  margin-top: auto;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  padding-top: 0.7rem;
+}
+
+.card.is-today { box-shadow: inset 0 0 0 2px var(--signal); }
+
+.card.deliverable { background: var(--ink); color: var(--paper); }
+.card.deliverable .card-top,
+.card.deliverable .card-num,
+.card.deliverable p,
+.card.deliverable .tool { color: var(--paper); }
+.card.deliverable .badge {
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--paper);
+  background: var(--signal);
+  padding: 0.25rem 0.6rem;
+}
+.card.deliverable h3 { font-size: 1.5rem; }
+/* la ponderación es el dato que más se busca en un programa: se dice en la
+   tarjeta de la entrega, no sólo en el colofón */
+.card.deliverable .peso {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.card.deliverable .peso strong { font-size: 1.15rem; font-weight: 600; }
+.card.deliverable.is-active { background: #000; }
+.card.deliverable.is-today { box-shadow: inset 0 0 0 2px var(--signal); }
+
+/* divisor de receso entre tarjetas. Comparte medida y sangría con las tarjetas
+   para que la etiqueta caiga sobre el mismo eje que su texto. */
+.break-band {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  max-width: var(--readw);
+  padding: 0.95rem 1.4rem;
+  margin: 0 0 clamp(3rem, 7vw, 5rem);
+  border-top: 1px dashed var(--ink-2);
+  border-bottom: 1px dashed var(--ink-2);
+}
+.break-band.in-grid {
+  grid-column: 1 / -1;
+  background: var(--paper);
+  margin: 0;
+  border: none;
+}
+
+/* ---------- colophon ---------- */
+/* el pie se alinea con el cuerpo: la regla superior y las columnas cierran en la
+   columna de lectura, no a lo ancho de la página */
+.colophon {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--pad) clamp(3.5rem, 8vw, 6rem);
+}
+.colophon-grid {
+  max-width: var(--readw);
+  padding-top: clamp(2.5rem, 6vw, 4rem);
+  border-top: 1px solid var(--ink);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 2.2rem 2.5rem;
+}
+.colophon h2 {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 1rem;
+}
+.colophon p { margin: 0 0 0.7rem; font-size: 0.92rem; color: var(--ink-2); }
+.colophon strong { color: var(--ink); }
+.colophon .fine { font-size: 0.82rem; font-style: italic; }
+
+/* ---------- error ---------- */
+.load-error {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 12vw, 8rem) var(--pad);
+}
+.load-error h1 { font-family: var(--mono); font-weight: 500; font-size: 1.8rem; margin: 0 0 1rem; }
+.load-error code { font-family: var(--mono); background: var(--paper-2); padding: 0.1em 0.35em; }
+.load-error .fine { color: var(--ink-2); font-size: 0.9rem; }
+
+/* ---------- responsive ---------- */
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+
+/* ---------- papel ----------
+   El programa se entrega impreso o en PDF: aquí el sitio se vuelve documento.
+   Tinta mínima (sin retícula, sin gradientes, sin tarjetas en negro), una sola
+   columna a lo ancho de la caja y nada partido a media tarjeta. */
+.print-only { display: none; }
+
+@media print {
+  :root {
+    --paper: #fff;
+    --paper-2: #fff;
+    --ink: #000;
+    --ink-2: #333;
+    --line: #999;
+    --signal: #000;
+  }
+  @page { margin: 18mm 16mm; }
+
+  body { font-size: 10.5pt; line-height: 1.45; }
+  .grain { display: none; }
+  .print-only { display: block; }
+
+  /* la caja de la página manda: nada se centra ni se limita a la medida de
+     pantalla, y la cinta se encoge en vez de desbordar la hoja */
+  .masthead, #iterations, .colophon { max-width: none; padding-left: 0; padding-right: 0; }
+  .cards, .break-band, .colophon-grid, .progress, .ribbon { max-width: none; }
+  .ribbon { min-width: 0 !important; width: 100%; }
+  .map-scroll { overflow: visible; }
+
+  .title { font-size: 24pt; }
+  .lede { font-size: 11pt; }                      /* conserva su medida legible */
+  /* en una caja de 180mm, cinco columnas serían ilegibles */
+  .colophon-grid { grid-template-columns: repeat(3, 1fr); }
+  .diamond { fill: none; stroke: #000; animation: none; opacity: 1; transform: none; }
+  .node { fill: #fff; }
+  .node.deliver { fill: #000; }
+
+  /* la entrega deja de ser un bloque de tinta y pasa a ser un marco */
+  .card.deliverable { background: #fff; color: #000; border: 1.5pt solid #000; }
+  .card.deliverable .card-top,
+  .card.deliverable .card-num,
+  .card.deliverable p,
+  .card.deliverable .tool { color: #000; }
+  .card.deliverable .badge { background: #fff; color: #000; border: 0.5pt solid #000; }
+  .card.is-today, .card.deliverable.is-today { box-shadow: none; outline: 1.5pt solid #000; }
+
+  /* cortes de página: la unidad mínima es la tarjeta, y una iteración no se
+     separa de su cinta */
+  .card, .break-band, .col, .iteration-head { break-inside: avoid; }
+  .iteration-head, .map-scroll { break-after: avoid; }
+  .colophon-grid { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+}

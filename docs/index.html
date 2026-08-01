@@ -3,61 +3,73 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Código Creativo 2027</title>
-  <meta name="description" content="Mapa del curso Código Creativo 2027: 16 sesiones, dos iteraciones, dos entregas." />
+  <title>Cursos · CENTRO 2027-I</title>
+  <meta name="description" content="Los cursos de código creativo y el laboratorio del semestre 2027-I." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="motor/v1/styles.css" />
+  <style>
+    /* el índice reusa las tarjetas del motor, pero aquí son enlaces */
+    #cursos { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad) clamp(2rem, 6vw, 3.5rem); }
+    a.card { text-decoration: none; color: inherit; }
+    a.card:hover, a.card:focus-visible { background: var(--paper-2); }
+    a.card h3 { color: var(--ink); }
+    a.card .card-top .card-num { color: var(--signal); }
+  </style>
 </head>
 <body>
   <div class="grain" aria-hidden="true"></div>
 
   <header class="masthead">
-    <p class="eyebrow">Código Creativo · 2027</p>
-    <h1 class="title">Un curso que abre <br /> y cierra, dos veces</h1>
+    <p class="eyebrow">CENTRO · 2027-I</p>
+    <h1 class="title">Cursos</h1>
     <p class="lede">
-      El mapa del semestre. Dieciséis sesiones, dos iteraciones, dos entregas.
-      Cada tramo se ensancha al explorar y se afina al decidir: se mira, se enfoca,
-      se construye, se muestra —y luego se vuelve a empezar con más ambición.
+      Cuatro clases de un mismo semestre. Cada una tiene su propio mapa:
+      las sesiones, las dos iteraciones y las entregas.
     </p>
     <ul class="meta" role="list">
-      <li>16 sesiones</li>
-      <li>2 iteraciones</li>
-      <li>Cine · Arq. Interiores · Arquitectura</li>
+      <li>4 cursos</li>
+      <li>Emilio Ocelotl</li>
     </ul>
   </header>
 
-  <section class="map" aria-label="Mapa del curso">
-    <div class="map-scroll">
-      <svg id="ribbon" viewBox="0 0 1200 380" role="img"
-           aria-label="Diagrama de las 16 sesiones: el trazo se ensancha al explorar y se cierra en cada entrega.">
-      </svg>
+  <main id="cursos">
+    <div class="cards">
+      <a class="card" href="cc3-cine/">
+        <div class="card-top"><span class="card-num">Cine</span><span>3er semestre</span></div>
+        <h3>Código Creativo 3</h3>
+        <p>Continuación de Código Creativo para la carrera de Cine.</p>
+      </a>
+      <a class="card" href="cc-interiores/">
+        <div class="card-top"><span class="card-num">Arq. de Interiores</span><span>semestre por definir</span></div>
+        <h3>Código Creativo</h3>
+        <p>Código creativo para la carrera de Arquitectura de Interiores.</p>
+      </a>
+      <a class="card" href="cc4-moda/">
+        <div class="card-top"><span class="card-num">Moda</span><span>4º semestre</span></div>
+        <h3>Código Creativo 4</h3>
+        <p>Cómputo físico y tecnología portable para la carrera de Moda.</p>
+      </a>
+      <a class="card" href="lab-cct/">
+        <div class="card-top"><span class="card-num">Laboratorio</span><span>Optativa</span></div>
+        <h3>Ciencia, creatividad y tecnología</h3>
+        <p>Laboratorio de proyectos entre ciencia, creatividad y tecnología.</p>
+      </a>
     </div>
-    <p class="map-caption" id="mapCaption">
-      El trazo se ensancha al explorar y se cierra al decidir. Las dos entregas caen donde el tramo se afina del todo.
-    </p>
-  </section>
-
-  <main id="sessions"></main>
+  </main>
 
   <footer class="colophon">
-    <div class="col">
-      <h2>Dos entregas</h2>
-      <p><strong>Parcial (S8)</strong> — ensayo del método a escala pequeña: prototipo sencillo + plantilla.</p>
-      <p><strong>Final (S16)</strong> — proyecto iterado y montado: concepto, resolución técnica y presentación.</p>
-    </div>
-    <div class="col">
-      <h2>Herramientas</h2>
-      <p>Processing es la base común. Hydra, p5.js y Strudel entran cuando el proyecto lo pide; un vistazo acotado a TouchDesigner en la segunda iteración.</p>
-      <p class="fine">No se cambia de herramienta por moda, se cambia cuando el proyecto lo necesita.</p>
-    </div>
-    <div class="col">
-      <h2>Tres carreras</h2>
-      <p>Mismo método, aterrizajes distintos: narrativa audiovisual en Cine; luz y superficie en Arq. de Interiores; forma y sistema en Arquitectura.</p>
+    <div class="colophon-grid">
+      <div class="col">
+        <h2>Método</h2>
+        <p>Los cuatro cursos comparten forma: dos iteraciones que se abren al explorar y se cierran al decidir, cada una rematada por una entrega.</p>
+      </div>
+      <div class="col">
+        <h2>En papel</h2>
+        <p>Cada mapa se imprime como programa del curso: <strong>Ctrl/Cmd + P</strong> desde la página de la clase.</p>
+      </div>
     </div>
   </footer>
-
-  <script src="app.js"></script>
 </body>
 </html>
