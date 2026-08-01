@@ -387,6 +387,15 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
       role: "button", "aria-label": `Sesión ${s.n}: ${s.titulo || ""}${dates[gi] ? " — " + FMT_LONG.format(dates[gi]) : ""}` });
 
     const anchor = edgeAnchor(k), cls = extra => extra + (anchor ? " " + anchor : "");
+    const nodeR = isDeliver ? entregaDe[s.n].nodeR : (isToday ? 7 : 6);
+
+    // El foco se dibuja como anillo concéntrico al nodo. Un outline sobre el
+    // <g> abarcaría también el número y la fecha —que cuelgan muy por debajo
+    // de la espina— y saldría una caja alta y flaca ajena al diagrama.
+    // Radio constante y no relativo a nodeR: el indicador de foco mide siempre
+    // lo mismo, y enfocar activa además .is-active (que lleva el nodo a r:8),
+    // así que hace falta holgura para que el anillo no lo roce.
+    g.appendChild(svgEl("circle", { class: "focus-ring", cx: xi(k), cy: CY, r: 13 }));
 
     if (isToday && !isDeliver) {
       svg.appendChild(svgEl("line", { class: "today-stem", x1: xi(k), y1: LABEL_Y + 6, x2: xi(k), y2: CY }));
@@ -400,9 +409,9 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
       const lab = svgEl("text", { class: cls("deliver-label"), x: labelX(k, etiqueta, 13, 0.18), y: LABEL_Y });
       lab.textContent = etiqueta;
       svg.appendChild(lab);
-      g.appendChild(svgEl("circle", { class: "node deliver", cx: xi(k), cy: CY, r: ent.nodeR }));
+      g.appendChild(svgEl("circle", { class: "node deliver", cx: xi(k), cy: CY, r: nodeR }));
     } else {
-      g.appendChild(svgEl("circle", { class: "node", cx: xi(k), cy: CY, r: isToday ? 7 : 6 }));
+      g.appendChild(svgEl("circle", { class: "node", cx: xi(k), cy: CY, r: nodeR }));
     }
 
     const num = svgEl("text", { class: cls("node-num"), x: labelX(k, "", 0, 0), y: NUM_Y });

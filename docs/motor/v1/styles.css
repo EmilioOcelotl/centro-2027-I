@@ -168,6 +168,14 @@ body {
 .session-node.is-active .node { fill: var(--signal); stroke: var(--signal); r: 8; }
 .session-node.is-active .node-num { fill: var(--ink); font-weight: 600; }
 
+/* foco: anillo concéntrico, no la caja del navegador. El outline genérico de
+   más abajo envolvería todo el <g> —círculo, número y fecha— y daría un
+   rectángulo alto y flaco. El anillo vive fuera del nodo, así que compone con
+   los otros dos estados: se puede estar enfocado y ser hoy a la vez. */
+.session-node:focus-visible { outline: none; }
+.focus-ring { fill: none; stroke: none; pointer-events: none; }
+.session-node:focus-visible .focus-ring { stroke: var(--signal); stroke-width: 2; }
+
 @media (prefers-reduced-motion: no-preference) {
   .diamond.animate {
     opacity: 0;
