@@ -317,19 +317,37 @@ function evaluation(entregas, sessions, dates) {
   if (!entregas.length) return null;
   const dateByN = {};
   sessions.forEach((s, i) => { if (dates[i]) dateByN[s.n] = dates[i]; });
+  const rows = entregas.slice().sort((a, b) => a.sesion - b.sesion);
+  // Una columna que no tiene nada que decir no se dibuja: sin calendario no hay
+  // fechas, y sin 'peso' no hay porcentajes ni total que cuadrar.
+  const conFecha = rows.some(e => dateByN[e.sesion]);
+  const suma = rows.reduce((t, e) => t + (Number(e.peso) || 0), 0);
+
+  const cols = [["Entrega", ""], ["Sesión", ""]];
+  if (conFecha) cols.push(["Fecha", ""]);
+  if (suma) cols.push(["Peso", "peso"]);
+
+  const body = rows.map(e => {
+    const dt = dateByN[e.sesion], peso = Number(e.peso) || 0;
+    return `<tr><th scope="row">${esc(e.etiqueta)}</th><td>S${pad2(e.sesion)}</td>`
+      + (conFecha ? `<td>${dt ? fmtDate(dt) : "—"}</td>` : "")
+      + (suma ? `<td class="peso">${peso ? peso + "%" : "—"}</td>` : "")
+      + "</tr>";
+  }).join("");
+  // el total es el control que quien imparte necesita ver antes de publicar
+  const foot = suma
+    ? `<tfoot><tr><th scope="row">Total</th><td colspan="${cols.length - 2}"></td>`
+      + `<td class="peso">${suma}%</td></tr></tfoot>`
+    : "";
+
   const el = h("section", { class: "evaluation" });
   el.appendChild(h("h2", null, "Evaluación"));
-  const list = h("ul", { class: "evaluation-list", role: "list" });
-  entregas.slice().sort((a, b) => a.sesion - b.sesion).forEach(e => {
-    const dt = dateByN[e.sesion], peso = Number(e.peso) || 0;
-    list.appendChild(h("li", null, `<strong>${esc(e.etiqueta)}</strong> · S${pad2(e.sesion)}`
-      + (dt ? " · " + fmtDate(dt) : "") + (peso ? ` · <strong class="peso">${peso}%</strong>` : "")));
-  });
-  el.appendChild(list);
-  // la suma es el control que quien imparte necesita ver antes de publicar
-  const suma = entregas.reduce((t, e) => t + (Number(e.peso) || 0), 0);
-  if (suma) el.appendChild(h("p", { class: "fine" },
-    suma === 100 ? "Suma 100% de la calificación." : `Los pesos suman ${suma}%.`));
+  el.appendChild(h("table", { class: "evaluation-table" },
+    `<thead><tr>${cols.map(([c, k]) => `<th scope="col"${k ? ` class="${k}"` : ""}>${c}</th>`).join("")}</tr></thead>`
+    + `<tbody>${body}</tbody>${foot}`));
+  // el total ya dice cuánto suman: la nota sólo hace falta cuando no cuadra
+  if (suma && suma !== 100) el.appendChild(h("p", { class: "fine" },
+    `Los pesos suman ${suma}%, no 100%.`));
   return el;
 }
 

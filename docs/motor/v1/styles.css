@@ -130,21 +130,54 @@ body {
   color: var(--signal);
   margin: 0 0 0.9rem;
 }
-.evaluation-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem 2.2rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+/* Tabla de entregas: una fila por entrega y el total al pie. Las columnas se
+   dibujan sólo si hay algo que poner (ver app.js), así que la tabla puede
+   tener dos, tres o cuatro. Sin retícula vertical: los renglones bastan para
+   leerla y el filete cerrado ensuciaría una portada que es casi todo aire. */
+.evaluation-table {
+  width: 100%;
+  border-collapse: collapse;
   font-family: var(--mono);
-  font-size: 0.85rem;
+  font-size: clamp(0.78rem, 0.72rem + 0.3vw, 0.85rem);
   letter-spacing: 0.02em;
+  text-align: left;
+}
+.evaluation-table th,
+.evaluation-table td {
+  padding: 0.55rem 1rem 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: baseline;
+}
+.evaluation-table thead th {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  border-bottom-color: var(--ink);
+}
+.evaluation-table tbody th { color: var(--ink); font-weight: 600; }
+.evaluation-table tbody td { color: var(--ink-2); }
+/* el filete del total lo pone tfoot: dejar también el del último renglón daría
+   una línea doble */
+.evaluation-table tbody tr:last-child th,
+.evaluation-table tbody tr:last-child td { border-bottom: none; }
+/* el % se lee columna abajo, así que se alinea a la derecha para poder sumarlo
+   con la vista */
+.evaluation-table .peso { text-align: right; padding-right: 0; }
+.evaluation-table tbody .peso,
+.evaluation-table tfoot .peso { color: var(--ink); font-weight: 600; }
+.evaluation-table tfoot th,
+.evaluation-table tfoot td {
+  border-bottom: none;
+  border-top: 1px solid var(--ink);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--ink-2);
 }
-.evaluation-list strong { color: var(--ink); font-weight: 600; }
-/* el % es el dato que se busca de un vistazo: sube de cuerpo dentro del renglón */
-.evaluation-list .peso { font-size: 1rem; }
+.evaluation-table tfoot .peso { font-size: 1rem; letter-spacing: 0.02em; }
 .evaluation .fine { font-size: 0.8rem; font-style: italic; color: var(--ink-2); margin: 1rem 0 0; }
 
 /* ---------- cintas / diamantes ---------- */
