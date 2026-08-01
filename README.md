@@ -14,8 +14,6 @@ públicos de las cuatro clases.
 
 ```
 .
-├── propuesta.md        # documento de trabajo (privado, no se publica)
-├── NOTAS.md            # notas sueltas y acuerdos
 └── docs/               # ← esto es lo que publica GitHub Pages
     ├── index.html      # índice de las cuatro clases
     ├── motor/v1/       # motor del sitio (copia de ../plantilla-curso)
