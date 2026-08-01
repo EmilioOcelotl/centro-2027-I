@@ -16,7 +16,14 @@ grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
 intro: "Código Creativo 3 - Arquitectura de Interiores. Este curso se realiza a partir de iteraciones. Vamos a partir de un motivo: la malla"
 caption: ""                         # vacío = sin frase bajo el diagrama; borra la línea para la de por defecto
 
-# 2 · CALENDARIO
+# 2 · ACUERDO SOBRE EL USO DE IA — sale en la portada, bajo el objetivo.
+#     'texto' admite una cadena o una lista de puntos. Sin 'ia' —o con 'texto'
+#     vacío— el recuadro no aparece.
+ia:
+  titulo: "Uso de inteligencia artificial"
+  texto: "Como parte de la metodología del curso es necesario llegar a un acuerdo claro para el uso de inteligencia artificial."
+
+# 3 · CALENDARIO
 calendario:
   inicio: 2026-08-03                # primer día del semestre: la 1ª sesión es el
                                     # primer lunes a partir de esta fecha
@@ -26,7 +33,7 @@ calendario:
   descansos:
     - {de: 2026-10-05, a: 2026-10-09, etiqueta: "Receso"}
 
-# 3 · ESTRUCTURA — define la forma del diagrama y la evaluación
+# 4 · ESTRUCTURA — define la forma del diagrama y la evaluación
 estructura:
   iteraciones:
     - {nombre: "Primera parte", sesiones: [1, 8],  nota: ""}
@@ -37,7 +44,7 @@ estructura:
   continuas:                        # se califican sin fecha fija
     - {etiqueta: "Actividades", peso: 30}
 
-# 4 · SESIONES — el número de sesiones define la duración del curso.
+# 5 · SESIONES — el número de sesiones define la duración del curso.
 sesiones:
   # 'desc' admite una lista. Con varios puntos conviene la forma en bloque:
   # las claves de la sesión van sangradas a la columna que abre el guion.
@@ -64,7 +71,15 @@ sesiones:
   - {n: 15, titulo: "Sesión 15",        tool: "", desc: ""}
   - {n: 16, titulo: "Entrega final",    tool: "", desc: ""}
 
-# 5 · COLOFÓN — columnas del pie de página. Sin 'colofon' ni 'grupos' el pie no
+# 6 · REFERENCIAS — lista al final del documento, antes del colofón.
+#     Cada entrada es una cadena, o un mapa {texto, url} si hay a dónde ir.
+#     Sin 'referencias' —o con la lista vacía— la sección no aparece.
+referencias: []
+# referencias:
+#   - "Autor, A. (2020). Título. Editorial."
+#   - {texto: "Nombre del recurso", url: "https://ejemplo.org"}
+
+# 7 · COLOFÓN — columnas del pie de página. Sin 'colofon' ni 'grupos' el pie no
 #     aparece en pantalla; impreso conserva la URL del sitio.
 # colofon:
 #   - {titulo: "Herramientas", texto: "…"}

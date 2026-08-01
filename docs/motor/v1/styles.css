@@ -78,6 +78,29 @@ body {
   color: var(--ink-2);
   margin: 0 0 2.2rem;
 }
+/* Acuerdo sobre el uso de IA. Único bloque enmarcado de la portada: los demás
+   se separan con aire, y aquí el marco es el que dice «esto se pacta», no
+   «esto se informa». Toma la medida de la columna de lectura, como la barra de
+   avance y la tabla de evaluación. */
+.ia-pact {
+  max-width: var(--readw);
+  margin: 0 0 2.2rem;
+  padding: 1.3rem 1.4rem 1.4rem;
+  border: 1px solid var(--ink);
+}
+.ia-pact h2 {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 0.9rem;
+}
+.ia-pact-body > :first-child { margin-top: 0; }
+.ia-pact-body > :last-child { margin-bottom: 0; }
+.ia-pact p { margin: 0 0 0.7rem; font-size: 0.95rem; color: var(--ink-2); }
+.ia-pact .prose-list { font-size: 0.95rem; }
+
 .meta {
   display: flex;
   flex-wrap: wrap;
@@ -418,6 +441,51 @@ body {
   border: none;
 }
 
+/* ---------- referencias ----------
+   Cierra el documento sobre los mismos ejes que las tarjetas y el colofón. No
+   lleva filete propio: va justo encima del que abre el colofón, y dos reglas a
+   esa distancia se leerían como un filete doble. El rótulo marca el corte. */
+.references {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 var(--pad) clamp(2.5rem, 6vw, 4rem);
+}
+.references h2 {
+  max-width: var(--readw);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 1.2rem;
+}
+/* Numeración propia y colgada fuera de la medida: el número va en mono —se cita
+   por él— y el texto conserva el eje izquierdo de la columna, como la viñeta de
+   rombo de .prose-list. */
+.ref-list {
+  max-width: var(--readw);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: ref;
+  display: grid;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  color: var(--ink-2);
+}
+.ref-list li { position: relative; padding-left: 2.4rem; counter-increment: ref; }
+.ref-list li::before {
+  content: counter(ref, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.ref-list a { color: var(--ink); text-decoration: underline; text-underline-offset: 0.18em; }
+
 /* ---------- colophon ---------- */
 /* el pie se alinea con el cuerpo: la regla superior y las columnas cierran en la
    columna de lectura, no a lo ancho de la página */
@@ -486,8 +554,9 @@ body {
 
   /* la caja de la página manda: nada se centra ni se limita a la medida de
      pantalla, y la cinta se encoge en vez de desbordar la hoja */
-  .masthead, #iterations, .colophon { max-width: none; padding-left: 0; padding-right: 0; }
-  .cards, .break-band, .colophon-grid, .progress, .evaluation, .ribbon { max-width: none; }
+  .masthead, #iterations, .references, .colophon { max-width: none; padding-left: 0; padding-right: 0; }
+  .cards, .break-band, .colophon-grid, .progress, .evaluation, .ia-pact,
+  .references h2, .ref-list, .ribbon { max-width: none; }
   .ribbon { min-width: 0 !important; width: 100%; }
   .map-scroll { overflow: visible; }
 
@@ -511,7 +580,11 @@ body {
 
   /* cortes de página: la unidad mínima es la tarjeta, y una iteración no se
      separa de su cinta */
-  .card, .break-band, .col, .iteration-head, .evaluation { break-inside: avoid; }
+  .card, .break-band, .col, .iteration-head, .evaluation, .ia-pact,
+  .ref-list li { break-inside: avoid; }
+  /* el enlace pierde su destino al imprimirse (ver la regla de <a> de abajo):
+     en papel la referencia tiene que traer la URL escrita */
+  .ref-list a[href^="http"]::after { content: " " attr(href); word-break: break-all; }
   .iteration-head, .map-scroll { break-after: avoid; }
   .colophon-grid { break-inside: avoid; }
   a { color: inherit; text-decoration: none; }

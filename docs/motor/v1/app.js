@@ -276,6 +276,8 @@ function render(cfg) {
   app.appendChild(h("div", { class: "grain", "aria-hidden": "true" }));
   app.appendChild(masthead(cfg, sessions, entregas, continuas, dates, tIdx));
   app.appendChild(iterationsSection(cfg, sessions, iteraciones, entregaDe, dates, tIdx, breaks));
+  const refs = references(cfg.referencias);
+  if (refs) app.appendChild(refs);
   app.appendChild(colophon(cfg));
 
   link();
@@ -367,6 +369,21 @@ function evaluation(entregas, continuas, sessions, dates) {
   return el;
 }
 
+// El acuerdo sobre el uso de IA es parte de la metodología del curso, no una
+// nota al pie: va donde va en los temarios en papel —título, objetivo, acuerdo—,
+// antes de la meta y del avance. Acepta las dos formas del colofón: una cadena
+// suelta («ia: "…"») o un mapa con su propio rótulo y una lista de puntos.
+function aiPact(ia) {
+  if (!ia) return null;
+  const isMap = typeof ia === "object" && !Array.isArray(ia);
+  const texto = isMap ? ia.texto : ia;
+  if (texto == null || texto === "") return null;
+  const el = h("section", { class: "ia-pact" });
+  el.appendChild(h("h2", null, esc((isMap && ia.titulo) || "Uso de inteligencia artificial")));
+  el.appendChild(h("div", { class: "ia-pact-body" }, prose(texto)));
+  return el;
+}
+
 function masthead(cfg, sessions, entregas, continuas, dates, tIdx) {
   const n = sessions.length;
   const el = h("header", { class: "masthead" });
@@ -374,6 +391,8 @@ function masthead(cfg, sessions, entregas, continuas, dates, tIdx) {
   el.appendChild(h("p", { class: "eyebrow" }, esc(eyebrow)));
   el.appendChild(h("h1", { class: "title" }, esc(cfg.titulo || "Curso")));
   if (cfg.intro) el.appendChild(h("p", { class: "lede" }, esc(cfg.intro)));
+  const ia = aiPact(cfg.ia);
+  if (ia) el.appendChild(ia);
 
   const meta = h("ul", { class: "meta", role: "list" });
   const bits = [`${n} sesiones`];
@@ -628,6 +647,41 @@ function makeCard(s, entrega, date, isToday) {
     ${prose(s.desc)}
     ${s.tool && !entrega ? `<span class="tool">${esc(s.tool)}</span>` : ""}`;
   return card;
+}
+
+/* ---------- referencias ---------- */
+
+// Cierra el documento, después de la última sesión y antes del colofón: es
+// material de consulta, no parte del recorrido. Siempre es una lista numerada
+// —una referencia se cita por su número— y cada entrada admite dos formas:
+// una cadena suelta, o un mapa {texto, url} cuando hay a dónde ir.
+function references(refs) {
+  const items = (Array.isArray(refs) ? refs : [refs]).filter(r => r != null && r !== "");
+  if (!items.length) return null;
+  const el = h("section", { class: "references" });
+  el.appendChild(h("h2", null, "Referencias"));
+  const list = h("ol", { class: "ref-list" });
+  items.forEach(r => {
+    const isMap = typeof r === "object" && !Array.isArray(r);
+    const texto = isMap ? (r.texto || r.url) : r;
+    const url = isMap ? r.url : null;
+    if (texto == null || texto === "") return;
+    // por nodos y no por innerHTML: el frontmatter es contenido, nunca marcado,
+    // y así ni el texto ni la URL pueden inyectar etiquetas ni salirse del
+    // atributo (esc() no toca las comillas)
+    const li = h("li");
+    if (url) {
+      const a = h("a", { href: url, rel: "noopener" });
+      a.textContent = texto;
+      li.appendChild(a);
+    } else {
+      li.textContent = texto;
+    }
+    list.appendChild(li);
+  });
+  if (!list.children.length) return null;
+  el.appendChild(list);
+  return el;
 }
 
 /* ---------- colofón ---------- */
