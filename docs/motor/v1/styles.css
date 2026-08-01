@@ -1,17 +1,25 @@
+/* Programa en blanco y negro: la pantalla adopta la paleta del papel, de modo
+   que lo que se lee en el navegador y lo que sale de Ctrl+P son la misma pieza.
+   El bloque @media print ya sólo corrige lo que es mecánica de la hoja.
+   --signal se conserva como variable —aunque hoy valga negro— porque nombra
+   "lo que destaca": basta cambiarla aquí para devolverle un acento. */
 :root {
-  --paper: #E9E7DE;
-  --paper-2: #DFDCD1;
-  --ink: #17171C;
-  --ink-2: #565660;
-  --line: #C7C4B8;
-  --signal: #2A24D6;
+  --paper: #FFFFFF;
+  --paper-2: #F1F1EF;   /* hover: en papel no existe, ver @media print */
+  --ink: #000000;
+  --ink-2: #333333;
+  --line: #CCCCCC;
+  --signal: #000000;
 
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --pad: clamp(1.25rem, 5vw, 4rem);
-  --maxw: 1120px;
+  /* Una sola columna centrada: el contenedor mide la columna de lectura más su
+     sangría, así que centrarlo centra de golpe portada, cintas, tarjetas y
+     colofón sin desalinearlos entre sí. El renglón sigue a la izquierda. */
   --readw: 44rem;   /* medida de la columna de lectura (tarjetas y bandas) */
+  --maxw: calc(var(--readw) + var(--pad) * 2);
 }
 
 * { box-sizing: border-box; }
@@ -57,7 +65,9 @@ body {
 .title {
   font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(2.35rem, 1.4rem + 4.6vw, 4.75rem);
+  /* el tope lo fija la columna, no la ventana: por encima de ~3.9rem un título
+     de dos palabras ya no cabe en --readw y se parte en seco */
+  font-size: clamp(2.1rem, 1.4rem + 3.4vw, 3.9rem);
   line-height: 1.02;
   letter-spacing: -0.02em;
   margin: 0 0 1.6rem;
@@ -274,8 +284,10 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-size: 0.72rem;
-  color: var(--paper);
-  background: var(--signal);
+  /* invertido respecto a la tarjeta: sobre el bloque negro de la entrega, un
+     badge negro sería invisible */
+  color: var(--ink);
+  background: var(--paper);
   padding: 0.25rem 0.6rem;
 }
 .card.deliverable h3 { font-size: 1.5rem; }
@@ -289,8 +301,10 @@ body {
   margin: 0;
 }
 .card.deliverable .peso strong { font-size: 1.15rem; font-weight: 600; }
-.card.deliverable.is-active { background: #000; }
-.card.deliverable.is-today { box-shadow: inset 0 0 0 2px var(--signal); }
+/* sobre negro el hover tiene que aclarar, no oscurecer, y la marca de hoy
+   tiene que ser del color del papel para verse */
+.card.deliverable.is-active { background: #262626; }
+.card.deliverable.is-today { box-shadow: inset 0 0 0 2px var(--paper); }
 
 /* divisor de receso entre tarjetas. Comparte medida y sangría con las tarjetas
    para que la etiqueta caiga sobre el mismo eje que su texto. */
@@ -361,19 +375,16 @@ body {
 :focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
 
 /* ---------- papel ----------
-   El programa se entrega impreso o en PDF: aquí el sitio se vuelve documento.
-   Tinta mínima (sin retícula, sin gradientes, sin tarjetas en negro), una sola
-   columna a lo ancho de la caja y nada partido a media tarjeta. */
+   La paleta ya es la del papel (ver :root), así que aquí no se redefine el
+   color: sólo queda la mecánica de la hoja —caja de página, tinta mínima,
+   ancho completo y nada partido a media tarjeta— y las dos variables que de
+   verdad se comportan distinto sobre papel. */
 .print-only { display: none; }
 
 @media print {
   :root {
-    --paper: #fff;
-    --paper-2: #fff;
-    --ink: #000;
-    --ink-2: #333;
-    --line: #999;
-    --signal: #000;
+    --paper-2: #fff;   /* en papel no hay hover que señalar */
+    --line: #999;      /* la línea clara de pantalla se pierde impresa */
   }
   @page { margin: 18mm 16mm; }
 

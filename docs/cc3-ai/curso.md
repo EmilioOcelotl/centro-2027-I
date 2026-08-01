@@ -8,13 +8,13 @@
 # 1 · IDENTIDAD
 universidad: "CENTRO"
 programa: "Arquitectura de Interiores"
-titulo: "Código Creativo"        # ¿lleva número de semestre? (Código Creativo 2 / 3…)
+titulo: "CC-3"        # ¿lleva número de semestre? (Código Creativo 2 / 3…)
 edicion: "2027-I"
 imparte: "Emilio Ocelotl"
 grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
 
-intro: ""                           # una o dos frases de portada
-caption: ""                         # frase corta bajo el diagrama (hay una por defecto)
+intro: "Código Creativo 3 - Arquitectura de Interiores. Este curso se realiza a partir de iteraciones. Vamos a partir de un motivo: la malla"                           # una o dos frases de portada
+caption: " "                         # frase corta bajo el diagrama (hay una por defecto)
 
 # 2 · CALENDARIO — descomenta y llena cuando tengas las fechas.
 #     Sin este bloque el sitio funciona igual, pero sin fechas ni marca de "hoy".
