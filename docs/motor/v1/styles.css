@@ -353,7 +353,12 @@ body {
 
 /* ---------- responsive ---------- */
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
-:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; }
+/* El foco se dibuja por dentro del canto, no separado de él: con un offset
+   positivo el hueco deja ver el fondo de la página, que es más claro que el
+   fondo de la tarjeta enfocada (--paper-2) y se lee como un contorno blanco.
+   Se conserva outline —y no box-shadow— porque es lo único que sobrevive al
+   modo de alto contraste forzado. */
+:focus-visible { outline: 2px solid var(--signal); outline-offset: -2px; }
 
 /* ---------- papel ----------
    El programa se entrega impreso o en PDF: aquí el sitio se vuelve documento.
