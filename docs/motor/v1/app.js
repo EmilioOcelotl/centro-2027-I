@@ -97,10 +97,26 @@ function parseYAML(text) {
       const ind = indentOf(line);
       if (ind < minIndent) break;
       const content = line.slice(ind);
-      if (content.startsWith("- ")) {
-        const item = content.slice(2).trim();
+      if (content === "-" || content.startsWith("- ")) {
+        const rest = content.slice(1), pos = rest.search(/\S/);
+        if (pos < 0) {                                 // «-» solo: el nodo va debajo
+          idx++;
+          result.push(idx < lines.length ? parseNode(indentOf(lines[idx])) : null);
+          continue;
+        }
+        const off = 1 + pos, item = rest.trim();
+        // Un ítem que abre un mapa en bloque —«- n: 1» y sus claves hermanas
+        // sangradas a la misma columna— no cabe en una línea. Se reescribe el
+        // guion como espacios y se parsea desde ahí como un mapa cualquiera:
+        // la columna del ítem hace de sangría mínima, así que el siguiente
+        // guion (que va más a la izquierda) corta el mapa por sí solo.
+        if (item[0] !== "{" && item[0] !== "[" && topColon(item) >= 0) {
+          lines[idx] = " ".repeat(ind + off) + item;
+          result.push(parseNode(ind + off));
+          continue;
+        }
         idx++;
-        result.push(item === "" ? parseNode(indentOf(lines[idx])) : parseValue(item));
+        result.push(parseValue(item));
       } else {
         const i = topColon(content);
         const key = content.slice(0, i).trim();
@@ -213,6 +229,19 @@ function h(tag, attrs, html) {
 const pad2 = n => String(n).padStart(2, "0");
 const esc = s => String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 
+// Todo campo de prosa del frontmatter —desc, nota, texto del colofón— acepta
+// una cadena o una lista. La lista sale como <ul>; la cadena, como párrafo.
+// El .md nunca inyecta marcado: lo que llega se escapa y el motor decide la
+// etiqueta, que es lo que mantiene el frontmatter como contenido y no como HTML.
+function prose(v) {
+  if (v == null || v === "") return "";
+  if (Array.isArray(v)) {
+    const items = v.filter(x => x != null && x !== "");
+    return items.length ? `<ul class="prose-list">${items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+  }
+  return `<p>${esc(v)}</p>`;
+}
+
 /* =========================================================
    4 · Render principal
    ========================================================= */
@@ -241,9 +270,9 @@ function render(cfg) {
   document.title = [cfg.titulo, cfg.edicion].filter(Boolean).join(" · ") || "Curso";
 
   app.appendChild(h("div", { class: "grain", "aria-hidden": "true" }));
-  app.appendChild(masthead(cfg, sessions.length, dates, tIdx));
+  app.appendChild(masthead(cfg, sessions, entregas, dates, tIdx));
   app.appendChild(iterationsSection(cfg, sessions, iteraciones, entregaDe, dates, tIdx, breaks));
-  app.appendChild(colophon(cfg, entregas, dates));
+  app.appendChild(colophon(cfg));
 
   link();
 }
@@ -281,7 +310,31 @@ function progress(dates, tIdx, n) {
   return el;
 }
 
-function masthead(cfg, n, dates, tIdx) {
+// La ponderación es el dato que más se busca en un programa, y vivía al final
+// del documento, detrás de dieciséis tarjetas. Aquí cierra la portada: mismo
+// registro mono que la meta y el avance, y el mapa no se desplaza.
+function evaluation(entregas, sessions, dates) {
+  if (!entregas.length) return null;
+  const dateByN = {};
+  sessions.forEach((s, i) => { if (dates[i]) dateByN[s.n] = dates[i]; });
+  const el = h("section", { class: "evaluation" });
+  el.appendChild(h("h2", null, "Evaluación"));
+  const list = h("ul", { class: "evaluation-list", role: "list" });
+  entregas.slice().sort((a, b) => a.sesion - b.sesion).forEach(e => {
+    const dt = dateByN[e.sesion], peso = Number(e.peso) || 0;
+    list.appendChild(h("li", null, `<strong>${esc(e.etiqueta)}</strong> · S${pad2(e.sesion)}`
+      + (dt ? " · " + fmtDate(dt) : "") + (peso ? ` · <strong class="peso">${peso}%</strong>` : "")));
+  });
+  el.appendChild(list);
+  // la suma es el control que quien imparte necesita ver antes de publicar
+  const suma = entregas.reduce((t, e) => t + (Number(e.peso) || 0), 0);
+  if (suma) el.appendChild(h("p", { class: "fine" },
+    suma === 100 ? "Suma 100% de la calificación." : `Los pesos suman ${suma}%.`));
+  return el;
+}
+
+function masthead(cfg, sessions, entregas, dates, tIdx) {
+  const n = sessions.length;
   const el = h("header", { class: "masthead" });
   const eyebrow = [cfg.programa, cfg.edicion].filter(Boolean).join(" · ") || cfg.universidad || "";
   el.appendChild(h("p", { class: "eyebrow" }, esc(eyebrow)));
@@ -298,6 +351,8 @@ function masthead(cfg, n, dates, tIdx) {
   el.appendChild(meta);
   const prog = progress(dates, tIdx, n);
   if (prog) el.appendChild(prog);
+  const ev = evaluation(entregas, sessions, dates);
+  if (ev) el.appendChild(ev);
   return el;
 }
 
@@ -493,7 +548,7 @@ function iterationsSection(cfg, sessions, iteraciones, entregaDe, dates, tIdx, b
     const head = h("div", { class: "iteration-head" });
     head.innerHTML = `<span class="iteration-index">${pad2(gi + 1)}</span>
       <div class="iteration-name"><h2>${iteraciones.length ? "Iteración — " : ""}${esc(it.nombre)}</h2>
-      ${it.nota ? `<p>${esc(it.nota)}</p>` : ""}</div>`;
+      ${prose(it.nota)}</div>`;
     sec.appendChild(head);
 
     // mini-cinta de esta iteración
@@ -531,50 +586,39 @@ function makeCard(s, entrega, date, isToday) {
     <div class="card-top"><span class="card-num">${numLine}</span>${topRight}</div>
     <h3>${esc(s.titulo)}</h3>
     ${entrega && entrega.peso ? `<p class="peso"><strong>${entrega.peso}%</strong> de la calificación</p>` : ""}
-    ${s.desc ? `<p>${esc(s.desc)}</p>` : ""}
+    ${prose(s.desc)}
     ${s.tool && !entrega ? `<span class="tool">${esc(s.tool)}</span>` : ""}`;
   return card;
 }
 
 /* ---------- colofón ---------- */
 
-function colophon(cfg, entregas, dates) {
+// Las entregas ya no bajan aquí: se dicen en la portada (ver evaluation) y
+// repetirlas al pie sería decir dos veces el mismo dato.
+function colophon(cfg) {
   const foot = h("footer", { class: "colophon" });
   // rejilla interna: el colofón cierra en la misma columna que las tarjetas
   const grid = h("div", { class: "colophon-grid" });
   foot.appendChild(grid);
-  const sByN = {};
-  (cfg.sesiones || []).slice().sort((a, b) => a.n - b.n).forEach((s, i) => { sByN[s.n] = dates[i]; });
 
-  if (entregas.length) {
-    const col = h("div", { class: "col" });
-    col.appendChild(h("h2", null, "Entregas"));
-    entregas.forEach(e => {
-      const dt = sByN[e.sesion], peso = Number(e.peso) || 0;
-      col.appendChild(h("p", null, `<strong>${esc(e.etiqueta)}</strong> — S${pad2(e.sesion)}`
-        + (dt ? " · " + fmtDate(dt) : "") + (peso ? ` · <strong>${peso}%</strong>` : "")));
-    });
-    // la suma es el control que el docente necesita ver antes de publicar
-    const suma = entregas.reduce((t, e) => t + (Number(e.peso) || 0), 0);
-    if (suma) col.appendChild(h("p", { class: "fine" },
-      suma === 100 ? "Suma 100% de la calificación." : `Los pesos suman ${suma}%.`));
-    grid.appendChild(col);
-  }
+  let onScreen = 0;
   (cfg.colofon || []).forEach(c => {
-    const col = h("div", { class: "col" });
-    col.appendChild(h("h2", null, esc(c.titulo)));
-    col.appendChild(h("p", null, esc(c.texto)));
-    grid.appendChild(col);
+    grid.appendChild(h("div", { class: "col" }, `<h2>${esc(c.titulo)}</h2>${prose(c.texto)}`));
+    onScreen++;
   });
   if (cfg.grupos && cfg.grupos.length) {
     const col = h("div", { class: "col" });
     col.appendChild(h("h2", null, "Grupos"));
     col.appendChild(h("p", null, esc(cfg.grupos.join(" · ")) + (cfg.calendario ? " — mismo calendario." : "")));
     grid.appendChild(col);
+    onScreen++;
   }
   // sólo en papel: de dónde salió la hoja que el alumno tiene en la mano
   grid.appendChild(h("div", { class: "col print-only" }, `<h2>Programa en línea</h2>
     <p>${esc(location.href.split("?")[0])}</p>`));
+  // un curso sin colofón ni grupos dejaría en pantalla una regla huérfana bajo
+  // la última tarjeta: el pie entero pasa a ser cosa del papel
+  if (!onScreen) foot.classList.add("print-only");
   return foot;
 }
 

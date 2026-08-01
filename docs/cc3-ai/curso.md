@@ -36,7 +36,15 @@ estructura:
 
 # 4 · SESIONES — el número de sesiones define la duración del curso.
 sesiones:
-  - {n: 1,  titulo: "Sesión 1",         tool: "", desc: "Presentaciones: curso, profesor, alumnxs.\nEvaluación\nUso de IA en el salón."}
+  # 'desc' admite una lista. Con varios puntos conviene la forma en bloque:
+  # las claves de la sesión van sangradas a la columna que abre el guion.
+  - n: 1
+    titulo: "Sesión 1"
+    tool: ""
+    desc:
+      - "Presentaciones: curso, profesor, alumnxs"
+      - "Evaluación"
+      - "Uso de IA en el salón"
   - {n: 2,  titulo: "Sesión 2",         tool: "", desc: ""}
   - {n: 3,  titulo: "Sesión 3",         tool: "", desc: ""}
   - {n: 4,  titulo: "Sesión 4",         tool: "", desc: ""}

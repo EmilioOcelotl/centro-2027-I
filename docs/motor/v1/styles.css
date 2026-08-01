@@ -113,6 +113,40 @@ body {
   transform: rotate(45deg);
 }
 
+/* Evaluación: cierra la portada porque la ponderación es lo primero que se
+   busca en un programa —antes vivía en el colofón, detrás de las tarjetas—.
+   Se separa del avance sólo con aire, como los demás bloques del masthead:
+   una regla aquí caería a unos píxeles de la barra de progreso y las dos se
+   leerían como un filete doble. El rótulo basta para marcar el corte. */
+.evaluation {
+  max-width: var(--readw);
+  margin: 2.8rem 0 0;
+}
+.evaluation h2 {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 0.9rem;
+}
+.evaluation-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 2.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-2);
+}
+.evaluation-list strong { color: var(--ink); font-weight: 600; }
+/* el % es el dato que se busca de un vistazo: sube de cuerpo dentro del renglón */
+.evaluation-list .peso { font-size: 1rem; }
+.evaluation .fine { font-size: 0.8rem; font-style: italic; color: var(--ink-2); margin: 1rem 0 0; }
+
 /* ---------- cintas / diamantes ---------- */
 .defs-only { position: absolute; width: 0; height: 0; }
 .map-scroll { overflow-x: auto; overflow-y: hidden; margin-bottom: clamp(1.6rem, 4vw, 2.5rem); }
@@ -261,6 +295,29 @@ body {
 .card h3 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
 .card p { margin: 0; font-size: 0.95rem; color: var(--ink-2); }
 .card .hoy { color: var(--signal); font-weight: 600; text-transform: uppercase; }
+
+/* Listas de contenido (desc de una sesión, nota de una iteración, texto del
+   colofón). Mismo cuerpo y color que el párrafo que sustituyen; la viñeta es
+   el rombo de .meta, colgado fuera de la medida para que el texto conserve el
+   eje izquierdo de su caja. */
+.prose-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+.prose-list li { position: relative; padding-left: 1.1rem; }
+.prose-list li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.62em;
+  width: 5px; height: 5px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
 .tool {
   margin-top: auto;
   font-family: var(--mono);
@@ -277,6 +334,7 @@ body {
 .card.deliverable .card-top,
 .card.deliverable .card-num,
 .card.deliverable p,
+.card.deliverable .prose-list,
 .card.deliverable .tool { color: var(--paper); }
 .card.deliverable .badge {
   font-family: var(--mono);
@@ -352,6 +410,7 @@ body {
   margin: 0 0 1rem;
 }
 .colophon p { margin: 0 0 0.7rem; font-size: 0.92rem; color: var(--ink-2); }
+.colophon .prose-list { font-size: 0.92rem; }
 .colophon strong { color: var(--ink); }
 .colophon .fine { font-size: 0.82rem; font-style: italic; }
 
@@ -395,7 +454,7 @@ body {
   /* la caja de la página manda: nada se centra ni se limita a la medida de
      pantalla, y la cinta se encoge en vez de desbordar la hoja */
   .masthead, #iterations, .colophon { max-width: none; padding-left: 0; padding-right: 0; }
-  .cards, .break-band, .colophon-grid, .progress, .ribbon { max-width: none; }
+  .cards, .break-band, .colophon-grid, .progress, .evaluation, .ribbon { max-width: none; }
   .ribbon { min-width: 0 !important; width: 100%; }
   .map-scroll { overflow: visible; }
 
@@ -412,13 +471,14 @@ body {
   .card.deliverable .card-top,
   .card.deliverable .card-num,
   .card.deliverable p,
+  .card.deliverable .prose-list,
   .card.deliverable .tool { color: #000; }
   .card.deliverable .badge { background: #fff; color: #000; border: 0.5pt solid #000; }
   .card.is-today, .card.deliverable.is-today { box-shadow: none; outline: 1.5pt solid #000; }
 
   /* cortes de página: la unidad mínima es la tarjeta, y una iteración no se
      separa de su cinta */
-  .card, .break-band, .col, .iteration-head { break-inside: avoid; }
+  .card, .break-band, .col, .iteration-head, .evaluation { break-inside: avoid; }
   .iteration-head, .map-scroll { break-after: avoid; }
   .colophon-grid { break-inside: avoid; }
   a { color: inherit; text-decoration: none; }
