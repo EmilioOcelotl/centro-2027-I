@@ -8,11 +8,31 @@
   --paper-2: #F1F1EF;   /* hover: en papel no existe, ver @media print */
   --ink: #000000;
   --ink-2: #333333;
-  --line: #CCCCCC;
+  --line: #CCCCCC;   /* sólo decorativo: la retícula del fondo */
+  /* Todo filete que separa una cosa de otra —tarjeta de tarjeta, renglón de
+     renglón, riel de avance— es un componente de interfaz, y WCAG 1.4.11 le
+     pide 3:1 contra el papel. --line da 1.61:1: en un proyector de salón o con
+     el brillo bajo, la retícula que delimita las tarjetas desaparece. --rule
+     es esa misma línea llevada al mínimo que se sostiene (3.2:1). */
+  --rule: #8F8F8F;
   --signal: #000000;
 
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Escala de texto. Antes había nueve cuerpos distintos entre 10.9 y 20.8px
+     para decir cinco cosas, y ninguno de ellos era el del <body>, que quedaba
+     pisado por todos. Aquí son tres, más los titulares:
+       --fs-prosa    lo que se lee de corrido (lede, tarjetas, referencias…)
+       --fs-sec      lo que acompaña (tabla, cintillos de tarjeta, caption)
+       --fs-rotulo   versalitas y micro-etiquetas — es el suelo, nada baja de aquí
+     En rem, para que sigan el tamaño de fuente que el usuario tenga puesto. */
+  --fs-prosa: 1rem;
+  --fs-sec: 0.875rem;
+  --fs-rotulo: 0.8rem;
+  /* Encabezado de iteración: el número y el nombre lo comparten, así que se
+     escribe una vez y no vuelven a separarse. */
+  --fs-iteracion: clamp(1.05rem, 2.4vw, 1.4rem);
 
   --pad: clamp(1.25rem, 5vw, 4rem);
   /* Una sola columna centrada: el contenedor mide la columna de lectura más su
@@ -30,7 +50,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  font-size: var(--fs-prosa);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -56,8 +76,11 @@ body {
 }
 .eyebrow {
   font-family: var(--mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.28em;
+  font-size: var(--fs-rotulo);
+  /* 0.28em sobre 12.8px era el tracking más abierto de la página: en versalitas
+     y a este cuerpo, tanto aire deshace la silueta de la palabra. Queda en el
+     mismo 0.16em que los demás rótulos. */
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--signal);
   margin: 0 0 1.4rem;
@@ -72,9 +95,12 @@ body {
   letter-spacing: -0.02em;
   margin: 0 0 1.6rem;
 }
+/* El objetivo es prosa, no un titular: entra a la escala como todo lo demás.
+   Con 48ch de medida —tallados para 20.8px— a este cuerpo quedaría una columna
+   angosta a media portada, así que cierra donde cierran las tarjetas. */
 .lede {
-  max-width: 48ch;
-  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.3rem);
+  max-width: var(--readw);
+  font-size: var(--fs-prosa);
   color: var(--ink-2);
   margin: 0 0 2.2rem;
 }
@@ -90,7 +116,7 @@ body {
 }
 .ia-pact h2 {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--signal);
@@ -98,8 +124,8 @@ body {
 }
 .ia-pact-body > :first-child { margin-top: 0; }
 .ia-pact-body > :last-child { margin-bottom: 0; }
-.ia-pact p { margin: 0 0 0.7rem; font-size: 0.95rem; color: var(--ink-2); }
-.ia-pact .prose-list { font-size: 0.95rem; }
+.ia-pact p { margin: 0 0 0.7rem; font-size: var(--fs-prosa); color: var(--ink-2); }
+.ia-pact .prose-list { font-size: var(--fs-prosa); }
 
 .meta {
   display: flex;
@@ -109,7 +135,7 @@ body {
   padding: 0;
   list-style: none;
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.04em;
 }
 /* avance del semestre: responde «¿dónde vamos?» sin bajar a la cinta. La barra
@@ -117,13 +143,13 @@ body {
 .progress { margin: 2.2rem 0 0; max-width: var(--readw); }
 .progress-line {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.04em;
   color: var(--ink-2);
   margin: 0 0 0.6rem;
 }
 .progress-line strong { color: var(--ink); font-weight: 600; }
-.progress-bar { height: 3px; background: var(--line); }
+.progress-bar { height: 3px; background: var(--rule); }
 .progress-bar span { display: block; height: 100%; background: var(--signal); }
 
 .meta li { position: relative; padding-left: 1.1rem; }
@@ -147,7 +173,7 @@ body {
 }
 .evaluation h2 {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--signal);
@@ -161,18 +187,18 @@ body {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--mono);
-  font-size: clamp(0.78rem, 0.72rem + 0.3vw, 0.85rem);
+  font-size: var(--fs-sec);
   letter-spacing: 0.02em;
   text-align: left;
 }
 .evaluation-table th,
 .evaluation-table td {
   padding: 0.55rem 1rem 0.55rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
   vertical-align: baseline;
 }
 .evaluation-table thead th {
-  font-size: 0.72rem;
+  font-size: var(--fs-rotulo);
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -194,14 +220,15 @@ body {
 .evaluation-table tfoot td {
   border-bottom: none;
   border-top: 1px solid var(--ink);
-  font-size: 0.72rem;
+  font-size: var(--fs-rotulo);
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-2);
 }
-.evaluation-table tfoot .peso { font-size: 1rem; letter-spacing: 0.02em; }
-.evaluation .fine { font-size: 0.8rem; font-style: italic; color: var(--ink-2); margin: 1rem 0 0; }
+/* el total sube un escalón sobre el resto de la tabla: es la cifra que se busca */
+.evaluation-table tfoot .peso { font-size: var(--fs-prosa); letter-spacing: 0.02em; }
+.evaluation .fine { font-size: var(--fs-sec); font-style: italic; color: var(--ink-2); margin: 1rem 0 0; }
 
 /* ---------- cintas / diamantes ---------- */
 .defs-only { position: absolute; width: 0; height: 0; }
@@ -213,7 +240,7 @@ body {
 .ribbon { display: block; width: 100%; max-width: var(--readw); height: auto; margin: 0; }
 .map-caption {
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-sec);
   color: var(--ink-2);
   max-width: 62ch;
   margin: 0 0 clamp(2rem, 5vw, 3.5rem);
@@ -224,10 +251,10 @@ body {
 /* la cinta se "solidifica" al decidir: apertura casi vacía → cierre denso */
 .grad-open  { stop-color: var(--signal); stop-opacity: 0.05; }
 .grad-close { stop-color: var(--signal); stop-opacity: 0.24; }
-.spine { stroke: var(--line); stroke-width: 1; }
+.spine { stroke: var(--rule); stroke-width: 1; }
 .node { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; transition: fill 0.15s ease; }
-.node-num { font-family: var(--mono); font-size: 15px; fill: var(--ink-2); text-anchor: middle; }
-.node-date { font-family: var(--mono); font-size: 12px; fill: var(--ink-2); text-anchor: middle; opacity: 0.85; }
+.node-num { font-family: var(--mono); font-size: 16px; fill: var(--ink-2); text-anchor: middle; }
+.node-date { font-family: var(--mono); font-size: 13px; fill: var(--ink-2); text-anchor: middle; opacity: 0.85; }
 .deliver { fill: var(--signal); stroke: var(--signal); }
 .deliver-label {
   font-family: var(--mono); font-size: 13px; font-weight: 600;
@@ -240,19 +267,19 @@ body {
 .break-cap { stroke: var(--ink); stroke-width: 1.25; }
 .break-slash { stroke: var(--ink-2); stroke-width: 1.5; }
 .break-eyebrow {
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
   fill: var(--ink-2); text-anchor: middle;
   paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round;
 }
 .break-dates {
-  font-family: var(--mono); font-size: 12px; fill: var(--ink); text-anchor: middle;
+  font-family: var(--mono); font-size: 13px; fill: var(--ink); text-anchor: middle;
   paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round;
 }
 
 /* hoy */
 .today-stem { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.6; }
 .today-label {
-  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
   letter-spacing: 0.16em; fill: var(--ink); text-anchor: middle;
 }
 .session-node.is-today .node { stroke: var(--signal); stroke-width: 2.5; }
@@ -294,26 +321,33 @@ body {
 .iteration-head {
   display: flex;
   align-items: baseline;
-  gap: 1rem;
+  /* el número dejó de ser un bloque aparte y es el prefijo del nombre: a 64px
+     necesitaba 1rem de aire, a este cuerpo son la misma línea */
+  gap: 0.6rem;
   padding-bottom: 1.2rem;
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--ink);
 }
+/* El índice medía 64px —el texto más grande de la página, por encima del propio
+   título del curso— para un dato que sólo numera la sección. Baja al cuerpo del
+   nombre de la iteración; el peso es lo que le conserva la jerarquía, ahora que
+   comparten familia y tamaño. El line-height de 0.8 y el tracking de display se
+   van con los 64px: al mismo cuerpo, hereda el 1.6 del nombre y las dos líneas
+   base se alinean solas. */
 .iteration-index {
   font-family: var(--mono);
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 500;
-  line-height: 0.8;
-  letter-spacing: -0.03em;
+  font-size: var(--fs-iteracion);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .iteration-name h2 {
   margin: 0;
   font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  font-size: var(--fs-iteracion);
   letter-spacing: -0.01em;
 }
-.iteration-name p { margin: 0.2rem 0 0; font-size: 0.9rem; color: var(--ink-2); }
+.iteration-name p { margin: 0.2rem 0 0; font-size: var(--fs-prosa); color: var(--ink-2); }
 
 /* Sesiones apiladas en una sola columna (desktop y mobile): cada tarjeta crece
    con su propio contenido —sin acoplar alturas por fila— y el texto conserva
@@ -323,8 +357,8 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
+  background: var(--rule);
+  border: 1px solid var(--rule);
   max-width: var(--readw);
   margin: 0;
 }
@@ -343,13 +377,13 @@ body {
   align-items: center;
   justify-content: space-between;
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-sec);
   color: var(--ink-2);
   letter-spacing: 0.04em;
 }
 .card-num { color: var(--ink); font-weight: 600; }
 .card h3 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
-.card p { margin: 0; font-size: 0.95rem; color: var(--ink-2); }
+.card p { margin: 0; font-size: var(--fs-prosa); color: var(--ink-2); }
 .card .hoy { color: var(--signal); font-weight: 600; text-transform: uppercase; }
 
 /* Listas de contenido (desc de una sesión, nota de una iteración, texto del
@@ -362,7 +396,7 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.95rem;
+  font-size: var(--fs-prosa);
   color: var(--ink-2);
 }
 .prose-list li { position: relative; padding-left: 1.1rem; }
@@ -377,7 +411,7 @@ body {
 .tool {
   margin-top: auto;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-2);
@@ -397,7 +431,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  font-size: 0.72rem;
+  font-size: var(--fs-rotulo);
   /* invertido respecto a la tarjeta: sobre el bloque negro de la entrega, un
      badge negro sería invisible */
   color: var(--ink);
@@ -409,7 +443,7 @@ body {
    tarjeta de la entrega, no sólo en el colofón */
 .card.deliverable .peso {
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-sec);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin: 0;
@@ -424,7 +458,7 @@ body {
    para que la etiqueta caiga sobre el mismo eje que su texto. */
 .break-band {
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-2);
@@ -453,7 +487,7 @@ body {
 .references h2 {
   max-width: var(--readw);
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--signal);
@@ -470,7 +504,7 @@ body {
   counter-reset: ref;
   display: grid;
   gap: 0.75rem;
-  font-size: 0.92rem;
+  font-size: var(--fs-prosa);
   color: var(--ink-2);
 }
 .ref-list li { position: relative; padding-left: 2.4rem; counter-increment: ref; }
@@ -480,7 +514,7 @@ body {
   left: 0;
   top: 0.1em;
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.04em;
   color: var(--ink);
 }
@@ -504,16 +538,16 @@ body {
 }
 .colophon h2 {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-rotulo);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--signal);
   margin: 0 0 1rem;
 }
-.colophon p { margin: 0 0 0.7rem; font-size: 0.92rem; color: var(--ink-2); }
-.colophon .prose-list { font-size: 0.92rem; }
+.colophon p { margin: 0 0 0.7rem; font-size: var(--fs-prosa); color: var(--ink-2); }
+.colophon .prose-list { font-size: var(--fs-prosa); }
 .colophon strong { color: var(--ink); }
-.colophon .fine { font-size: 0.82rem; font-style: italic; }
+.colophon .fine { font-size: var(--fs-sec); font-style: italic; }
 
 /* ---------- error ---------- */
 .load-error {
@@ -523,7 +557,7 @@ body {
 }
 .load-error h1 { font-family: var(--mono); font-weight: 500; font-size: 1.8rem; margin: 0 0 1rem; }
 .load-error code { font-family: var(--mono); background: var(--paper-2); padding: 0.1em 0.35em; }
-.load-error .fine { color: var(--ink-2); font-size: 0.9rem; }
+.load-error .fine { color: var(--ink-2); font-size: var(--fs-sec); }
 
 /* ---------- responsive ---------- */
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
@@ -537,14 +571,15 @@ body {
 /* ---------- papel ----------
    La paleta ya es la del papel (ver :root), así que aquí no se redefine el
    color: sólo queda la mecánica de la hoja —caja de página, tinta mínima,
-   ancho completo y nada partido a media tarjeta— y las dos variables que de
-   verdad se comportan distinto sobre papel. */
+   ancho completo y nada partido a media tarjeta— y la única variable que de
+   verdad se comporta distinto sobre papel. --line ya no se corrige aquí: desde
+   que los filetes estructurales pasaron a --rule, sólo pinta la retícula del
+   fondo, que en papel no se imprime. */
 .print-only { display: none; }
 
 @media print {
   :root {
     --paper-2: #fff;   /* en papel no hay hover que señalar */
-    --line: #999;      /* la línea clara de pantalla se pierde impresa */
   }
   @page { margin: 18mm 16mm; }
 
@@ -561,7 +596,7 @@ body {
   .map-scroll { overflow: visible; }
 
   .title { font-size: 24pt; }
-  .lede { font-size: 11pt; }                      /* conserva su medida legible */
+  /* el objetivo ya no se sale de la escala: en papel es prosa como el resto */
   /* en una caja de 180mm, cinco columnas serían ilegibles */
   .colophon-grid { grid-template-columns: repeat(3, 1fr); }
   .diamond { fill: none; stroke: #000; animation: none; opacity: 1; transform: none; }

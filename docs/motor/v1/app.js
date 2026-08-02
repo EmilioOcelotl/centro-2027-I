@@ -435,13 +435,24 @@ function gradientDefs() {
 function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP, VB_W) {
   const n = local.length;
   const TOP = 46, WAIST = 0.35, SEAM = 16;
+  // Constantes que también viven en el CSS: si allá cambian, aquí también.
+  const FOCUS_R = 13, FOCUS_SW = 2;   // .focus-ring
+  const NODE_SW = 2.5;                // el trazo más grueso: .session-node.is-today .node
   // El viewBox es común a todas las cintas (lo fija la iteración más larga) y el
   // CSS lo acota a la columna de lectura: la cinta abre en el eje izquierdo del
-  // masthead y cierra donde cierran las tarjetas. La sangría es sólo el radio del
-  // nodo, para que apertura y cierre caigan sobre esos ejes; el paso se estira
-  // para llenar la columna, de modo que toda iteración —corta o larga— cierra en
-  // el mismo lugar.
-  const PAD_X = 10;
+  // masthead y cierra donde cierran las tarjetas. La sangría es lo que mide el
+  // círculo más gordo que se va a dibujar, para que apertura y cierre caigan
+  // sobre esos ejes sin salirse; el paso se estira para llenar la columna, de
+  // modo que toda iteración —corta o larga— cierra en el mismo lugar.
+  //
+  // Era una constante de 10, tomada del radio de un nodo normal. Pero el de una
+  // entrega se calcula con su peso (ver entregaDe: 7 a 12), así que toda entrega
+  // que pesara 60% o más del máximo se salía del viewBox y el SVG la recortaba:
+  // la entrega que más pesa —la final de cualquier curso— perdía 2.75 unidades
+  // de su lado derecho y se dibujaba con un canto plano. Ahora sale del dibujo,
+  // no de un número escrito a mano.
+  const maxNodeR = Math.max(7, ...local.map(s => (entregaDe[s.n] || {}).nodeR || 0));
+  const PAD_X = Math.ceil(Math.max(maxNodeR + NODE_SW / 2, FOCUS_R + FOCUS_SW / 2));
   const STEP_L = (VB_W - 2 * PAD_X) / Math.max(1, n - 1);
   const xi = k => PAD_X + k * STEP_L;               // k = índice local (0..n-1)
   // Etiquetas: los extremos se anclan al eje (start/end) para cerrar a ras; las
@@ -458,7 +469,15 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
 
   const svg = svgEl("svg", { class: "ribbon", viewBox: `0 0 ${VB_W} ${VB_H}`, role: "img",
     "aria-label": "Diagrama de la iteración: el trazo se ensancha al explorar y se cierra sobre la entrega." });
-  svg.style.minWidth = Math.round(VB_W * 0.47) + "px";
+  // El texto del SVG va en unidades del viewBox, así que se encoge con la cinta:
+  // a 0.47 los números de sesión salían a 8px y las fechas a 6.5px en un
+  // teléfono, y el scroll horizontal de .map-scroll no llegaba a activarse nunca
+  // —sólo por debajo de ~343px de ventana—. Con el piso en 0.9 la escala no baja
+  // de ahí: en una pantalla angosta la cinta desborda y se recorre, que es para
+  // lo que .map-scroll estaba puesto. También cubre el caso de la iteración muy
+  // larga, que hasta ahora se comprimía en escritorio.
+  const ESCALA_MIN = 0.9;
+  svg.style.minWidth = Math.round(VB_W * ESCALA_MIN) + "px";
   // el ancho máximo lo pone el CSS (--readw): mismo eje derecho que las tarjetas
 
   // la espina recorre la columna completa: mismos cantos que las tarjetas
@@ -503,11 +522,11 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
     // Radio constante y no relativo a nodeR: el indicador de foco mide siempre
     // lo mismo, y enfocar activa además .is-active (que lleva el nodo a r:8),
     // así que hace falta holgura para que el anillo no lo roce.
-    g.appendChild(svgEl("circle", { class: "focus-ring", cx: xi(k), cy: CY, r: 13 }));
+    g.appendChild(svgEl("circle", { class: "focus-ring", cx: xi(k), cy: CY, r: FOCUS_R }));
 
     if (isToday && !isDeliver) {
       svg.appendChild(svgEl("line", { class: "today-stem", x1: xi(k), y1: LABEL_Y + 6, x2: xi(k), y2: CY }));
-      const lab = svgEl("text", { class: cls("today-label"), x: labelX(k, "HOY", 12, 0.16), y: LABEL_Y }); lab.textContent = "HOY";
+      const lab = svgEl("text", { class: cls("today-label"), x: labelX(k, "HOY", 13, 0.16), y: LABEL_Y }); lab.textContent = "HOY";
       svg.appendChild(lab);
     }
     if (isDeliver) {
@@ -526,7 +545,7 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
     num.textContent = pad2(s.n);
     g.appendChild(num);
     if (dates[gi]) {
-      const dt = svgEl("text", { class: cls("node-date"), x: labelX(k, fmtDate(dates[gi]), 12, 0), y: DATE_Y });
+      const dt = svgEl("text", { class: cls("node-date"), x: labelX(k, fmtDate(dates[gi]), 13, 0), y: DATE_Y });
       dt.textContent = fmtDate(dates[gi]);
       g.appendChild(dt);
     }
