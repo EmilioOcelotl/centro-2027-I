@@ -432,9 +432,18 @@ function gradientDefs() {
 // viewBox crece con el número de sesiones para que la letra conserve su tamaño
 // en cualquier iteración; el min/max-width del render sigue esa proporción, de
 // modo que a tamaño natural todas las cintas tienen el mismo alto.
+//
+// EN EL SVG SÓLO VA GEOMETRÍA. Todo rótulo —números de sesión, fechas, HOY, la
+// entrega, el receso— se devuelve como HTML posicionado sobre la cinta. Dentro
+// del SVG el cuerpo de letra se mide en unidades del viewBox, así que sigue al
+// ancho del dibujo y no al tamaño de fuente del navegador: en cuanto la cinta
+// topa con su piso —siempre en teléfono, en escritorio a partir de ~175%— el
+// texto se congela y no llega al 200% que pide WCAG 1.4.4. Fuera del SVG los
+// rótulos van en rem como el resto de la página, y el piso de la cinta también,
+// de modo que al agrandar la letra crece la pieza entera.
 function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP, VB_W) {
   const n = local.length;
-  const TOP = 46, WAIST = 0.35, SEAM = 16;
+  const TOP = 20, SEAM = 16;
   // Constantes que también viven en el CSS: si allá cambian, aquí también.
   const FOCUS_R = 13, FOCUS_SW = 2;   // .focus-ring
   const NODE_SW = 2.5;                // el trazo más grueso: .session-node.is-today .node
@@ -455,56 +464,98 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
   const PAD_X = Math.ceil(Math.max(maxNodeR + NODE_SW / 2, FOCUS_R + FOCUS_SW / 2));
   const STEP_L = (VB_W - 2 * PAD_X) / Math.max(1, n - 1);
   const xi = k => PAD_X + k * STEP_L;               // k = índice local (0..n-1)
-  // Etiquetas: los extremos se anclan al eje (start/end) para cerrar a ras; las
-  // de en medio van centradas sobre su nodo, con la caja dentro del viewBox.
-  const edgeAnchor = k => k === 0 ? "at-start" : k === n - 1 ? "at-end" : null;
-  const labelX = (k, text, fontPx, lsEm) => {
-    if (k === 0) return 0;
-    if (k === n - 1) return VB_W;
-    const half = String(text).length * fontPx * (0.6 + lsEm) / 2, m = 6;
-    return Math.max(m + half, Math.min(xi(k), VB_W - m - half));
-  };
-  const w = H * WAIST, CY = TOP + H;
-  const NUM_Y = CY + H + 24, DATE_Y = NUM_Y + 17, LABEL_Y = 20, VB_H = DATE_Y + 14;
+  const CY = TOP + H, VB_H = CY + H + 8;
+  // Rótulos: los de los extremos se anclan al canto de la columna para cerrar a
+  // ras con las tarjetas; los de en medio van centrados sobre su nodo. En HTML
+  // el ancla es una clase y el desplazamiento lo hace el CSS con un translate,
+  // así que no hay que medir la caja de texto a mano —era lo que hacía labelX,
+  // adivinando el ancho del glifo a partir del cuerpo en px—.
+  const anchorOf = k => k === 0 ? " at-start" : k === n - 1 ? " at-end" : "";
+  const leftOf = k => k === 0 ? "0%" : k === n - 1 ? "100%" : (xi(k) / VB_W * 100).toFixed(3) + "%";
 
-  const svg = svgEl("svg", { class: "ribbon", viewBox: `0 0 ${VB_W} ${VB_H}`, role: "img",
-    "aria-label": "Diagrama de la iteración: el trazo se ensancha al explorar y se cierra sobre la entrega." });
-  // El texto del SVG va en unidades del viewBox, así que se encoge con la cinta:
-  // a 0.47 los números de sesión salían a 8px y las fechas a 6.5px en un
-  // teléfono, y el scroll horizontal de .map-scroll no llegaba a activarse nunca
-  // —sólo por debajo de ~343px de ventana—. Con el piso en 0.9 la escala no baja
-  // de ahí: en una pantalla angosta la cinta desborda y se recorre, que es para
-  // lo que .map-scroll estaba puesto. También cubre el caso de la iteración muy
-  // larga, que hasta ahora se comprimía en escritorio.
+  // El piso de escala evita que la cinta se comprima hasta lo ilegible: por
+  // debajo de él desborda y .map-scroll la recorre. Va en rem —no en px— para
+  // que suba con el tamaño de fuente del usuario: es lo que hace que los
+  // rótulos de HTML tengan siempre el espacio que su cuerpo pide.
   const ESCALA_MIN = 0.9;
-  svg.style.minWidth = Math.round(VB_W * ESCALA_MIN) + "px";
+  const wrap = h("div", { class: "ribbon-wrap" });
+  wrap.style.minWidth = (VB_W * ESCALA_MIN / 16).toFixed(2) + "rem";
   // el ancho máximo lo pone el CSS (--readw): mismo eje derecho que las tarjetas
 
-  // la espina recorre la columna completa: mismos cantos que las tarjetas
-  svg.appendChild(svgEl("line", { class: "spine", x1: 0, y1: CY, x2: VB_W, y2: CY }));
+  const marks = h("div", { class: "ribbon-marks", "aria-hidden": "true" });
+  const axis = h("div", { class: "ribbon-axis", "aria-hidden": "true" });
+  const brks = h("div", { class: "ribbon-breaks", "aria-hidden": "true" });
+  // Las tres tiras duplican en pantalla lo que el lector de pantalla ya recibe
+  // por otro lado: cada nodo es un botón con su aria-label —sesión, título y
+  // fecha larga— y los recesos salen además como banda entre las tarjetas.
 
-  // cinta: punto → bulto → cintura → bulto → punto (arriba), y el espejo abajo
-  const xL = xi(0), xR = xi(n - 1), xM = (xL + xR) / 2;
-  const xP1 = (xL + xM) / 2, xP2 = (xM + xR) / 2;
+  const svg = svgEl("svg", { class: "ribbon", viewBox: `0 0 ${VB_W} ${VB_H}`, role: "img",
+    "aria-label": "Doble diamante de la iteración: dos veces se abre para explorar y se cierra para decidir." });
+
+  // Recesos de esta iteración, ubicados antes de dibujar nada: la espina se
+  // traza por tramos para dejarles la muesca. Los recesos entre iteraciones no
+  // llegan aquí, los pinta la banda entre bloques.
+  const cortes = (breaks || []).map(br => {
+    const k = local.findIndex(s => s.n === br.beforeN);
+    if (k < 0 || k + 1 >= n || local[k + 1].n !== br.afterN) return null;
+    return { br, bx: (xi(k) + xi(k + 1)) / 2 };
+  }).filter(Boolean).sort((a, b) => a.bx - b.bx);
+
+  // La espina recorre la columna completa —mismos cantos que las tarjetas— y se
+  // interrumpe en cada receso.
+  //
+  // Antes el receso se restaba de la figura: una máscara de papel del alto del
+  // relleno, con los cantos rematados. Pero un receso es un hecho del
+  // calendario y el rombo es un modelo de fases, así que el corte caía donde no
+  // significaba nada y hacía estragos según dónde tocara —en el hueco real de
+  // cc3-ai dejaba una cuña suelta de 37 unidades; un hueco más al centro partía
+  // el rombo en dos triángulos—. Y la etiqueta medía cuatro veces la costura,
+  // así que la máscara nunca la cubrió: se montaba sobre la espina y sobre el
+  // número de sesión, mordiendo el contorno con su halo.
+  //
+  // Ahora el receso vive donde vive el tiempo: una muesca en la espina, las dos
+  // barras, y la etiqueta abajo del todo, bajo la fila de fechas. El relleno no
+  // se toca, así que no hay nada que restar ni cantos que rematar.
+  let xTramo = 0;
+  cortes.forEach(({ bx }) => {
+    svg.appendChild(svgEl("line", { class: "spine", x1: xTramo, y1: CY, x2: bx - SEAM / 2, y2: CY }));
+    xTramo = bx + SEAM / 2;
+  });
+  svg.appendChild(svgEl("line", { class: "spine", x1: xTramo, y1: CY, x2: VB_W, y2: CY }));
+
+  // Doble diamante: dos rombos que se tocan en un vértice a media iteración.
+  //
+  // La figura ya no cuelga de las sesiones. Antes abría en el centro de la
+  // primera y cerraba en el de la última —forma y calendario eran el mismo
+  // objeto—, y a media iteración no cerraba: se estrechaba a una cintura del
+  // 35% de la altura, que es lo que impedía leerla como dos diamantes. Ahora
+  // abre y cierra en los cantos del viewBox: el timeline es literal —los nodos
+  // son las fechas, y no se mueven— y el diamante es la figura que lo acompaña,
+  // así que arranca antes de la primera clase y cierra después de la última. El
+  // voladizo son las 14 unidades que PAD_X ya reservaba para el círculo de la
+  // entrega, de modo que no cuesta ni una sesión de espacio.
+  //
+  // El vértice de en medio cae en el punto medio del viewBox, que es también el
+  // punto medio del tramo de sesiones: en una iteración de ocho, entre la 4ª y
+  // la 5ª.
+  const xA = 0, xE = VB_W, xM = (xA + xE) / 2;
+  const xP1 = (xA + xM) / 2, xP2 = (xM + xE) / 2;
   if (n >= 2) {
-    const path =
-      `M ${xL} ${CY} L ${xP1} ${CY - H} L ${xM} ${CY - w} L ${xP2} ${CY - H} ` +
-      `L ${xR} ${CY} L ${xP2} ${CY + H} L ${xM} ${CY + w} L ${xP1} ${CY + H} Z`;
-    const dia = svgEl("path", { class: "diamond", d: path });
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) dia.classList.add("animate");
-    svg.appendChild(dia);
+    // Dos paths y no un contorno corrido: el degradado va por elemento
+    // (objectBoundingBox), así que cada rombo se densifica hacia su propio
+    // cierre —divergir y converger, dos veces— en vez de una sola rampa de
+    // punta a punta. Y cada uno florece a su tiempo con el --delay que el CSS
+    // ya leía sin que nadie lo definiera.
+    [[xA, xP1, xM, 0], [xM, xP2, xE, 0.18]].forEach(([x0, xc, x1, delay]) => {
+      const dia = svgEl("path", { class: "diamond",
+        d: `M ${x0} ${CY} L ${xc} ${CY - H} L ${x1} ${CY} L ${xc} ${CY + H} Z` });
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        dia.classList.add("animate");
+        dia.style.setProperty("--delay", delay + "s");
+      }
+      svg.appendChild(dia);
+    });
   }
-
-  // media altura del relleno en un x dado (0 = espina desnuda)
-  const fillHalfAt = x => {
-    if (n < 2 || x < xL || x > xR) return 0;
-    const pts = [[xL, 0], [xP1, H], [xM, w], [xP2, H], [xR, 0]];
-    for (let i = 0; i < pts.length - 1; i++) {
-      const [ax, ah] = pts[i], [bx2, bh] = pts[i + 1];
-      if (x >= ax && x <= bx2) return ah + (bh - ah) * (x - ax) / (bx2 - ax);
-    }
-    return 0;
-  };
 
   local.forEach((s, k) => {
     const gi = idxByN[s.n];                          // índice global (fechas y hoy)
@@ -513,67 +564,68 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
     const g = svgEl("g", { class: "session-node" + (isToday ? " is-today" : ""), "data-n": s.n, tabindex: "0",
       role: "button", "aria-label": `Sesión ${s.n}: ${s.titulo || ""}${dates[gi] ? " — " + FMT_LONG.format(dates[gi]) : ""}` });
 
-    const anchor = edgeAnchor(k), cls = extra => extra + (anchor ? " " + anchor : "");
     const nodeR = isDeliver ? entregaDe[s.n].nodeR : (isToday ? 7 : 6);
 
-    // El foco se dibuja como anillo concéntrico al nodo. Un outline sobre el
-    // <g> abarcaría también el número y la fecha —que cuelgan muy por debajo
-    // de la espina— y saldría una caja alta y flaca ajena al diagrama.
-    // Radio constante y no relativo a nodeR: el indicador de foco mide siempre
-    // lo mismo, y enfocar activa además .is-active (que lleva el nodo a r:8),
-    // así que hace falta holgura para que el anillo no lo roce.
+    // Área de clic: el <g> ya no contiene el número ni la fecha, así que su
+    // caja se reduciría al círculo —seis unidades de radio, un blanco diminuto
+    // para el dedo—. Esta banda transparente le devuelve la altura que tenía y
+    // le da además todo el ancho de su columna, sin pisar la de al lado.
+    g.appendChild(svgEl("rect", { class: "node-hit", x: xi(k) - STEP_L / 2, y: CY - 17, width: STEP_L, height: 34 }));
+
+    // El foco se dibuja como anillo concéntrico al nodo, no como outline del
+    // <g>: el outline abarcaría también la banda de clic y daría un rectángulo
+    // ancho y bajo ajeno al diagrama. Radio constante y no relativo a nodeR: el
+    // indicador de foco mide siempre lo mismo, y enfocar activa además
+    // .is-active (que lleva el nodo a r:8), así que hace falta holgura para que
+    // el anillo no lo roce.
     g.appendChild(svgEl("circle", { class: "focus-ring", cx: xi(k), cy: CY, r: FOCUS_R }));
 
+    // El plumón sube desde la espina hasta el canto de arriba, donde arranca el
+    // rótulo de HTML: dentro del SVG queda la línea, que es dibujo; fuera, la
+    // palabra, que es prosa.
     if (isToday && !isDeliver) {
-      svg.appendChild(svgEl("line", { class: "today-stem", x1: xi(k), y1: LABEL_Y + 6, x2: xi(k), y2: CY }));
-      const lab = svgEl("text", { class: cls("today-label"), x: labelX(k, "HOY", 13, 0.16), y: LABEL_Y }); lab.textContent = "HOY";
-      svg.appendChild(lab);
+      svg.appendChild(svgEl("line", { class: "today-stem", x1: xi(k), y1: 0, x2: xi(k), y2: CY }));
+      const m = h("span", { class: "mark mark-today" + anchorOf(k) }, "Hoy");
+      m.style.left = leftOf(k);
+      marks.appendChild(m);
     }
     if (isDeliver) {
       const ent = entregaDe[s.n];
-      svg.appendChild(svgEl("line", { class: "deliver-stem", x1: xi(k), y1: LABEL_Y + 6, x2: xi(k), y2: CY }));
-      const etiqueta = String(ent.etiqueta).toUpperCase() + (ent.peso ? ` · ${ent.peso}%` : "");
-      const lab = svgEl("text", { class: cls("deliver-label"), x: labelX(k, etiqueta, 13, 0.18), y: LABEL_Y });
-      lab.textContent = etiqueta;
-      svg.appendChild(lab);
-      g.appendChild(svgEl("circle", { class: "node deliver", cx: xi(k), cy: CY, r: nodeR }));
-    } else {
-      g.appendChild(svgEl("circle", { class: "node", cx: xi(k), cy: CY, r: nodeR }));
+      svg.appendChild(svgEl("line", { class: "deliver-stem", x1: xi(k), y1: 0, x2: xi(k), y2: CY }));
+      const m = h("span", { class: "mark mark-deliver" + anchorOf(k) },
+        esc(ent.etiqueta) + (ent.peso ? ` · ${ent.peso}%` : ""));
+      m.style.left = leftOf(k);
+      marks.appendChild(m);
     }
-
-    const num = svgEl("text", { class: cls("node-num"), x: labelX(k, "", 0, 0), y: NUM_Y });
-    num.textContent = pad2(s.n);
-    g.appendChild(num);
-    if (dates[gi]) {
-      const dt = svgEl("text", { class: cls("node-date"), x: labelX(k, fmtDate(dates[gi]), 13, 0), y: DATE_Y });
-      dt.textContent = fmtDate(dates[gi]);
-      g.appendChild(dt);
-    }
+    g.appendChild(svgEl("circle", { class: "node" + (isDeliver ? " deliver" : ""), cx: xi(k), cy: CY, r: nodeR }));
     svg.appendChild(g);
+
+    const item = h("span", { class: "axis-item" + anchorOf(k) + (isToday ? " is-today" : ""), "data-n": s.n },
+      `<b>${pad2(s.n)}</b>` + (dates[gi] ? `<i>${esc(fmtDate(dates[gi]))}</i>` : ""));
+    item.style.left = leftOf(k);
+    axis.appendChild(item);
   });
 
-  // recesos dentro de la iteración → costura de altura completa (un canal de
-  // papel interrumpe relleno y contorno; los cantos se rematan). Los recesos
-  // entre iteraciones no llegan aquí: los pinta la banda entre bloques.
-  (breaks || []).forEach(br => {
-    const k = local.findIndex(s => s.n === br.beforeN);
-    if (k < 0 || k + 1 >= n || local[k + 1].n !== br.afterN) return;
-    const bx = (xi(k) + xi(k + 1)) / 2, xa = bx - SEAM / 2, xb = bx + SEAM / 2;
-    const hL = fillHalfAt(xa), hR = fillHalfAt(xb), hM = Math.max(hL, hR, fillHalfAt(bx));
-    svg.appendChild(svgEl("rect", { class: "break-mask", x: xa, y: CY - hM - 3, width: SEAM, height: 2 * hM + 6 }));
-    if (hL > 1) svg.appendChild(svgEl("line", { class: "break-cap", x1: xa, y1: CY - hL, x2: xa, y2: CY + hL }));
-    if (hR > 1) svg.appendChild(svgEl("line", { class: "break-cap", x1: xb, y1: CY - hR, x2: xb, y2: CY + hR }));
+  // Recesos dentro de la iteración: la muesca ya está hecha —la espina se trazó
+  // por tramos—, así que aquí sólo van las dos barras que la rematan, que son
+  // dibujo. El nombre y las fechas son prosa: bajan a su propia tira de HTML,
+  // debajo de la fila de sesiones, donde no pisan ni la espina ni un número.
+  cortes.forEach(({ br, bx }) => {
     [-3, 3].forEach(off => svg.appendChild(svgEl("line", { class: "break-slash",
       x1: bx + off - 3.5, y1: CY + 8, x2: bx + off + 3.5, y2: CY - 8 })));
-    const eb = svgEl("text", { class: "break-eyebrow", x: bx, y: CY + 23 });
-    eb.textContent = br.etiqueta;
-    svg.appendChild(eb);
-    const dl = svgEl("text", { class: "break-dates", x: bx, y: CY + 38 });
-    dl.textContent = br.dateLabel;
-    svg.appendChild(dl);
+    const b = h("span", { class: "break-item" },
+      `<b>${esc(br.etiqueta)}</b><i>${esc(br.dateLabel)}</i>`);
+    b.style.left = (bx / VB_W * 100).toFixed(3) + "%";
+    brks.appendChild(b);
   });
 
-  return svg;
+  // Orden de apilado: los rótulos que cuelgan de arriba, el dibujo, la fila de
+  // sesiones y al final los recesos. Las tiras vacías no ocupan renglón.
+  if (marks.children.length) wrap.appendChild(marks);
+  wrap.appendChild(svg);
+  wrap.appendChild(axis);
+  if (brks.children.length) wrap.appendChild(brks);
+  return wrap;
 }
 
 /* ---------- tarjetas ---------- */
@@ -592,7 +644,7 @@ function iterationsSection(cfg, sessions, iteraciones, entregaDe, dates, tIdx, b
   // Antes no había forma de quitarla: una cadena en blanco pasaba el || y
   // dejaba un renglón vacío entre la portada y la primera cinta.
   const cap = cfg.caption == null
-    ? "El trazo se ensancha al explorar y se cierra al decidir. Las entregas caen donde el tramo se afina del todo."
+    ? "Dos veces se abre para explorar y se cierra para decidir. Las fechas de abajo son literales; la figura las desborda porque el trabajo empieza antes de la primera clase y no se acaba en la última."
     : String(cfg.caption).trim();
   if (cap) root.appendChild(h("p", { class: "map-caption" }, esc(cap)));
 
@@ -739,11 +791,19 @@ function colophon(cfg) {
 function link() {
   const nodes = [...document.querySelectorAll(".session-node")];
   const cards = [...document.querySelectorAll(".card")];
-  const byN = n => ({ node: nodes.find(e => e.dataset.n == n), card: cards.find(e => e.dataset.n == n) });
+  // El número y la fecha ya no viven dentro del <g> del nodo, así que se
+  // enteran por su cuenta: llevan el mismo data-n y entran al mismo diálogo.
+  const items = [...document.querySelectorAll(".axis-item")];
+  const byN = n => ({
+    node: nodes.find(e => e.dataset.n == n),
+    card: cards.find(e => e.dataset.n == n),
+    item: items.find(e => e.dataset.n == n),
+  });
   const setActive = (n, on) => {
-    const { node, card } = byN(n);
+    const { node, card, item } = byN(n);
     node && node.classList.toggle("is-active", on);
     card && card.classList.toggle("is-active", on);
+    item && item.classList.toggle("is-active", on);
   };
   nodes.forEach(node => {
     const n = node.dataset.n;
