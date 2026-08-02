@@ -8,7 +8,7 @@
 # 1 · IDENTIDAD
 universidad: "CENTRO"
 programa: "Arquitectura de Interiores"
-titulo: "CC-3"        # ¿lleva número de semestre? (Código Creativo 2 / 3…)
+titulo: "Código Creativo 3"        # ¿lleva número de semestre? (Código Creativo 2 / 3…)
 edicion: "2027-I"
 imparte: "Emilio Ocelotl"
 grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
