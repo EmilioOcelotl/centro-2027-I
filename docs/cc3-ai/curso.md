@@ -3,6 +3,11 @@
 #  Código Creativo · Arquitectura de Interiores — configuración del sitio.
 #  Todo lo que ve el alumno sale de este frontmatter.
 #  Guía completa de campos: ../../../plantilla-curso/plantilla.md
+#
+#  PROVISIONAL (2 ago 2026): vaciado del programa oficial de CENTRO
+#  —"Programación orientada a objetos en el diseño"—. Los 8 temas del
+#  contenido temático van en las sesiones impares y las 8 asesorías en las
+#  pares. Está pendiente releer las 16 como doble diamante.
 # ─────────────────────────────────────────────────────────────
 
 # 1 · IDENTIDAD
@@ -13,7 +18,7 @@ edicion: "2027-I"
 imparte: "Emilio Ocelotl"
 grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
 
-intro: "Código Creativo 3 - Arquitectura de Interiores. Este curso se realiza a partir de iteraciones. Vamos a partir de un motivo: la malla"
+intro: "Programación orientada a objetos en el diseño. Al finalizar el curso el alumno aplicará conocimientos de programación orientada a objetos en Processing para realizar manipulación de imágenes fijas y composiciones animadas."
 caption: ""                         # vacío = sin frase bajo el diagrama; borra la línea para la de por defecto
 
 # 2 · ACUERDO SOBRE EL USO DE IA — sale en la portada, bajo el objetivo.
@@ -36,40 +41,132 @@ calendario:
 # 4 · ESTRUCTURA — define la forma del diagrama y la evaluación
 estructura:
   iteraciones:
-    - {nombre: "Primera parte", sesiones: [1, 8],  nota: ""}
-    - {nombre: "Segunda parte", sesiones: [9, 16], nota: ""}
+    - {nombre: "Objetos e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos y manipulación de imagen fija."}
+    - {nombre: "Composición animada",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
   entregas:                         # caen en una sesión y cierran la iteración
-    - {sesion: 8,  etiqueta: "Parcial", peso: 30}
-    - {sesion: 16, etiqueta: "Final",   peso: 40}
+    - {sesion: 8,  etiqueta: "Ejercicios de imagen fija", peso: 30}
+    - {sesion: 16, etiqueta: "Trabajo final",             peso: 40}
   continuas:                        # se califican sin fecha fija
-    - {etiqueta: "Actividades", peso: 30}
+    - {etiqueta: "Ejercicios de objetos y trigonometría", peso: 30}
 
 # 5 · SESIONES — el número de sesiones define la duración del curso.
 sesiones:
   # 'desc' admite una lista. Con varios puntos conviene la forma en bloque:
   # las claves de la sesión van sangradas a la columna que abre el guion.
   - n: 1
-    titulo: "Sesión 1"
+    titulo: "Encuadre y transformaciones"
+    tool: "Processing"
+    desc:
+      - "Presentaciones. Curso, profesor, alumnxs"
+      - "Acuerdo sobre el uso de IA en la clase"
+      - "Evaluación"
+      - "¿Qué son las transformaciones? Traslación y rotación"
+      - "pushMatrix, popMatrix y scale"
+      - "Creación de robot"
+  - n: 2
+    titulo: "Asesoría"
     tool: ""
     desc:
-      - "Presentaciones: curso, profesor, alumnxs"
-      - "Evaluación"
-      - "Uso de IA en el salón"
-  - {n: 2,  titulo: "Sesión 2",         tool: "", desc: ""}
-  - {n: 3,  titulo: "Sesión 3",         tool: "", desc: ""}
-  - {n: 4,  titulo: "Sesión 4",         tool: "", desc: ""}
-  - {n: 5,  titulo: "Sesión 5",         tool: "", desc: ""}
-  - {n: 6,  titulo: "Sesión 6",         tool: "", desc: ""}
-  - {n: 7,  titulo: "Sesión 7",         tool: "", desc: ""}
-  - {n: 8,  titulo: "Entrega parcial",  tool: "", desc: ""}
-  - {n: 9,  titulo: "Sesión 9",         tool: "", desc: ""}
-  - {n: 10, titulo: "Sesión 10",        tool: "", desc: ""}
-  - {n: 11, titulo: "Sesión 11",        tool: "", desc: ""}
-  - {n: 12, titulo: "Sesión 12",        tool: "", desc: ""}
-  - {n: 13, titulo: "Sesión 13",        tool: "", desc: ""}
-  - {n: 14, titulo: "Sesión 14",        tool: "", desc: ""}
-  - {n: 15, titulo: "Sesión 15",        tool: "", desc: ""}
-  - {n: 16, titulo: "Entrega final",    tool: "", desc: ""}
+      - "Revisión de ejercicios de transformaciones"
+      - "Búsqueda de proyectos de referencia"
+  - n: 3
+    titulo: "Vectores"
+    tool: "Processing"
+    desc:
+      - "¿Qué es un vector? Dirección y magnitud"
+      - "Atributos: x, y, z"
+      - "Traslación y dirección: suma y resta"
+      - "Escala: multiplicación y división"
+      - "Calcular la magnitud: teorema de Pitágoras"
+      - "Normalización"
+  - n: 4
+    titulo: "Asesoría"
+    tool: ""
+    desc:
+      - "Revisión de ejercicios con vectores"
+  - n: 5
+    titulo: "Introducción a la programación orientada a objetos"
+    tool: "Processing"
+    desc:
+      - "Paradigma de la programación orientada a objetos"
+      - "Estructura y sintaxis de una clase"
+      - "Diagrama de clases"
+      - "Atributos y variables"
+      - "Constructor y constructor con argumentos"
+      - "Métodos y funciones"
+      - "Arreglos de objetos"
+  - n: 6
+    titulo: "Asesoría"
+    tool: ""
+    desc:
+      - "Revisión de ejercicios con clases y arreglos de objetos"
+      - "Ejercicios aplicados a conceptos de la carrera"
+  - n: 7
+    titulo: "Manipulación de imagen fija"
+    tool: "Processing"
+    desc:
+      - "Algoritmo de ordenamiento"
+      - "Manipulación de imágenes por hue, brillo y RGB"
+      - "Pixels: loadPixels, pixels[], updatePixels"
+  - n: 8
+    titulo: "Entrega parcial"
+    tool: ""
+    desc:
+      - "Ejercicios de programación orientada a objetos aplicada a la manipulación de imagen fija"
+  - n: 9
+    titulo: "Animación: trigonometría I"
+    tool: "Processing"
+    desc:
+      - "Introducción a las funciones trigonométricas"
+      - "Triángulo rectángulo y distancia euclidiana"
+      - "Periodicidad"
+      - "Oscilaciones: amplitud, frecuencia y fase"
+  - n: 10
+    titulo: "Asesoría"
+    tool: ""
+    desc:
+      - "Revisión de ejercicios de oscilación"
+  - n: 11
+    titulo: "Animación: trigonometría II"
+    tool: "Processing"
+    desc:
+      - "Coordenadas polares y cartesianas"
+      - "Parametrización de un círculo"
+      - "Seno y coseno"
+      - "Lerp"
+  - n: 12
+    titulo: "Asesoría"
+    tool: ""
+    desc:
+      - "Revisión de ejercicios de trigonometría"
+      - "Ejercicios interactivos aplicados a conceptos de la carrera"
+  - n: 13
+    titulo: "Animación: ruido"
+    tool: "Processing"
+    desc:
+      - "Introducción al ruido"
+      - "Diferencia entre ruido y azar"
+      - "Espacios de sampleo"
+      - "Detalle de ruido y semilla"
+  - n: 14
+    titulo: "Asesoría"
+    tool: ""
+    desc:
+      - "Revisión de ejercicios con ruido"
+      - "Avances del trabajo final"
+  - n: 15
+    titulo: "Animación: sonido y análisis de audio"
+    tool: "Processing · sound"
+    desc:
+      - "Ondas y codificación digital del sonido (sound file y audio sample)"
+      - "Generación de audio: osciladores y ruido"
+      - "Modificación de audio: efectos y filtros"
+      - "Análisis de audio: FFT y amplitud"
+  - n: 16
+    titulo: "Entrega final"
+    tool: ""
+    desc:
+      - "Trabajo final desarrollando procesos de composición animada"
 
 # 6 · REFERENCIAS — lista al final del documento, antes del colofón.
 #     Cada entrada es una cadena, o un mapa {texto, url} si hay a dónde ir.
@@ -81,11 +178,18 @@ referencias: []
 
 # 7 · COLOFÓN — columnas del pie de página. Sin 'colofon' ni 'grupos' el pie no
 #     aparece en pantalla; impreso conserva la URL del sitio.
-# colofon:
-#   - {titulo: "Herramientas", texto: "…"}
-#   - titulo: "Criterios"
-#     texto:
-#       - "…"
+colofon:
+  - titulo: "Herramientas"
+    texto:
+      - "Processing como entorno de desarrollo para la manipulación de imágenes fijas y composiciones animadas."
+      - "Brightspace para la comunicación y la evaluación."
+  - titulo: "Trabajo independiente"
+    texto:
+      - "Búsqueda y revisión de proyectos de referencia y de canales de YouTube."
+      - "Ejercicios aplicados a conceptos de la carrera."
+      - "Ejercicios interactivos aplicados a conceptos de la carrera."
+  - titulo: "Asistencia"
+    texto: "Para acreditar el curso es necesario contar con el 80% de asistencia."
 ---
 
 <!-- El motor v1 sólo usa el frontmatter de arriba. -->
