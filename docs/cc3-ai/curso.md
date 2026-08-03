@@ -18,7 +18,7 @@ edicion: "2027-I"
 imparte: "Emilio Ocelotl"
 grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
 
-intro: "Programación orientada a objetos en el diseño. Al finalizar el curso el alumno aplicará conocimientos de programación orientada a objetos en Processing para realizar manipulación de imágenes fijas y composiciones animadas."
+intro: "Programación orientada a objetos en el diseño. Al finalizar el curso el alumno aplicará conocimientos de programación orientada a objetos en Processing para realizar manipulación de imágenes fijas y composiciones animadas. Podemos usar otras plataformas y explorar otros paradigmas, se resuelve sobre la marcha."
 caption: ""                         # vacío = sin frase bajo el diagrama; borra la línea para la de por defecto
 
 # 2 · ACUERDO SOBRE EL USO DE IA — sale en la portada, bajo el objetivo.
@@ -26,7 +26,7 @@ caption: ""                         # vacío = sin frase bajo el diagrama; borra
 #     vacío— el recuadro no aparece.
 ia:
   titulo: "Uso de inteligencia artificial"
-  texto: "Como parte de la metodología del curso es necesario llegar a un acuerdo claro para el uso de inteligencia artificial."
+  texto: "Punto de partida: una discusión sobre el uso de IA en general. En este curso está permitido usar Inteligencia Artificial generativa para la escritura de código. Las ideas y planeación deberán realizarse con escritura convencional, están permitidos archivos digitales o analógicos. "
 
 # 3 · CALENDARIO
 calendario:
@@ -59,10 +59,13 @@ sesiones:
     desc:
       - "Presentaciones. Curso, profesor, alumnxs"
       - "Acuerdo sobre el uso de IA en la clase"
-      - "Evaluación"
+      - "Evaluación y resultados esperados"
+      - "Puntualidad y tolerancia"
+      - "Metodología y contenido que puede ser flexible"
+      - "Actividad: escribir en un documento 3 objetos/programas/apps y explicar brevemente cómo funcionan"
+      - " Actividad con Hydra e introducción a pixeles"
       - "¿Qué son las transformaciones? Traslación y rotación"
       - "pushMatrix, popMatrix y scale"
-      - "Creación de robot"
   - n: 2
     titulo: "Asesoría"
     tool: ""
