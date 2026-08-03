@@ -54,7 +54,7 @@ sesiones:
   # 'desc' admite una lista. Con varios puntos conviene la forma en bloque:
   # las claves de la sesión van sangradas a la columna que abre el guion.
   - n: 1
-    titulo: "Encuadre y transformaciones"
+    titulo: "Encuadre y pixeles"
     tool: "Hydra"
     desc:
       - "Presentaciones. Curso, profesor, alumnxs"
@@ -64,11 +64,12 @@ sesiones:
       - "Metodología y contenido que puede ser flexible"
       - "Actividad con Hydra e introducción a pixeles"
   - n: 2
-    titulo: "Asesoría"
-    tool: ""
+    titulo: "Patrones dibujados, ideas divergentes sobre el proyecto parcial"
+    tool: "Papel o dispositivo para dibujar"
     desc:
-      - "Revisión de ejercicios de transformaciones"
-      - "Búsqueda de proyectos de referencia"
+      - "Pixeles y texturas"
+      - "Actividad: dibujar el patrón de una textura digital. ¿Qué características tiene?"
+      - "Conformación de equipos y primer acercamiento al proyecto parcial: el reto"
   - n: 3
     titulo: "Vectores"
     tool: "Processing"
