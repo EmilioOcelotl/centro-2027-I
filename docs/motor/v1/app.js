@@ -611,8 +611,17 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
   // dibujo. El nombre y las fechas son prosa: bajan a su propia tira de HTML,
   // debajo de la fila de sesiones, donde no pisan ni la espina ni un número.
   cortes.forEach(({ br, bx }) => {
-    [-3, 3].forEach(off => svg.appendChild(svgEl("line", { class: "break-slash",
-      x1: bx + off - 3.5, y1: CY + 8, x2: bx + off + 3.5, y2: CY - 8 })));
+    // Las barras necesitan despegarse del relleno del rombo o dejan de leerse
+    // como un eje interrumpido —parecen una raya sobre el dibujo—, pero un
+    // rectángulo de papel detrás enseña sus cuatro cantos y mete una caja donde
+    // no hay ninguna. Así que cada barra lleva su propio halo: la misma diagonal
+    // trazada gruesa en papel, debajo. El hueco toma la forma del símbolo, no la
+    // de una ventana, y al no depender del alto del relleno tampoco recorta la
+    // cuña que dejaba la máscara vieja cuando el receso caía cerca del extremo.
+    const barras = [-3, 3].map(off => [bx + off - 3.5, CY + 8, bx + off + 3.5, CY - 8]);
+    ["break-slash-halo", "break-slash"].forEach(cls =>
+      barras.forEach(([x1, y1, x2, y2]) =>
+        svg.appendChild(svgEl("line", { class: cls, x1, y1, x2, y2 }))));
     const b = h("span", { class: "break-item" },
       `<b>${esc(br.etiqueta)}</b><i>${esc(br.dateLabel)}</i>`);
     b.style.left = (bx / VB_W * 100).toFixed(3) + "%";

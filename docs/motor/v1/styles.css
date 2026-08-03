@@ -30,8 +30,16 @@
   --fs-prosa: 1rem;
   --fs-sec: 0.875rem;
   --fs-rotulo: 0.8rem;
-  /* Encabezado de iteración: el número y el nombre lo comparten, así que se
-     escribe una vez y no vuelven a separarse. */
+  /* Y dos cuerpos de jerarquía, que no son prosa aunque estén hechos de letras.
+     La pasada que redujo los nueve cuerpos a tres se llevó estos dos por
+     delante, y ahí confundió dos cosas distintas: lo que WCAG 1.4.4 pide es que
+     el texto CREZCA con el ajuste del navegador —o sea, rem en vez de px—, no
+     que todo mida lo mismo. En rem, un objetivo de 1.3rem y un índice de 4rem
+     escalan igual de bien que uno de 1rem, y la portada recupera su entrada y
+     las iteraciones su número. */
+  --fs-lede: clamp(1.05rem, 1rem + 0.4vw, 1.3rem);
+  --fs-indice: clamp(2.5rem, 6vw, 4rem);
+  /* el nombre de la iteración: el índice ya no lo comparte */
   --fs-iteracion: clamp(1.05rem, 2.4vw, 1.4rem);
 
   --pad: clamp(1.25rem, 5vw, 4rem);
@@ -95,12 +103,13 @@ body {
   letter-spacing: -0.02em;
   margin: 0 0 1.6rem;
 }
-/* El objetivo es prosa, no un titular: entra a la escala como todo lo demás.
-   Con 48ch de medida —tallados para 20.8px— a este cuerpo quedaría una columna
-   angosta a media portada, así que cierra donde cierran las tarjetas. */
+/* El objetivo entra por los ojos antes que nada: es lo primero que se lee y lo
+   único que resume el curso, así que pesa más que la prosa que viene después.
+   Su medida de 48ch va con ese cuerpo —no con el del texto corrido— y es lo que
+   le da forma de entrada y no de párrafo. */
 .lede {
-  max-width: var(--readw);
-  font-size: var(--fs-prosa);
+  max-width: 48ch;
+  font-size: var(--fs-lede);
   color: var(--ink-2);
   margin: 0 0 2.2rem;
 }
@@ -256,8 +265,9 @@ body {
 .deliver { fill: var(--signal); stroke: var(--signal); }
 .deliver-stem { stroke: var(--signal); stroke-width: 1; stroke-dasharray: 3 3; }
 
-/* receso / corte de eje: en el SVG sólo quedan las dos barras sobre la muesca
-   de la espina. El nombre y las fechas van en la tira de HTML de más abajo. */
+/* receso / corte de eje: en el SVG quedan las dos barras y su halo. El nombre
+   y las fechas van en la tira de HTML de más abajo. */
+.break-slash-halo { stroke: var(--paper); stroke-width: 5; stroke-linecap: round; }
 .break-slash { stroke: var(--ink-2); stroke-width: 1.5; }
 
 /* ---------- rótulos de la cinta (HTML sobre el dibujo) ----------
@@ -345,24 +355,24 @@ body {
 .iteration-head {
   display: flex;
   align-items: baseline;
-  /* el número dejó de ser un bloque aparte y es el prefijo del nombre: a 64px
-     necesitaba 1rem de aire, a este cuerpo son la misma línea */
-  gap: 0.6rem;
+  /* a este cuerpo la cifra necesita aire propio: pegada al nombre lo empujaría */
+  gap: 1rem;
   padding-bottom: 1.2rem;
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--ink);
 }
-/* El índice medía 64px —el texto más grande de la página, por encima del propio
-   título del curso— para un dato que sólo numera la sección. Baja al cuerpo del
-   nombre de la iteración; el peso es lo que le conserva la jerarquía, ahora que
-   comparten familia y tamaño. El line-height de 0.8 y el tracking de display se
-   van con los 64px: al mismo cuerpo, hereda el 1.6 del nombre y las dos líneas
-   base se alinean solas. */
+/* El índice es la señal de que empieza un bloque nuevo: se ve desde lejos y se
+   encuentra pasando la página con el pulgar, que es justo lo que se le pide a
+   un mapa de semestre. Al bajarlo al cuerpo del nombre, las dos iteraciones
+   dejaban de distinguirse de cualquier otro renglón. Vuelve a su tamaño, ahora
+   en rem: el line-height de 0.8 y el tracking cerrado son de display y vuelven
+   con él, para que la cifra se apoye en la línea base del nombre. */
 .iteration-index {
   font-family: var(--mono);
-  font-size: var(--fs-iteracion);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: var(--fs-indice);
+  font-weight: 500;
+  line-height: 0.8;
+  letter-spacing: -0.03em;
 }
 .iteration-name h2 {
   margin: 0;
@@ -444,22 +454,25 @@ body {
 
 .card.is-today { box-shadow: inset 0 0 0 2px var(--signal); }
 
-.card.deliverable { background: var(--ink); color: var(--paper); }
-.card.deliverable .card-top,
-.card.deliverable .card-num,
-.card.deliverable p,
-.card.deliverable .prose-list,
-.card.deliverable .tool { color: var(--paper); }
+/* La entrega es un marco, no un bloque de tinta.
+   Invertir la tarjeta entera ponía un relleno del 100% —el objeto más ruidoso
+   que permite una paleta de un solo color— a decir por cuarta vez lo que ya
+   dicen el nodo grueso de la cinta, su etiqueta con el porcentaje y el renglón
+   de la tabla de evaluación. Y dejaba la pantalla diciendo una cosa y el papel
+   otra, justo en el elemento más visible, cuando la premisa de este archivo es
+   que sean la misma pieza. Queda el marco que @media print ya dibujaba; el
+   peso lo cargan el badge, el cuerpo del título y la ponderación. */
+.card.deliverable { border: 2px solid var(--ink); }
 .card.deliverable .badge {
   font-family: var(--mono);
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   font-size: var(--fs-rotulo);
-  /* invertido respecto a la tarjeta: sobre el bloque negro de la entrega, un
-     badge negro sería invisible */
-  color: var(--ink);
-  background: var(--paper);
+  /* la única mancha de tinta que queda: es lo que deja encontrar las entregas
+     recorriendo la columna sin leerlas */
+  color: var(--paper);
+  background: var(--ink);
   padding: 0.25rem 0.6rem;
 }
 .card.deliverable h3 { font-size: 1.5rem; }
@@ -473,10 +486,8 @@ body {
   margin: 0;
 }
 .card.deliverable .peso strong { font-size: 1.15rem; font-weight: 600; }
-/* sobre negro el hover tiene que aclarar, no oscurecer, y la marca de hoy
-   tiene que ser del color del papel para verse */
-.card.deliverable.is-active { background: #262626; }
-.card.deliverable.is-today { box-shadow: inset 0 0 0 2px var(--paper); }
+/* el hover y la marca de hoy ya no necesitan excepción: la entrega es una
+   tarjeta de papel como las demás y hereda las dos */
 
 /* divisor de receso entre tarjetas. Comparte medida y sangría con las tarjetas
    para que la etiqueta caiga sobre el mismo eje que su texto. */
@@ -629,14 +640,8 @@ body {
   .node { fill: #fff; }
   .node.deliver { fill: #000; }
 
-  /* la entrega deja de ser un bloque de tinta y pasa a ser un marco */
-  .card.deliverable { background: #fff; color: #000; border: 1.5pt solid #000; }
-  .card.deliverable .card-top,
-  .card.deliverable .card-num,
-  .card.deliverable p,
-  .card.deliverable .prose-list,
-  .card.deliverable .tool { color: #000; }
-  .card.deliverable .badge { background: #fff; color: #000; border: 0.5pt solid #000; }
+  /* la entrega ya es un marco en pantalla: aquí no hay nada que corregir. Sólo
+     el anillo de hoy, que es box-shadow y no se imprime */
   .card.is-today, .card.deliverable.is-today { box-shadow: none; outline: 1.5pt solid #000; }
 
   /* cortes de página: la unidad mínima es la tarjeta, y una iteración no se
