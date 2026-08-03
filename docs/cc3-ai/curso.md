@@ -44,7 +44,7 @@ estructura:
     - {nombre: "Objetos e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos y manipulación de imagen fija."}
     - {nombre: "Composición animada",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
   entregas:                         # caen en una sesión y cierran la iteración
-    - {sesion: 8,  etiqueta: "Ejercicios de imagen fija", peso: 30}
+    - {sesion: 8,  etiqueta: "Trabajo parcial", peso: 30}
     - {sesion: 16, etiqueta: "Trabajo final",             peso: 40}
   continuas:                        # se califican sin fecha fija
     - {etiqueta: "Ejercicios de objetos y trigonometría", peso: 30}
@@ -55,17 +55,14 @@ sesiones:
   # las claves de la sesión van sangradas a la columna que abre el guion.
   - n: 1
     titulo: "Encuadre y transformaciones"
-    tool: "Processing"
+    tool: "Hydra"
     desc:
       - "Presentaciones. Curso, profesor, alumnxs"
       - "Acuerdo sobre el uso de IA en la clase"
       - "Evaluación y resultados esperados"
       - "Puntualidad y tolerancia"
       - "Metodología y contenido que puede ser flexible"
-      - "Actividad: escribir en un documento 3 objetos/programas/apps y explicar brevemente cómo funcionan"
-      - " Actividad con Hydra e introducción a pixeles"
-      - "¿Qué son las transformaciones? Traslación y rotación"
-      - "pushMatrix, popMatrix y scale"
+      - "Actividad con Hydra e introducción a pixeles"
   - n: 2
     titulo: "Asesoría"
     tool: ""
