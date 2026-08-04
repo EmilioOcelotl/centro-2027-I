@@ -229,6 +229,23 @@ function h(tag, attrs, html) {
 const pad2 = n => String(n).padStart(2, "0");
 const esc = s => String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 
+// esc() no toca las comillas porque su destino normal es texto, no atributos.
+// Una URL sí va dentro de un atributo, y ahí una comilla la sacaría de él.
+const escAttr = s => esc(s).replace(/"/g, "&quot;");
+
+// Un punto de prosa es una cadena, o —igual que en las referencias— un mapa
+// {texto, url} cuando hay a dónde ir. Es la única forma de marcado que el
+// frontmatter puede pedir: no escribe HTML, nombra un destino y el motor arma
+// la etiqueta. Texto y URL siguen escapándose.
+function proseItem(x) {
+  if (x != null && typeof x === "object" && !Array.isArray(x)) {
+    const texto = x.texto || x.url;
+    if (texto == null || texto === "") return "";
+    return x.url ? `<a href="${escAttr(x.url)}" rel="noopener">${esc(texto)}</a>` : esc(texto);
+  }
+  return esc(x);
+}
+
 // Todo campo de prosa del frontmatter —desc, nota, texto del colofón— acepta
 // una cadena o una lista. La lista sale como <ul>; la cadena, como párrafo.
 // El .md nunca inyecta marcado: lo que llega se escapa y el motor decide la
@@ -236,10 +253,10 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>]/g, c => ({ "&": "&amp
 function prose(v) {
   if (v == null || v === "") return "";
   if (Array.isArray(v)) {
-    const items = v.filter(x => x != null && x !== "");
-    return items.length ? `<ul class="prose-list">${items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "";
+    const items = v.filter(x => x != null && x !== "").map(proseItem).filter(s => s !== "");
+    return items.length ? `<ul class="prose-list">${items.map(x => `<li>${x}</li>`).join("")}</ul>` : "";
   }
-  return `<p>${esc(v)}</p>`;
+  return `<p>${proseItem(v)}</p>`;
 }
 
 /* =========================================================

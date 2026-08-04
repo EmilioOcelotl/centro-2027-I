@@ -27,7 +27,7 @@ caption: ""                         # vacío = sin frase bajo el diagrama; borra
 #     vacío— el recuadro no aparece.
 ia:
   titulo: "Uso de inteligencia artificial"
-  texto: "Punto de partida: una discusión sobre el uso de IA en general. En este curso está permitido usar Inteligencia Artificial generativa para la escritura de código. Las ideas y planeación deberán realizarse con escritura convencional, están permitidos archivos digitales o analógicos. "
+  texto: "En este curso está permitido usar Inteligencia Artificial generativa para la escritura de código. Las ideas y planeación deberán realizarse con escritura convencional, están permitidos archivos digitales o analógicos. "
 
 # 3 · CALENDARIO
 calendario:
@@ -41,13 +41,13 @@ calendario:
 # 4 · ESTRUCTURA — define la forma del diagrama y la evaluación
 estructura:
   iteraciones:
-    - {nombre: "Objetos e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos y manipulación de imagen fija."}
-    - {nombre: "Composición animada",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
+    - {nombre: "Pixeles e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos y manipulación de imagen fija."}
+    - {nombre: "Imágenes en movimiento",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
   entregas:                         # caen en una sesión y cierran la iteración
     - {sesion: 8,  etiqueta: "Trabajo parcial", peso: 30}
     - {sesion: 16, etiqueta: "Trabajo final",             peso: 40}
   continuas:                        # se califican sin fecha fija
-    - {etiqueta: "Ejercicios de objetos y trigonometría", peso: 30}
+    - {etiqueta: "Actividades", peso: 30}
 
 # 5 · SESIONES — el número de sesiones define la duración del curso.
 sesiones:
@@ -62,15 +62,18 @@ sesiones:
       - "Evaluación y resultados esperados"
       - "Puntualidad y tolerancia"
       - "Metodología y contenido que puede ser flexible"
+      # un punto de 'desc' admite {texto, url} cuando hay a dónde ir
+      - {texto: "Actividad: rejilla de pixeles", url: "pixeles/"}
       - "Actividad con Hydra e introducción a pixeles"
-      - "Funciones con Hydra"
+      - "Funciones con Hydra y modificaciones específicas"
+      - ¿Qué podríamos hacer con esto?
   - n: 2
     titulo: "Patrones dibujados, ideas divergentes sobre el proyecto parcial"
     tool: "Papel o dispositivo para dibujar"
     desc:
       - "Pixeles, fotogramas y texturas"
       - "Actividad: dibujar el patrón de una textura digital o de un fotograma. ¿Qué características tiene?"
-      - "Conformación de equipos y primer acercamiento al proyecto parcial: el reto"
+      - "Conformación de equipos y primer acercamiento al proyecto parcial. Definir el reto"
   - n: 3
     titulo: "Vectores"
     tool: "Processing"

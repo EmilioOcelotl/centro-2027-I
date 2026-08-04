@@ -553,7 +553,8 @@ body {
   letter-spacing: 0.04em;
   color: var(--ink);
 }
-.ref-list a { color: var(--ink); text-decoration: underline; text-underline-offset: 0.18em; }
+.ref-list a,
+.prose-list a { color: var(--ink); text-decoration: underline; text-underline-offset: 0.18em; }
 
 /* ---------- colophon ---------- */
 /* el pie se alinea con el cuerpo: la regla superior y las columnas cierran en la

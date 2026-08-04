@@ -3,13 +3,6 @@
 Repositorio del semestre: notas de trabajo, material de clase y los sitios
 públicos de las cuatro clases.
 
-| Clase | Carrera | Día | Sitio |
-|-------|---------|-----|-------|
-| Código Creativo 3 | Arquitectura de Interiores | lunes | [`docs/cc3-ai/`](docs/cc3-ai/) |
-| Código Creativo 3 | Cine | martes | [`docs/cc3-cine/`](docs/cc3-cine/) |
-| Código Creativo 4 | Moda | miércoles | [`docs/cc4-dtm/`](docs/cc4-dtm/) |
-| Laboratorio de ciencia, creatividad y tecnología | — | viernes | [`docs/lab-cct/`](docs/lab-cct/) |
-
 ## Estructura
 
 ```
