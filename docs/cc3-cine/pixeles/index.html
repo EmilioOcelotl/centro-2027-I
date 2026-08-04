@@ -73,7 +73,6 @@
       cursor: pointer;
     }
     .btn:hover { background: var(--paper-2); }
-    .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 
     /* el selector nativo del sistema: es el que trae rueda de color y hex */
     input[type="color"] {
@@ -141,7 +140,6 @@
     /* pixeles muy chicos: el número ya no cabe, se retira solo */
     .lienzo.muda .px, .lienzo.apagada .px { color: transparent; }
     .px:focus-visible { outline: 3px solid var(--signal); outline-offset: -3px; }
-    body.gotereando .px { cursor: copy; }
 
     /* ---------- lectura del pixel ---------- */
     .lectura {
@@ -238,8 +236,8 @@
 
       <div class="fila">
         <span class="rotulo">Pintar</span>
-        <button type="button" class="btn" id="gotero" aria-pressed="false">Gotero</button>
         <button type="button" class="btn" id="vaciar">Vaciar</button>
+        <button type="button" class="btn" id="descargar">Descargar</button>
         <label class="casilla"><input type="checkbox" id="numeros" checked /> números</label>
         <button type="button" class="btn" id="ocultar">Ocultar controles</button>
         <p class="nota" id="nota" hidden>Los números se ocultan solos: a este tamaño el pixel ya no tiene dónde escribirlos.</p>
@@ -284,16 +282,17 @@
   const inColor = $("color");
   const chkNums = $("numeros");
   const nota    = $("nota");
-  const btnGot  = $("gotero");
 
   const PALETA = ["#FFFFFF", "#000000", "#D62828", "#F77F00", "#FCBF49",
                   "#2A9D8F", "#264653", "#3A86FF", "#8338EC", "#FF006E"];
+
+  // el PNG se dibuja con la paleta del motor, no con una copia de sus valores
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
   let cols = 8, rows = 5;
   let px = new Array(cols * rows).fill(null);   // null = papel, sin pintar
   let celdas = [];                              // los nodos, en el mismo orden
   let pintando = false;
-  let goteroArmado = false;                     // el gotero es de un solo uso
   let foco = 0;                                 // roving tabindex
 
   /* ---------- color ----------
@@ -398,7 +397,9 @@
   new ResizeObserver(medir).observe(lienzo);
 
   /* ---------- pintar con el puntero ---------- */
-  function toma(i) {                     // gotero: el color del pixel vuelve al selector
+  // Alt + click devuelve al selector el color de un pixel ya pintado. Sin botón:
+  // es un atajo para quien lo necesite, no un modo que haya que recordar apagar.
+  function toma(i) {
     if (!px[i]) return;
     inColor.value = px[i];
     marcarMuestra();
@@ -413,7 +414,7 @@
     const i = +b.dataset.i;
     mover(i);
     b.focus({ preventScroll: true });
-    if (goteroArmado || e.altKey) { toma(i); if (goteroArmado) armarGotero(false); leer(i); return; }
+    if (e.altKey) { toma(i); leer(i); return; }
     pintando = true;
     pintar(i, inColor.value.toUpperCase());
     leer(i);
@@ -456,7 +457,7 @@
     else if (e.key === "End")        destino = y * cols + cols - 1;
     else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      if (goteroArmado || e.altKey) { toma(foco); if (goteroArmado) armarGotero(false); }
+      if (e.altKey) toma(foco);
       else pintar(foco, inColor.value.toUpperCase());
       leer(foco);
       return;
@@ -497,12 +498,65 @@
   }
   inColor.addEventListener("input", marcarMuestra);
 
-  function armarGotero(v) {
-    goteroArmado = v;
-    btnGot.setAttribute("aria-pressed", String(v));
-    document.body.classList.toggle("gotereando", v);
+  /* ---------- descargar ----------
+     Se dibuja la rejilla como se ve —colores, retícula y números— y no un
+     archivo del tamaño real en pixeles: lo que el alumno se lleva es la lámina
+     de la actividad, con la numeración que es su asunto. El lado de la celda no
+     es el de la pantalla; se escoge aquí para que el PNG salga legible tanto en
+     una rejilla de 8 como en una de 64. */
+  function dibujarPNG() {
+    const lado = Math.max(16, Math.min(120, Math.round(1600 / cols)));
+    const cv = document.createElement("canvas");
+    cv.width = cols * (lado + 1) + 1;      // el +1 son los filetes de la retícula
+    cv.height = rows * (lado + 1) + 1;
+    const cx = cv.getContext("2d");
+
+    // la retícula es el fondo, y cada pixel la tapa dejando ver el filete:
+    // el mismo truco del gap de la rejilla en pantalla
+    cx.fillStyle = cssVar("--rule");
+    cx.fillRect(0, 0, cv.width, cv.height);
+
+    // En pantalla el número que no cabe lo recorta overflow:hidden; en el canvas
+    // fillText no recorta nada y los dígitos se derramarían sobre los vecinos.
+    // Así que se mide el número más largo —el último— y el cuerpo se encoge
+    // hasta que quepa; si para caber hay que bajar de 7px, no se dibuja ninguno.
+    const mono = cssVar("--mono");
+    let cuerpo = Math.round(lado * 0.34);
+    cx.font = `${cuerpo}px ${mono}`;
+    const anchoMax = cx.measureText(String(cols * rows - 1)).width;
+    if (anchoMax > lado * 0.86) cuerpo = Math.floor(cuerpo * lado * 0.86 / anchoMax);
+    cx.font = `${cuerpo}px ${mono}`;
+
+    const conNumeros = chkNums.checked && cuerpo >= 7;
+    cx.textAlign = "center";
+    cx.textBaseline = "middle";
+
+    const papel = cssVar("--paper");
+    for (let i = 0; i < cols * rows; i++) {
+      const x = 1 + (i % cols) * (lado + 1);
+      const y = 1 + ((i / cols) | 0) * (lado + 1);
+      const c = px[i] || papel;
+      cx.fillStyle = c;
+      cx.fillRect(x, y, lado, lado);
+      if (conNumeros) {
+        cx.fillStyle = tinta(c);
+        cx.fillText(i, x + lado / 2, y + lado / 2);
+      }
+    }
+    return cv;
   }
-  btnGot.addEventListener("click", () => armarGotero(!goteroArmado));
+
+  $("descargar").addEventListener("click", () => {
+    dibujarPNG().toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rejilla-${cols}x${rows}.png`;
+      a.click();
+      // revocar en el mismo tick le quita el blob a la descarga a medio empezar
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, "image/png");
+  });
 
   $("vaciar").addEventListener("click", () => {
     px.fill(null);
@@ -530,7 +584,7 @@
     // dentro de un campo, 'c' es una letra y no un atajo
     if (e.target.matches("input, textarea")) return;
     if (e.key === "c" || e.key === "C") controles(document.body.classList.contains("sin-controles"));
-    else if (e.key === "Escape") { armarGotero(false); controles(true); }
+    else if (e.key === "Escape") controles(true);
   });
 
   /* ---------- arranque ---------- */
