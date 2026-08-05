@@ -12,13 +12,13 @@
 
 # 1 · IDENTIDAD
 universidad: "CENTRO"
-programa: "Moda"
+programa: "Diseño Textil y Moda"
 titulo: "Código Creativo 4"
 edicion: "2027-I"
 imparte: "Emilio Ocelotl"
 grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
 
-intro: "Cómputo físico e interacción. Herramientas y métodos de implementación técnica para prendas interactivas y tecnología vestible: programación de microcontroladores, simulación de circuitos e interacciones físicas a partir de datos corporales y ambientales. Cada sesión resuelve un bloque técnico de los proyectos del semestre y debe servir de inmediato en Diseño de moda y tecnología portable, la asignatura complementaria con la que se comparte el proyecto final. Traigan dudas técnicas específicas."
+intro: "Cómputo físico e interacción. Herramientas y métodos de implementación técnica para prendas interactivas y tecnología vestible: programación de microcontroladores, simulación de circuitos e interacciones físicas a partir de datos corporales y ambientales. Cada sesión resuelve un bloque técnico de los proyectos del semestre y debe servir de inmediato en Diseño de moda y tecnología portable, la asignatura complementaria con la que se comparte el proyecto final."
 caption: ""                         # vacío = sin frase bajo el diagrama; borra la línea para la de por defecto
 
 # 2 · ACUERDO SOBRE EL USO DE IA — sale en la portada, bajo el objetivo.
@@ -26,7 +26,7 @@ caption: ""                         # vacío = sin frase bajo el diagrama; borra
 #     vacío— el recuadro no aparece.
 ia:
   titulo: "Uso de inteligencia artificial"
-  texto: "Punto de partida: una discusión sobre el uso de IA en general. En este curso usamos inteligencia artificial generativa como herramienta para acelerar la escritura de código y poder enfocarnos en la integración física. La condición es poder describir y probar lo que el programa hace: si no se puede explicar el circuito ni el código, no está resuelto."
+  texto: "En este curso usamos inteligencia artificial generativa como herramienta para acelerar la escritura de código y poder enfocarnos en la integración física. La condición es poder describir y probar lo que el programa hace."
 
 # 3 · CALENDARIO
 calendario:
@@ -43,8 +43,8 @@ estructura:
     - {nombre: "Circuitos, simulación y movimiento", sesiones: [1, 8],  nota: "De la simulación en Wokwi al circuito físico: componentes, sensores, servos, motores de pasos y alimentación."}
     - {nombre: "Datos, interfaz y proyecto final",   sesiones: [9, 16], nota: "Comunicación serial, calibración y prototipado web, e iteración del proyecto compartido con Diseño de moda y tecnología portable."}
   entregas:                         # caen en una sesión y cierran la iteración
-    - {sesion: 8,  etiqueta: "Prototipo de prenda interactiva", peso: 30}
-    - {sesion: 16, etiqueta: "Trabajo final",                   peso: 40}
+    - {sesion: 8,  etiqueta: "Proyecto parcial", peso: 30}
+    - {sesion: 16, etiqueta: "Proyecto final",                   peso: 40}
   continuas:                        # se califican sin fecha fija
     - {etiqueta: "Ejercicios de electrónica y código en Arduino", peso: 30}
 
@@ -54,7 +54,7 @@ sesiones:
   # las claves de la sesión van sangradas a la columna que abre el guion.
   - n: 1
     titulo: "Encuadre y contexto técnico"
-    tool: ""
+    tool: "Tinkercad"
     desc:
       - "Presentaciones. Curso, profesor, alumnxs"
       - "Acuerdo sobre el uso de IA en la clase"
@@ -62,11 +62,11 @@ sesiones:
       - "Puntualidad y tolerancia"
       - "Metodología y contenido que puede ser flexible"
       - "Flujo de trabajo conjunto con Diseño de moda y tecnología portable"
-      - "Intereses y experiencia previa con electrónica"
-      - "Actividad: ¿hacia dónde va el agua?"
+      - "Componentes con los que estaremos trabajando: software, placas, sensores y actuadores"
+      - {texto: "Actividad: Generar cuenta en Tinkercad y explorar algún ejemplo", url: "https://www.tinkercad.com/"}
   - n: 2
     titulo: "Primeros pasos: placas y simulación"
-    tool: "Wokwi"
+    tool: "Tinkercad"
     desc:
       - "Programación por bloques y código escrito: facilidad y flexibilidad"
       - "Placas con las que trabajaremos: Arduino, LilyPad y Nano"

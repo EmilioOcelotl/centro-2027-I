@@ -71,8 +71,8 @@ sesiones:
     titulo: "Patrones dibujados, ideas divergentes sobre el proyecto parcial"
     tool: "Papel o dispositivo para dibujar"
     desc:
+      - "Repaso de lo que vimos la semana pasada. ¿Qué podríamos hacer con esto?"
       - "Pixeles, fotogramas y texturas"
-      - "Actividad: dibujar el patrón de una textura digital o de un fotograma. ¿Qué características tiene?"
       - "Conformación de equipos y primer acercamiento al proyecto parcial. Definir el reto"
   - n: 3
     titulo: "Vectores"
