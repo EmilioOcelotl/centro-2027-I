@@ -25,7 +25,7 @@ edicion: "2027-I"
 imparte: "Emilio Ocelotl"
 grupos: []                          # ["Grupo A", "Grupo B"] si hay más de uno
 
-intro: "Iluminación y videomapping como materiales de proyecto. Al finalizar el curso proyectarás una pieza propia sobre un objeto y una superficie no plana. Primero mapeamos con minimapper —navegador, sin instalación— y después abrimos TouchDesigner para resolver lo que cada proyecto pida: geometría compleja, detección de persona, audio reactivo o sistemas de partículas."
+intro: "Iluminación y videomapping como materiales de proyecto. Al finalizar el curso proyectarás una pieza propia sobre un objeto y una superficie no plana. Primero mapeamos con minimapper y después abrimos TouchDesigner para resolver lo que cada proyecto pida: geometría compleja, detección de persona, audio reactivo o sistemas de partículas."
 caption: ""                         # vacío = sin frase bajo el diagrama; borra la línea para la de por defecto
 
 # 2 · ACUERDO SOBRE EL USO DE IA — sale en la portada, bajo el objetivo.
@@ -48,7 +48,7 @@ calendario:
 estructura:
   iteraciones:
     - {nombre: "Mapear",   sesiones: [1, 8],  nota: "Un ciclo completo con minimapper: síntesis visual, fuentes, superficie, montaje y proyección."}
-    - {nombre: "Resolver", sesiones: [9, 16], nota: "TouchDesigner por demanda: cada equipo nombra su aspecto no resuelto y de ahí sale el contenido."}
+    - {nombre: "Afinar", sesiones: [9, 16], nota: "Soluciones específicas: cada equipo nombra su aspecto no resuelto y de ahí sale el contenido."}
   entregas:                         # caen en una sesión y cierran la iteración
     - {sesion: 8,  etiqueta: "Proyección parcial", peso: 30}
     - {sesion: 16, etiqueta: "Proyección final",   peso: 40}
