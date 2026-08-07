@@ -33,7 +33,7 @@ caption: ""                         # vacío = sin frase bajo el diagrama; borra
 #     vacío— el recuadro no aparece.
 ia:
   titulo: "Uso de inteligencia artificial"
-  texto: "Como parte de la metodología del curso es necesario llegar a un acuerdo claro para el uso de inteligencia artificial. Punto de partida: está permitida para escribir código; el concepto, la definición del proyecto y las decisiones de montaje se sostienen con escritura y dibujo propios. El acuerdo se discute y se cierra en la primera sesión."
+  texto: "Como parte de la metodología del curso es necesario llegar a un acuerdo claro para el uso de inteligencia artificial. Punto de partida: está permitida para escribir código; el concepto, la definición del proyecto y las decisiones de montaje se sostienen con escritura y dibujo propios."
 
 # 3 · CALENDARIO
 calendario:
@@ -67,8 +67,10 @@ sesiones:
       - "Acuerdo sobre el uso de IA en la clase"
       - "Evaluación, bitácora y resultados esperados"
       - "Puntualidad, tolerancia y computadora obligatoria"
-      - "Hydra en vivo: osc, color, modulate. Imagen desde el primer minuto"
-      - "Cierre: proyectar sobre la pared del salón lo que hizo cada quien"
+      - "Texturas y Hydra. Exploración de sketches existentes y generadores básicos"
+      - "Si da tiempo: modulaciones"
+      - "Proyección sobre la pared"
+      - "Actividad: Descripción de la textura ¿dónde la podríamos proyectar?"
   - n: 2
     titulo: "Superficie y luz"
     tool: "minimapper"
