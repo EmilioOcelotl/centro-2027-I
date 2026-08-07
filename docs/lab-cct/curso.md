@@ -66,9 +66,9 @@ sesiones:
       - "Presentaciones. Curso, profesor, alumnxs"
       - "Acuerdo sobre el uso de IA en la clase"
       - "Evaluación, bitácora y resultados esperados"
-      - "Puntualidad, tolerancia y computadora obligatoria"
+      - "Puntualidad y tolerancia"
       - "Texturas y Hydra. Exploración de sketches existentes y generadores básicos"
-      - "Si da tiempo: modulaciones"
+      - "Siguiente paso: modulaciones"
       - "Proyección sobre la pared"
       - "Actividad: Descripción de la textura ¿dónde la podríamos proyectar?"
   - n: 2
