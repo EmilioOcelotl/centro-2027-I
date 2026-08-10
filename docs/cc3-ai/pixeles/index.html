@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rejilla de pixeles · Código Creativo 3 · Arquitectura de Interiores</title>
+  <meta name="description" content="Actividad de salón: dimensionar, numerar y pintar una rejilla de pixeles." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <style>
+    /* La actividad hereda del motor la paleta, la tipografía y la medida de la
+       columna; lo que se define aquí es sólo lo que el motor no tiene: el
+       panel de controles, la rejilla y el renglón de lectura. El motor no se
+       toca —es copia congelada compartida por las cuatro clases—. */
+
+    /* alto que la rejilla tiene permitido ocupar. Al ocultar los controles la
+       página se queda sin portada ni panel, así que la rejilla se estira. */
+    :root { --alto-disp: 58vh; }
+    body.sin-controles { --alto-disp: 78vh; }
+
+    .envoltura { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+
+    /* ---------- panel de controles ---------- */
+    .panel {
+      max-width: var(--readw);
+      border: 1px solid var(--ink);
+      padding: 1.2rem 1.3rem 1.3rem;
+      margin: 0 0 clamp(1.6rem, 4vw, 2.4rem);
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+    .fila {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem 1rem;
+    }
+    .rotulo {
+      font-family: var(--mono);
+      font-size: var(--fs-rotulo);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--signal);
+      /* ancho fijo: los tres renglones del panel alinean sus rótulos */
+      flex: 0 0 5.5rem;
+    }
+    .campo { display: flex; align-items: center; gap: 0.45rem; font-family: var(--mono); font-size: var(--fs-sec); }
+    .campo input[type="number"] {
+      width: 4.2rem;
+      font-family: var(--mono);
+      font-size: var(--fs-sec);
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      padding: 0.35rem 0.45rem;
+    }
+    .total { font-family: var(--mono); font-size: var(--fs-sec); color: var(--ink-2); }
+    .total strong { color: var(--ink); font-weight: 600; }
+
+    /* botones: el mismo filete de las tarjetas, sin relleno de color */
+    .btn {
+      font-family: var(--mono);
+      font-size: var(--fs-rotulo);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--ink);
+      padding: 0.42rem 0.8rem;
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--paper-2); }
+
+    /* el selector nativo del sistema: es el que trae rueda de color y hex */
+    input[type="color"] {
+      width: 3rem;
+      height: 2.1rem;
+      padding: 0;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      cursor: pointer;
+    }
+    .muestras { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .muestra {
+      width: 1.6rem;
+      height: 1.6rem;
+      border: 1px solid var(--rule);
+      padding: 0;
+      cursor: pointer;
+    }
+    .muestra[aria-pressed="true"] { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+    .casilla { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: var(--fs-sec); cursor: pointer; }
+    .nota {
+      font-family: var(--mono);
+      font-size: var(--fs-rotulo);
+      color: var(--ink-2);
+      margin: 0;
+      flex-basis: 100%;
+    }
+    .nota[hidden] { display: none; }
+
+    /* ---------- la rejilla ---------- */
+    .zona { padding-bottom: clamp(1.4rem, 4vw, 2rem); }
+    .lienzo {
+      /* ancha hasta donde el alto disponible lo permita: así la rejilla entra
+         entera en la pantalla sea cual sea su proporción */
+      width: min(100%, calc(var(--alto-disp) * var(--cols) / var(--rows)));
+      aspect-ratio: var(--cols) / var(--rows);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      /* las líneas de la retícula son los huecos: un solo filete entre pixel y
+         pixel, sin dobleces ni medio pixel de más */
+      gap: 1px;
+      padding: 1px;
+      background: var(--rule);
+      touch-action: none;   /* arrastrar pinta, no hace scroll */
+    }
+    .px {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      min-width: 0;
+      font-family: var(--mono);
+      font-size: calc(var(--cell, 20px) * 0.34);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      background: var(--c, var(--paper));
+      color: var(--t, var(--ink));
+      cursor: crosshair;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    /* pixeles muy chicos: el número ya no cabe, se retira solo */
+    .lienzo.muda .px, .lienzo.apagada .px { color: transparent; }
+    .px:focus-visible { outline: 3px solid var(--signal); outline-offset: -3px; }
+
+    /* ---------- lectura del pixel ---------- */
+    .lectura {
+      max-width: var(--readw);
+      margin: 0 auto;
+      border-top: 1px solid var(--rule);
+      padding-top: 0.7rem;
+      font-family: var(--mono);
+      font-size: var(--fs-sec);
+      color: var(--ink-2);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 1.2rem;
+    }
+    .lectura strong { color: var(--ink); font-weight: 600; }
+    .lectura .swatch {
+      display: inline-block;
+      width: 0.85em;
+      height: 0.85em;
+      border: 1px solid var(--rule);
+      vertical-align: -0.05em;
+      margin-right: 0.35em;
+    }
+
+    /* ---------- volver a los controles ---------- */
+    .volver {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 2;
+      display: none;
+    }
+    body.sin-controles .volver { display: block; }
+    body.sin-controles .masthead,
+    body.sin-controles .panel,
+    body.sin-controles .pie { display: none; }
+    /* proyectando, la rejilla ya no es una ilustración dentro de la columna de
+       lectura: es lo único en pantalla y toma el ancho que haya */
+    body.sin-controles .zona { max-width: none; }
+
+    .pie {
+      max-width: var(--readw);
+      margin: 0 auto;
+      padding: clamp(1.6rem, 4vw, 2.4rem) 0 clamp(2.5rem, 6vw, 4rem);
+      border-top: 1px solid var(--rule);
+      font-size: var(--fs-sec);
+      color: var(--ink-2);
+    }
+    .pie p { margin: 0 0 0.6rem; }
+    .pie a { color: var(--ink); }
+    .pie code { font-family: var(--mono); color: var(--ink); }
+
+    /* ---------- papel ---------- */
+    @media print {
+      .panel, .volver, .grain { display: none; }
+      :root { --alto-disp: 45vh; }
+      /* lo pintado es el contenido: tiene que salir por la impresora */
+      .lienzo, .px, .swatch { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <p class="eyebrow">Código Creativo 3 · Arquitectura de Interiores · Actividad</p>
+    <h1 class="title">Rejilla de pixeles</h1>
+    <p class="lede">
+      Una imagen digital no es una superficie: es una lista de pixeles numerados
+      de 0 en adelante, en orden de lectura. Dimensiona la rejilla, píntala y
+      mira cómo cada pixel encuentra su número.
+    </p>
+  </header>
+
+  <div class="envoltura">
+    <form class="panel" id="panel" autocomplete="off">
+      <div class="fila">
+        <span class="rotulo">Rejilla</span>
+        <label class="campo">ancho
+          <input type="number" id="ancho" min="1" max="64" step="1" value="8" inputmode="numeric" />
+        </label>
+        <label class="campo">alto
+          <input type="number" id="alto" min="1" max="64" step="1" value="5" inputmode="numeric" />
+        </label>
+        <button type="submit" class="btn">Crear rejilla</button>
+        <span class="total" id="total"></span>
+      </div>
+
+      <div class="fila">
+        <span class="rotulo">Color</span>
+        <input type="color" id="color" value="#D62828" aria-label="color con el que se pinta" />
+        <div class="muestras" id="muestras"></div>
+      </div>
+
+      <div class="fila">
+        <span class="rotulo">Pintar</span>
+        <button type="button" class="btn" id="vaciar">Vaciar</button>
+        <button type="button" class="btn" id="descargar">Descargar</button>
+        <label class="casilla"><input type="checkbox" id="numeros" checked /> números</label>
+        <button type="button" class="btn" id="ocultar">Ocultar controles</button>
+        <p class="nota" id="nota" hidden>Los números se ocultan solos: a este tamaño el pixel ya no tiene dónde escribirlos.</p>
+      </div>
+    </form>
+  </div>
+
+  <main class="envoltura zona">
+    <div class="lienzo" id="lienzo" role="grid" aria-label="rejilla de pixeles" style="--cols:8; --rows:5;"></div>
+  </main>
+
+  <div class="envoltura">
+    <p class="lectura" id="lectura"></p>
+  </div>
+
+  <footer class="envoltura">
+    <div class="pie">
+      <p>
+        Click para pintar, arrastrar para pintar varios. <code>Alt + click</code>
+        toma el color de un pixel ya pintado. Con la rejilla enfocada, las
+        flechas mueven y <code>Enter</code> pinta. La tecla <code>c</code> oculta
+        y devuelve los controles.
+      </p>
+      <p><a href="../">← Código Creativo 3 · Arquitectura de Interiores</a></p>
+    </div>
+  </footer>
+
+  <button type="button" class="btn volver" id="volver">Controles</button>
+
+<script>
+(() => {
+  "use strict";
+
+  const MAX = 64;            // 64 × 64 = 4096 pixeles: el techo del ejercicio
+  const CELDA_MUDA = 22;     // px de lado por debajo de los cuales no cabe el número
+
+  const $ = id => document.getElementById(id);
+  const lienzo  = $("lienzo");
+  const lectura = $("lectura");
+  const inAncho = $("ancho");
+  const inAlto  = $("alto");
+  const inColor = $("color");
+  const chkNums = $("numeros");
+  const nota    = $("nota");
+
+  const PALETA = ["#FFFFFF", "#000000", "#D62828", "#F77F00", "#FCBF49",
+                  "#2A9D8F", "#264653", "#3A86FF", "#8338EC", "#FF006E"];
+
+  // el PNG se dibuja con la paleta del motor, no con una copia de sus valores
+  const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  let cols = 8, rows = 5;
+  let px = new Array(cols * rows).fill(null);   // null = papel, sin pintar
+  let celdas = [];                              // los nodos, en el mismo orden
+  let pintando = false;
+  let foco = 0;                                 // roving tabindex
+
+  /* ---------- color ----------
+     El número tiene que leerse sobre cualquier color, así que la tinta se
+     elige por la luminancia relativa del fondo (WCAG 2.x). El punto de corte
+     0.1791 es donde el contra blanco y el contra negro empatan: es la misma
+     cuenta de brillo que aparece en la sesión 7 con hue, brillo y RGB. */
+  const canal = v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  function luminancia(hex) {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    return 0.2126 * canal(r) + 0.7152 * canal(g) + 0.0722 * canal(b);
+  }
+  const tinta = hex => (luminancia(hex) > 0.1791 ? "#000000" : "#FFFFFF");
+  const rgb = hex => [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16));
+
+  /* ---------- construir la rejilla ----------
+     Redimensionar conserva lo pintado por coordenada: la rejilla puede crecer
+     en pleno salón sin que se pierda el dibujo que ya está en el proyector. */
+  function construir(nCols, nRows) {
+    const viejo = px, vCols = cols, vRows = rows;
+    cols = nCols; rows = nRows;
+    px = new Array(cols * rows).fill(null);
+    for (let y = 0; y < Math.min(rows, vRows); y++) {
+      for (let x = 0; x < Math.min(cols, vCols); x++) {
+        px[y * cols + x] = viejo[y * vCols + x];
+      }
+    }
+
+    lienzo.style.setProperty("--cols", cols);
+    lienzo.style.setProperty("--rows", rows);
+
+    const frag = document.createDocumentFragment();
+    celdas = new Array(cols * rows);
+    for (let i = 0; i < cols * rows; i++) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "px";
+      b.dataset.i = i;
+      b.tabIndex = -1;
+      b.textContent = i;
+      celdas[i] = b;
+      vestir(i);
+      frag.appendChild(b);
+    }
+    lienzo.replaceChildren(frag);
+
+    foco = Math.min(foco, cols * rows - 1);
+    celdas[foco].tabIndex = 0;
+    medir();
+    contar();
+    leer(foco);
+  }
+
+  // pinta el nodo con el estado del arreglo: color de fondo, tinta y etiqueta
+  function vestir(i) {
+    const b = celdas[i], c = px[i];
+    b.style.setProperty("--c", c || "");
+    b.style.setProperty("--t", c ? tinta(c) : "");
+    const x = i % cols, y = (i / cols) | 0;
+    b.setAttribute("aria-label",
+      `pixel ${i}, x ${x}, y ${y}, ${c ? c : "sin pintar"}`);
+  }
+
+  function pintar(i, color) {
+    if (px[i] === color) return;
+    px[i] = color;
+    vestir(i);
+  }
+
+  function contar() {
+    $("total").innerHTML =
+      `${cols} × ${rows} = <strong>${cols * rows}</strong> pixeles · del 0 al ${cols * rows - 1}`;
+  }
+
+  /* ---------- lectura del pixel ----------
+     El puente explícito hacia pixels[] en Processing: el índice del arreglo
+     plano, sus dos coordenadas y la cuenta que las une. */
+  function leer(i) {
+    const x = i % cols, y = (i / cols) | 0;
+    const c = px[i];
+    lectura.innerHTML =
+      `<span>índice <strong>${i}</strong></span>` +
+      `<span>x ${x}, y ${y}</span>` +
+      `<span>índice = y × ancho + x = ${y} × ${cols} + ${x} = <strong>${i}</strong></span>` +
+      (c ? `<span><span class="swatch" style="background:${c}"></span><strong>${c}</strong> · rgb(${rgb(c).join(", ")})</span>`
+         : `<span>sin pintar</span>`);
+  }
+
+  /* ---------- tamaño del pixel ----------
+     El cuerpo del número sigue al lado de la celda, y por debajo de cierto
+     tamaño el número se retira solo: una rejilla de 48 × 48 no se puede
+     rotular, y dejar los números ahí sólo ensucia la imagen. */
+  function medir() {
+    const lado = (lienzo.clientWidth - (cols + 1)) / cols;
+    lienzo.style.setProperty("--cell", lado + "px");
+    const muda = lado < CELDA_MUDA;
+    lienzo.classList.toggle("muda", muda);
+    nota.hidden = !(muda && chkNums.checked);
+  }
+  new ResizeObserver(medir).observe(lienzo);
+
+  /* ---------- pintar con el puntero ---------- */
+  // Alt + click devuelve al selector el color de un pixel ya pintado. Sin botón:
+  // es un atajo para quien lo necesite, no un modo que haya que recordar apagar.
+  function toma(i) {
+    if (!px[i]) return;
+    inColor.value = px[i];
+    marcarMuestra();
+  }
+
+  lienzo.addEventListener("pointerdown", e => {
+    const b = e.target.closest(".px");
+    if (!b) return;
+    // sin preventDefault, arrastrar sobre la rejilla selecciona texto; a cambio
+    // hay que enfocar a mano, porque es lo mismo que preventDefault cancela
+    e.preventDefault();
+    const i = +b.dataset.i;
+    mover(i);
+    b.focus({ preventScroll: true });
+    if (e.altKey) { toma(i); leer(i); return; }
+    pintando = true;
+    pintar(i, inColor.value.toUpperCase());
+    leer(i);
+  });
+
+  lienzo.addEventListener("pointerover", e => {
+    const b = e.target.closest(".px");
+    if (!b) return;
+    const i = +b.dataset.i;
+    if (pintando) pintar(i, inColor.value.toUpperCase());
+    leer(i);
+  });
+
+  window.addEventListener("pointerup", () => { pintando = false; });
+  window.addEventListener("pointercancel", () => { pintando = false; });
+
+  /* ---------- teclado ----------
+     Un solo tabindex móvil: 4096 pixeles no pueden ser 4096 paradas del
+     tabulador. Las flechas mueven dentro de la rejilla, Enter y espacio pintan. */
+  function mover(i) {
+    if (i < 0 || i >= cols * rows) return;
+    celdas[foco].tabIndex = -1;
+    foco = i;
+    celdas[foco].tabIndex = 0;
+  }
+
+  lienzo.addEventListener("focusin", e => {
+    const b = e.target.closest(".px");
+    if (b) { mover(+b.dataset.i); leer(foco); }
+  });
+
+  lienzo.addEventListener("keydown", e => {
+    const x = foco % cols, y = (foco / cols) | 0;
+    let destino = null;
+    if (e.key === "ArrowRight") destino = x < cols - 1 ? foco + 1 : null;
+    else if (e.key === "ArrowLeft")  destino = x > 0 ? foco - 1 : null;
+    else if (e.key === "ArrowDown")  destino = y < rows - 1 ? foco + cols : null;
+    else if (e.key === "ArrowUp")    destino = y > 0 ? foco - cols : null;
+    else if (e.key === "Home")       destino = y * cols;
+    else if (e.key === "End")        destino = y * cols + cols - 1;
+    else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (e.altKey) toma(foco);
+      else pintar(foco, inColor.value.toUpperCase());
+      leer(foco);
+      return;
+    } else return;
+
+    e.preventDefault();
+    if (destino === null) return;
+    mover(destino);
+    celdas[foco].focus();
+  });
+
+  /* ---------- controles ---------- */
+  $("panel").addEventListener("submit", e => {
+    e.preventDefault();
+    const a = Math.min(MAX, Math.max(1, Math.round(+inAncho.value) || 1));
+    const h = Math.min(MAX, Math.max(1, Math.round(+inAlto.value) || 1));
+    inAncho.value = a; inAlto.value = h;
+    construir(a, h);
+  });
+
+  const muestras = $("muestras");
+  PALETA.forEach(c => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "muestra";
+    b.style.background = c;
+    b.dataset.c = c;
+    b.setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-label", "usar el color " + c);
+    b.addEventListener("click", () => { inColor.value = c; marcarMuestra(); });
+    muestras.appendChild(b);
+  });
+
+  function marcarMuestra() {
+    const activo = inColor.value.toUpperCase();
+    muestras.querySelectorAll(".muestra").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.c === activo)));
+  }
+  inColor.addEventListener("input", marcarMuestra);
+
+  /* ---------- descargar ----------
+     Se dibuja la rejilla como se ve —colores, retícula y números— y no un
+     archivo del tamaño real en pixeles: lo que el alumno se lleva es la lámina
+     de la actividad, con la numeración que es su asunto. El lado de la celda no
+     es el de la pantalla; se escoge aquí para que el PNG salga legible tanto en
+     una rejilla de 8 como en una de 64. */
+  function dibujarPNG() {
+    const lado = Math.max(16, Math.min(120, Math.round(1600 / cols)));
+    const cv = document.createElement("canvas");
+    cv.width = cols * (lado + 1) + 1;      // el +1 son los filetes de la retícula
+    cv.height = rows * (lado + 1) + 1;
+    const cx = cv.getContext("2d");
+
+    // la retícula es el fondo, y cada pixel la tapa dejando ver el filete:
+    // el mismo truco del gap de la rejilla en pantalla
+    cx.fillStyle = cssVar("--rule");
+    cx.fillRect(0, 0, cv.width, cv.height);
+
+    // En pantalla el número que no cabe lo recorta overflow:hidden; en el canvas
+    // fillText no recorta nada y los dígitos se derramarían sobre los vecinos.
+    // Así que se mide el número más largo —el último— y el cuerpo se encoge
+    // hasta que quepa; si para caber hay que bajar de 7px, no se dibuja ninguno.
+    const mono = cssVar("--mono");
+    let cuerpo = Math.round(lado * 0.34);
+    cx.font = `${cuerpo}px ${mono}`;
+    const anchoMax = cx.measureText(String(cols * rows - 1)).width;
+    if (anchoMax > lado * 0.86) cuerpo = Math.floor(cuerpo * lado * 0.86 / anchoMax);
+    cx.font = `${cuerpo}px ${mono}`;
+
+    const conNumeros = chkNums.checked && cuerpo >= 7;
+    cx.textAlign = "center";
+    cx.textBaseline = "middle";
+
+    const papel = cssVar("--paper");
+    for (let i = 0; i < cols * rows; i++) {
+      const x = 1 + (i % cols) * (lado + 1);
+      const y = 1 + ((i / cols) | 0) * (lado + 1);
+      const c = px[i] || papel;
+      cx.fillStyle = c;
+      cx.fillRect(x, y, lado, lado);
+      if (conNumeros) {
+        cx.fillStyle = tinta(c);
+        cx.fillText(i, x + lado / 2, y + lado / 2);
+      }
+    }
+    return cv;
+  }
+
+  $("descargar").addEventListener("click", () => {
+    dibujarPNG().toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rejilla-${cols}x${rows}.png`;
+      a.click();
+      // revocar en el mismo tick le quita el blob a la descarga a medio empezar
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, "image/png");
+  });
+
+  $("vaciar").addEventListener("click", () => {
+    px.fill(null);
+    for (let i = 0; i < px.length; i++) vestir(i);
+    leer(foco);
+  });
+
+  chkNums.addEventListener("change", () => {
+    lienzo.classList.toggle("apagada", !chkNums.checked);
+    nota.hidden = !(lienzo.classList.contains("muda") && chkNums.checked);
+  });
+
+  function controles(ver) {
+    document.body.classList.toggle("sin-controles", !ver);
+    // sin la portada ni el panel, la página se acorta de golpe: si se queda con
+    // el scroll de antes, la rejilla aparece cortada por arriba
+    if (!ver) window.scrollTo({ top: 0 });
+    // el alto disponible cambió: la rejilla tiene que volver a medirse
+    requestAnimationFrame(medir);
+  }
+  $("ocultar").addEventListener("click", () => controles(false));
+  $("volver").addEventListener("click", () => { controles(true); $("ocultar").focus(); });
+
+  document.addEventListener("keydown", e => {
+    // dentro de un campo, 'c' es una letra y no un atajo
+    if (e.target.matches("input, textarea")) return;
+    if (e.key === "c" || e.key === "C") controles(document.body.classList.contains("sin-controles"));
+    else if (e.key === "Escape") controles(true);
+  });
+
+  /* ---------- arranque ---------- */
+  construir(cols, rows);
+  marcarMuestra();
+})();
+</script>
+</body>
+</html>

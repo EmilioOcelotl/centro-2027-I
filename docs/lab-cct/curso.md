@@ -69,12 +69,13 @@ sesiones:
       - "Puntualidad y tolerancia"
       - "Texturas y Hydra. Exploración de sketches existentes y generadores básicos"
       - "Siguiente paso: modulaciones"
-      - "Proyección sobre la pared"
       - "Actividad: Descripción de la textura ¿dónde la podríamos proyectar?"
   - n: 2
     titulo: "Superficie y luz"
     tool: "minimapper"
     desc:
+      - "Exploración con hydra y módulos personalizados" 
+      - "Proyección sobre la pared"
       - "Qué es el videomapping. Proyección como material de interiores"
       - "Referentes: proyección sobre superficies no planas"
       - "Práctica: dibujar quads, arrastrar vértices"

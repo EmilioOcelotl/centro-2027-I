@@ -68,7 +68,11 @@ sesiones:
     tool: "Papel o dispositivo para dibujar"
     desc:
       - "Pixeles y texturas"
-      - "Actividad: dibujar el patrón de una textura digital. ¿Qué características tiene?"
+      # un punto de 'desc' admite {texto, url} cuando hay a dónde ir
+      - {texto: "Actividad: rejilla de pixeles", url: "pixeles/"}
+      - "Actividad: dibujar el patrón de una textura digital." 
+      - "¿Qué características tiene? ¿Cómo podrían describirla?"
+      - "¿En dónde se imaginan que podría existir esta textura? Superficies, objetos, espacios"
       - "Conformación de equipos y primer acercamiento al proyecto parcial: el reto"
   - n: 3
     titulo: "Vectores"
