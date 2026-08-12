@@ -65,14 +65,16 @@ sesiones:
       - "Componentes con los que estaremos trabajando: software, placas, sensores y actuadores"
       - {texto: "Actividad: Generar cuenta en Tinkercad y explorar algún ejemplo", url: "https://www.tinkercad.com/"}
   - n: 2
-    titulo: "Primeros pasos: placas y simulación"
+    titulo: "Primeros pasos: placas, simulación y encendido de LED"
     tool: "Tinkercad"
     desc:
-      - "Programación por bloques y código escrito: facilidad y flexibilidad"
+      - "¿Qué han revisado en la otra clase?"
+      - "Componentes requeridos"
+      - "Palabras clave que pueden servir para buscar referentes para esta clase"
       - "Placas con las que trabajaremos: Arduino, LilyPad y Nano"
-      - "Diferencias y usos (por ejemplo, WiFi y Bluetooth)"
-      - "Otras placas y usos específicos"
-      - "Arduino Nano en Wokwi: primer programa"
+      - "Arduino Uno en Tinkerpad"
+      - "Encendido de LED"
+      - "¿Podrían imaginar esto en un circuito suave, una prenda, o cualquier otro proyecto?"
   - n: 3
     titulo: "Arduino y circuitos"
     tool: "Wokwi"
