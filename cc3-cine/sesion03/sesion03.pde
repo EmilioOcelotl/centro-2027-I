@@ -17,6 +17,7 @@ int contador = 0;   // en qué columna escribe el slitscan
 
 void setup() {
   size(1000, 300);
+  pixelDensity(1);   // la rejilla mide width * height en todas las máquinas
   background(0);
 
   camara = createImage(width, height, RGB);   // negro hasta que llegue la cámara

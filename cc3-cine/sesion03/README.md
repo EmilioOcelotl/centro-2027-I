@@ -59,7 +59,7 @@ del código: en macOS, `Preferencias del Sistema > Privacidad y seguridad >
 Cámara`, dando permiso a Processing. Los ejercicios 1 y 2 funcionan igual sin
 cámara.
 
-## Dos cosas que suelen confundir
+## Tres cosas que suelen confundir
 
 **El slitscan tarda en llenarse.** Avanza una columna por cuadro sobre una
 ventana de 1000 px: son unos 30 segundos hasta ver la pantalla completa, y los
@@ -69,6 +69,23 @@ agregar al final de `draw()`:
 ```java
 image(cam, 0, 0, 250, 100);
 ```
+
+**En Mac la imagen sale recortada y duplicada** si falta `pixelDensity(1)`.
+En una pantalla Retina el búfer real de la ventana mide el doble de cada lado:
+2000 × 600 en vez de 1000 × 300. La cuenta `i = x + y * width` sigue avanzando
+de 1000 en 1000 sobre renglones que ahora miden 2000, así que los renglones
+pares caen en la mitad izquierda y los impares en la derecha —dos copias a
+media anchura— y los 300 renglones lógicos sólo llenan 150 de los 600 físicos
+—una franja arriba y el resto negro. Por eso el sketch fija la densidad en 1:
+
+```java
+size(1000, 300);
+pixelDensity(1);   // la rejilla mide width * height en todas las máquinas
+```
+
+Así `pixels[]` mide `width * height` en cualquier computadora y la rejilla de
+papel sigue siendo la misma rejilla. Para verlo: `println(width, pixelWidth)`
+imprime `1000 1000` con la línea puesta y `1000 2000` sin ella.
 
 **La cámara se copia al tamaño de la ventana** en cuanto llega cada cuadro:
 
@@ -100,7 +117,8 @@ como video, y `copy()` como atajo de todo el `for`.
 
 - [`pixels[]`](https://processing.org/reference/pixels.html) ·
   [`loadPixels()`](https://processing.org/reference/loadPixels_.html) ·
-  [`updatePixels()`](https://processing.org/reference/updatePixels_.html)
+  [`updatePixels()`](https://processing.org/reference/updatePixels_.html) ·
+  [`pixelDensity()`](https://processing.org/reference/pixelDensity_.html)
 - [`map()`](https://processing.org/reference/map_.html) ·
   [`lerpColor()`](https://processing.org/reference/lerpColor_.html)
 - [`copy()`](https://processing.org/reference/copy_.html) ·
