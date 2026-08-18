@@ -75,15 +75,14 @@ sesiones:
       - "¿En dónde se imaginan que podría existir esta textura? Superficies, objetos, espacios"
       - "Conformación de equipos y primer acercamiento al proyecto parcial: el reto"
   - n: 3
-    titulo: "Vectores"
+    titulo: "Imágenes en Processing. Primeros pasos"
     tool: "Processing"
     desc:
-      - "¿Qué es un vector? Dirección y magnitud"
-      - "Atributos: x, y, z"
-      - "Traslación y dirección: suma y resta"
-      - "Escala: multiplicación y división"
-      - "Calcular la magnitud: teorema de Pitágoras"
-      - "Normalización"
+      - "En la primera parte vamos a pensar: ¿Qué necesitamos para los proyectos que planteamos?"
+      - "Texturas, imágenes, colores, sonidos, textos."
+      - "En la segunda parte vamos a recordar cómo funciona Processing."
+      - "Adicionalmente vamos a probar un primer código para cargar imágenes que nos va a servir más adelante"
+      - {texto: "Referencia: loadImage()", url: "https://processing.org/reference/loadImage_.html"}
   - n: 4
     titulo: "Asesoría"
     tool: ""
