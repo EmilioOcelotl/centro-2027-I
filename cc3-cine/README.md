@@ -7,7 +7,7 @@ El programa, el calendario y las 16 sesiones viven en
 
 | Carpeta | Sesión | Contenido |
 |---|---|---|
-| [`sesion03/`](sesion03/) | 03 | Iteraciones y pixeles: color sólido, gradiente y slitscan |
+| [`sesion03/`](sesion03/) | 03 | Iteraciones y pixeles: color sólido, gradiente y slitscan. Un solo sketch con los tres ejercicios |
 
 ## Cómo abrir un sketch
 
@@ -16,5 +16,5 @@ Cada carpeta con un `.pde` adentro es un sketch de Processing: se abre con
 carpeta y el del archivo tienen que coincidir; si se renombra uno hay que
 renombrar el otro.
 
-También se puede copiar el código desde el `README.md` de cada sesión y
-pegarlo en un sketch vacío.
+También se puede abrir el `.pde` en GitHub, copiar todo el contenido y pegarlo
+en un sketch vacío.
