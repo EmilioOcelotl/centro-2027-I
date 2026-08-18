@@ -79,6 +79,7 @@ sesiones:
     titulo: "Iteraciones y pixeles: color sólido y gradiente"
     tool: "Processing"
     desc:
+      - "¿Qué necesitamos para los proyectos que estamos proponiendo?"
       - "Primero vemos a dónde vamos a llegar: un slitscan corriendo"
       - "Retomar Processing: setup, draw y size"
       - "Ejercicio de color sólido: dos iteraciones y la lista de pixeles"
