@@ -86,7 +86,7 @@ sesiones:
       - "La rejilla que numeramos en la primera sesión, ahora en código: i = x + y * width"
       - "Ejercicio de gradiente: dos colores definidos en variables, uno de cada lado del canvas"
       - "Leer pixeles de la cámara: una columna, y de ahí el slitscan"
-      - {texto: "Código de la sesión", url: "https://github.com/EmilioOcelotl/centro-2027-I/tree/main/cc3-cine/sesion03"}
+      - {texto: "Código de la sesión: sesion03.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion03/sesion03.pde"}
       - {texto: "Referencia: pixels[]", url: "https://processing.org/reference/pixels.html"}
   - n: 4
     titulo: "Asesoría"
