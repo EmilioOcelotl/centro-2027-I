@@ -49,9 +49,9 @@ void draw() {
       //pixels[i] = izquierda;                                                // 1 · sólido
       //pixels[i] = lerpColor(izquierda, derecha, map(x, 0, width, 0, 1));  // 2 · gradiente
       //pixels[i] = camara.pixels[x + y * width];   // == camara.pixels[i]
-      //if (x == contador) {
-      //  pixels[i] = camara.pixels[width/2 + y * width];  // 3 · slitscan
-      //}
+      if (x == contador) {
+        pixels[i] = camara.pixels[width/2 + y * width];  // 3 · slitscan
+      }
     }
   }
 
