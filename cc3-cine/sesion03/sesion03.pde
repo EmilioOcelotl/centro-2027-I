@@ -52,41 +52,13 @@ void draw() {
       if (x == contador) {
         pixels[i] = camara.pixels[width/2 + y * width];  // 3 · slitscan
       }
-
     }
   }
 
   updatePixels();                        // cierra pixels[] y lo manda a pantalla
 
   contador = contador + 1;               // el slitscan avanza una columna por cuadro
-  if (contador >= width) contador = 0;
+  if (contador >= width) {
+    contador = 0;
+  }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PARA PROBAR
-//
-// 1 · sólido — cambiar la línea del ejercicio por alguna de estas:
-//   pixels[i] = color(x, y, 100);                 // el color depende del lugar
-//   pixels[i] = color(random(255));               // ruido
-//   if (x % 20 < 10) pixels[i] = izquierda;       // franjas verticales
-//   if ((x + y) % 2 == 0) pixels[i] = izquierda;  // tablero de ajedrez
-//
-// 2 · gradiente — la dirección está en el último argumento de lerpColor(),
-//     que es "qué tan lejos estamos", de 0 a 1:
-//   map(y, 0, height, 0, 1)                       // vertical
-//   map(x + y, 0, width + height, 0, 1)           // diagonal
-//
-// 3 · slitscan — la columna que se lee es el width/2 de adentro del corchete:
-//   camara.pixels[100 + y * width]                     // otra columna fija
-//   camara.pixels[constrain(mouseX, 0, width-1) + y * width]   // con el mouse
-//
-//   Se tarda medio minuto en llenar la ventana. Para ver la cámara mientras
-//   tanto, al final de draw():   image(cam, 0, 0, 250, 100);
-//   Para que avance más rápido:  contador = contador + 4;
-//   Para guardar la secuencia y montarla como video, al final de draw():
-//     saveFrame("cuadros/########.png");
-//
-// EL ATAJO — copy() hace en una línea el for completo del ejercicio 3, y de
-// paso estira la tira. Por dentro está haciendo justo lo que escribimos:
-// leer un índice y escribir otro, uno por uno.
-//   copy(cam, cam.width/2, 0, 1, cam.height, contador, 0, 1, height);
