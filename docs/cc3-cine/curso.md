@@ -76,20 +76,23 @@ sesiones:
       - "Pixeles, fotogramas y texturas"
       - "Conformación de equipos y primer acercamiento al proyecto parcial."
   - n: 3
-    titulo: "Vectores"
+    titulo: "Iteraciones y pixeles: color sólido y gradiente"
     tool: "Processing"
     desc:
-      - "¿Qué es un vector? Dirección y magnitud"
-      - "Atributos: x, y, z"
-      - "Traslación y dirección: suma y resta"
-      - "Escala: multiplicación y división"
-      - "Calcular la magnitud: teorema de Pitágoras"
-      - "Normalización"
+      - "Primero vemos a dónde vamos a llegar: un slitscan corriendo"
+      - "Retomar Processing: setup, draw y size"
+      - "Ejercicio de color sólido: dos iteraciones y la lista de pixeles"
+      - "La rejilla que numeramos en la primera sesión, ahora en código: i = x + y * width"
+      - "Ejercicio de gradiente: dos colores definidos en variables, uno de cada lado del canvas"
+      - "Leer pixeles de la cámara: una columna, y de ahí el slitscan"
+      - {texto: "Código de la sesión", url: "https://github.com/EmilioOcelotl/centro-2027-I/tree/main/cc3-cine/sesion03"}
+      - {texto: "Referencia: pixels[]", url: "https://processing.org/reference/pixels.html"}
   - n: 4
     titulo: "Asesoría"
     tool: ""
     desc:
-      - "Revisión de ejercicios con vectores"
+      - "Revisión de los ejercicios de color sólido, gradiente y slitscan"
+      - "Variaciones propias sobre el slitscan y primeras decisiones de imagen"
   - n: 5
     titulo: "Introducción a la programación orientada a objetos"
     tool: "Processing"
