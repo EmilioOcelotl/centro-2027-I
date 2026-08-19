@@ -80,15 +80,14 @@ sesiones:
     tool: "Tinkercad"
     desc:
       - "¿Qué han revisado en la otra clase?"
-      - "Repaso del encendido de LED: el circuito hace algo, pero todavía no se entera de nada"
-      - "Botón: entrada digital, dos estados"
-      - "Potenciómetro: entrada analógica, un rango de valores"
-      - "Monitor serial: ver los números que entran"
-      - "Agregar un LED a los dos ejemplos de lectura: variable para guardar el valor, condicional para el botón y mapeo para el potenciómetro"
-      - "El potenciómetro es una resistencia variable, igual que el hilo conductor, la tela o la presión"
-      - "Actividad: investigación individual sobre sensores. ¿Qué detecta? ¿Con qué sensor? ¿Qué responde? Entregar un documento sencillo con el resultado"
-      - "Puesta en común: ¿alguno de estos sensores se podría relacionar con una prenda interactiva? Todavía sin aterrizar"
+      - "Repaso del encendido de LED. Escritura sin lectura"
+      - "Botón comoentrada digital, dos estados"
+      - "Potenciómetro como entrada analógica, un rango de valores"
+      - "Monitor serial para ver los números que entran"
+      - "Agregar un LED a los dos ejemplos de lectura con variable para guardar el valor, condicional para el botón y mapeo para el potenciómetro"
+      - "Actividad: investigación individual sobre sensores. 
       - "¿Qué se puede medir del cuerpo o del ambiente que le importe a tu proyecto?"
+      - "¿Qué detecta? ¿Con qué sensor? ¿Qué responde? Entregar un documento sencillo con el resultado"
   - n: 4
     titulo: "Sensores, rangos y umbrales"
     tool: "Tinkercad"
