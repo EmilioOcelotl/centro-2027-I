@@ -40,7 +40,7 @@ calendario:
 # 4 · ESTRUCTURA — define la forma del diagrama y la evaluación
 estructura:
   iteraciones:
-    - {nombre: "Circuitos, simulación y movimiento", sesiones: [1, 8],  nota: "De la simulación en Wokwi al circuito físico: componentes, sensores, servos, motores de pasos y alimentación."}
+    - {nombre: "Circuitos, simulación y movimiento", sesiones: [1, 8],  nota: "De la simulación en Tinkercad al circuito físico: componentes, sensores, servos, motores de pasos y alimentación."}
     - {nombre: "Datos, interfaz y proyecto final",   sesiones: [9, 16], nota: "Comunicación serial, calibración y prototipado web, e iteración del proyecto compartido con Diseño de moda y tecnología portable."}
   entregas:                         # caen en una sesión y cierran la iteración
     - {sesion: 8,  etiqueta: "Proyecto parcial", peso: 30}
@@ -72,24 +72,30 @@ sesiones:
       - "Componentes requeridos"
       - "Palabras clave que pueden servir para buscar referentes para esta clase"
       - "Placas con las que trabajaremos: Arduino, LilyPad y Nano"
-      - "Arduino Uno en Tinkerpad"
+      - "Arduino Uno en Tinkercad"
       - "Encendido de LED"
       - "¿Podrían imaginar esto en un circuito suave, una prenda, o cualquier otro proyecto?"
   - n: 3
-    titulo: "Arduino y circuitos"
-    tool: "Wokwi"
+    titulo: "Entradas: botón, potenciómetro y sensores"
+    tool: "Tinkercad"
     desc:
-      - "Componentes básicos: LEDs, resistencias, protoboard y Arduino Nano"
-      - "Repaso de color e intensidad"
-      - "Programación de un circuito sencillo"
-      - "Introducción a la escritura de programas con aplicaciones de IA generativa"
-      - "Botones e interruptores"
+      - "¿Qué han revisado en la otra clase?"
+      - "Repaso del encendido de LED: el circuito hace algo, pero todavía no se entera de nada"
+      - "Botón: entrada digital, dos estados"
+      - "Potenciómetro: entrada analógica, un rango de valores"
+      - "Monitor serial: ver los números que entran"
+      - "El potenciómetro es una resistencia variable, igual que el hilo conductor, la tela o la presión"
+      - "Actividad: investigación individual sobre sensores. ¿Qué detecta? ¿Con qué sensor? ¿Qué responde? Entregar un documento sencillo con el resultado"
+      - "Puesta en común: ¿alguno de estos sensores se podría relacionar con una prenda interactiva? Todavía sin aterrizar"
+      - "¿Qué se puede medir del cuerpo o del ambiente que le importe a tu proyecto?"
   - n: 4
     titulo: "Sensores, rangos y umbrales"
-    tool: "Wokwi"
+    tool: "Tinkercad"
     desc:
-      - "Programación de sensores en Wokwi"
-      - "Rangos, umbrales (if/else) y condiciones para la lectura de datos"
+      - "Repaso de la investigación: los sensores que aparecieron"
+      - "Programación de sensores en Tinkercad"
+      - "Rangos y calibración: el mínimo y el máximo de cada sensor"
+      - "Umbrales (if/else): a partir de qué valor pasa algo"
       - "Impresión en consola"
       - "Descripción y prueba de un programa hecho con IA generativa"
   - n: 5
@@ -177,7 +183,8 @@ sesiones:
 #     Cada entrada es una cadena, o un mapa {texto, url} si hay a dónde ir.
 #     Sin 'referencias' —o con la lista vacía— la sección no aparece.
 referencias:
-  - {texto: "Wokwi — simulador de Arduino en el navegador", url: "https://wokwi.com"}
+  - {texto: "Tinkercad — simulador de circuitos en el navegador", url: "https://www.tinkercad.com/"}
+  - {texto: "Wokwi — otro simulador, con placas que Tinkercad no incluye (Nano, ESP32)", url: "https://wokwi.com"}
   - {texto: "Arduino — referencia del lenguaje", url: "https://docs.arduino.cc/language-reference/"}
   - {texto: "Unit Electronics (tienda)", url: "https://uelectronics.com"}
   - {texto: "Steren (tienda)", url: "https://www.steren.com.mx"}
@@ -187,7 +194,7 @@ referencias:
 colofon:
   - titulo: "Herramientas"
     texto:
-      - "Wokwi para simular circuitos antes de armarlos."
+      - "Tinkercad para simular circuitos antes de armarlos."
       - "Arduino IDE para programar Arduino, LilyPad y Nano."
       - "Brightspace para la comunicación y la evaluación."
   - titulo: "Trabajo independiente"
