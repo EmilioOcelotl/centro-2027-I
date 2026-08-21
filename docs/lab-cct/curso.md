@@ -71,6 +71,11 @@ sesiones:
       - "Siguiente paso: modulaciones"
       - "Actividad: Descripción de la textura ¿dónde la podríamos proyectar?"
   - n: 2
+    titulo: "Cambio en clase 2"
+    tool: ""
+    desc:
+      - "Pendiente reagendar o encontrar una solución"
+  - n: 3
     titulo: "Cámara y caleidoscopio"
     tool: "Hydra"
     desc:
@@ -81,15 +86,6 @@ sesiones:
       - "Captura de pantalla y subir a brightspace"
       - "Investigación:¿Qué es videomapping?"
       - "Pensar en tres posibles proyectos"
-  - n: 3
-    titulo: "Síntesis: el código que importa"
-    tool: "Hydra en minimapper"
-    desc:
-      - "noise, voronoi, shape: fuentes de imagen generativa"
-      - "Color y blends"
-      - "modulate: una imagen deformando a otra"
-      - "Un output por quad (o0–o3) y qué pasa cuando dos quads comparten salida"
-      - "Ejercicio 1: una textura propia sobre dos superficies"
   - n: 4
     titulo: "Fuentes y formas libres"
     tool: "minimapper"
