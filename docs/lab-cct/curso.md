@@ -74,7 +74,7 @@ sesiones:
     titulo: "Cambio en clase 2"
     tool: ""
     desc:
-      - "Pendiente reagendar o encontrar una solución"
+      - "Pendiente reagendar o encontrar una solución."
   - n: 3
     titulo: "Cámara y caleidoscopio"
     tool: "Hydra"
@@ -90,10 +90,10 @@ sesiones:
     titulo: "Fuentes y formas libres"
     tool: "minimapper"
     desc:
-      - "Video, imagen, cámara y carrusel como fuente de un quad"
-      - "Archivo local contra URL: qué se guarda y qué no"
-      - "Formas libres: polígonos para superficies que no son rectángulos"
-      - "Mapeo sobre un objeto traído a clase"
+      - "Definir que necesitamos, escala y opciones de los proyectos"
+      - "Minimapper como una opción para los proyectos de la primera iteración"
+      - "Tipos de fuentes: hydra, video, imagen, cámara, carrusel"
+      - "Exploración libre en minimapper"
   - n: 5
     titulo: "Definir el proyecto parcial"
     tool: "Papel y plantilla"
@@ -194,6 +194,7 @@ referencias:
   - {texto: "minimapper — videomapping generativo en el navegador", url: "https://emilioocelotl.github.io/minimapper/"}
   - {texto: "Hydra — síntesis visual en vivo", url: "https://hydra.ojack.xyz/"}
   - {texto: "Hydra: lista de funciones", url: "https://hydra.ojack.xyz/api/"}
+  - {texto: "Record3D — captura 3D con LiDAR desde iPhone o iPad", url: "https://record3d.app/"}
   - {texto: "TouchDesigner (licencia no comercial)", url: "https://derivative.ca/download"}
   - {texto: "Kantan Mapper — mapeo de superficies en TouchDesigner", url: "https://derivative.ca/UserGuide/KantanMapper"}
 

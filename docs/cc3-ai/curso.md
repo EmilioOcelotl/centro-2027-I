@@ -84,10 +84,15 @@ sesiones:
       - "Adicionalmente vamos a probar un primer código para cargar imágenes que nos va a servir más adelante"
       - {texto: "Referencia: loadImage()", url: "https://processing.org/reference/loadImage_.html"}
   - n: 4
-    titulo: "Asesoría"
+    titulo: "Imágenes y pixeles en Processing"
     tool: ""
     desc:
-      - "Revisión de ejercicios con vectores"
+      - "Repaso de lo que vimos. Carga y despliegue de una imagen en Processing."
+      - "Vamos a modificar esa imagen con tint y si da tiempo, con otros efectos."
+      - "Bloque de pixeles listo para copiar y pegar."
+      - "Importante: pixelDensity."
+      - "Modificaciones con pixeles y exploración libre."
+      - "Uso de IA, revisión de proyectos y preparación para los prototipos."
   - n: 5
     titulo: "Introducción a la programación orientada a objetos"
     tool: "Processing"
