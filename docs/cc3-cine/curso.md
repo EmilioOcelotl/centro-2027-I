@@ -6,9 +6,8 @@
 #
 #  PROVISIONAL (3 ago 2026): mismo programa oficial de CENTRO que cc3-ai
 #  —"Programación orientada a objetos en el diseño"—, con los ejercicios
-#  aterrizados en cine. Los 8 temas del contenido temático van en las sesiones
-#  impares y las 8 asesorías en las pares. Está pendiente releer las 16 como
-#  doble diamante, igual que en cc3-ai.
+#  aterrizados en cine. Está pendiente releer las 16 como doble diamante,
+#  igual que en cc3-ai.
 # ─────────────────────────────────────────────────────────────
 
 # 1 · IDENTIDAD
@@ -41,7 +40,7 @@ calendario:
 # 4 · ESTRUCTURA — define la forma del diagrama y la evaluación
 estructura:
   iteraciones:
-    - {nombre: "Pixeles e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos y manipulación de imagen fija."}
+    - {nombre: "Pixeles e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos, manipulación de imagen fija y una primera entrada al audio."}
     - {nombre: "Imágenes en movimiento",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
   entregas:                         # caen en una sesión y cierran la iteración
     - {sesion: 8,  etiqueta: "Trabajo parcial", peso: 30}
@@ -89,11 +88,20 @@ sesiones:
       - {texto: "Código de la sesión: sesion03.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion03/sesion03.pde"}
       - {texto: "Referencia: pixels[]", url: "https://processing.org/reference/pixels.html"}
   - n: 4
-    titulo: "Asesoría"
-    tool: ""
+    titulo: "Exploración libre con el micrófono y Hydra"
+    tool: "Hydra"
     desc:
-      - "Revisión de los ejercicios de color sólido, gradiente y slitscan"
-      - "Variaciones propias sobre el slitscan y primeras decisiones de imagen"
+      - "Comentario general sobre audio y las computadoras."
+      - "Transducciones como el eje de las modificaciones que estamos haciendo."
+      - "Reproducción de muestras, síntesis y análisis de audio."
+      - "El micrófono como una señal de entrada que se puede analizar."
+      - "Transformada Rápida de Fourier y espectro"
+      - "Funciones de audio dentro de Hydra"
+      - "Ejercicio sencillo con fft"
+      - "Ejercicio libre usando la función fft en al menos un lugar."
+      - {texto: "Referencia: funciones de Hydra", url: "https://hydra.ojack.xyz/api/"}
+      - {texto: "Referencia: audioreactividad en Hydra (a.fft, setBins, setSmooth, setScale)", url: "https://hydra.ojack.xyz/docs/docs/learning/guides/audio/"}
+      - {texto: "Audio en Processing, para la sesión 15", url: "https://processing.org/tutorials/sound"}
   - n: 5
     titulo: "Introducción a la programación orientada a objetos"
     tool: "Processing"
