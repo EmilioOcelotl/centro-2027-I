@@ -92,12 +92,13 @@ sesiones:
     titulo: "Sensores, rangos y umbrales"
     tool: "Tinkercad"
     desc:
-      - "Repaso de la investigación: los sensores que aparecieron"
+      - "Configuración de equipos e ideas preliminares de proyectos"
+      - "Ssensores que aparecieron"
       - "Programación de sensores en Tinkercad"
       - "Rangos y calibración: el mínimo y el máximo de cada sensor"
       - "Umbrales (if/else): a partir de qué valor pasa algo"
       - "Impresión en consola"
-      - "Descripción y prueba de un programa hecho con IA generativa"
+      - "Equivalencias del programa con código escrito"
   - n: 5
     titulo: "Del simulador a la placa"
     tool: "Arduino IDE"
