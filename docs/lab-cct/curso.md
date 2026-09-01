@@ -87,13 +87,14 @@ sesiones:
       - "Investigación:¿Qué es videomapping?"
       - "Pensar en tres posibles proyectos"
   - n: 4
-    titulo: "Fuentes y formas libres"
+    titulo: "Fuentes y quad"
     tool: "minimapper"
     desc:
       - "Definir que necesitamos, escala y opciones de los proyectos"
       - "Minimapper como una opción para los proyectos de la primera iteración"
       - "Tipos de fuentes: hydra, video, imagen, cámara, carrusel"
       - "Exploración libre en minimapper"
+      - "Mapeo sobre objetos del salón de clase"
   - n: 5
     titulo: "Definir el proyecto parcial"
     tool: "Papel y plantilla"

@@ -103,16 +103,15 @@ sesiones:
       - {texto: "Referencia: audioreactividad en Hydra (a.fft, setBins, setSmooth, setScale)", url: "https://hydra.ojack.xyz/docs/docs/learning/guides/audio/"}
       - {texto: "Audio en Processing, para la sesión 15", url: "https://processing.org/tutorials/sound"}
   - n: 5
-    titulo: "Introducción a la programación orientada a objetos"
-    tool: "Processing"
+    titulo: "Objetivos del proyecto parcial y escritura de prompts"
+    tool: "Papel · IA generativa"
     desc:
-      - "Paradigma de la programación orientada a objetos"
-      - "Estructura y sintaxis de una clase"
-      - "Diagrama de clases"
-      - "Atributos y variables"
-      - "Constructor y constructor con argumentos"
-      - "Métodos y funciones"
-      - "Arreglos de objetos"
+      - "Actividad: definir los objetivos del proyecto parcial. Tienen jerarquía: cuál va primero y cuál depende de algo sin resolver."
+      - "Los primeros son estimaciones: ¿Qué es necesario?"
+      - "Investigación breve. de dónde viene la técnica que quieres usar y con qué se hace. Audio, sistema de partículas, modificaciones con datamosh."
+      - "Un objetivo por prompt. Es importante definir el resultado perceptual"
+      - "Una plantilla podría ser: entorno (Processing o Hydra), qué quiero, qué restrinjo, qué expongo como constantes, nombres de variables que digan lo que hacen y comentarios."
+      - "Los objetivos de cada equipo dicen qué entorno necesita."
   - n: 6
     titulo: "Asesoría"
     tool: ""
