@@ -106,12 +106,12 @@ sesiones:
     titulo: "Objetivos del proyecto parcial y escritura de prompts"
     tool: "Papel · IA generativa"
     desc:
-      - "Actividad: definir los objetivos del proyecto parcial. Tienen jerarquía: cuál va primero y cuál depende de algo sin resolver."
-      - "Los primeros son estimaciones: ¿Qué es necesario?"
+      - "Actividad: definir los objetivos del proyecto parcial. Tienen jerarquía cuál va primero y cuál depende de algo sin resolver."
+      - "Los primeros son estimaciones ¿Qué es necesario?"
       - "Investigación breve. de dónde viene la técnica que quieres usar y con qué se hace. Audio, sistema de partículas, modificaciones con datamosh."
       - "Un objetivo por prompt. Es importante definir el resultado perceptual"
       - "Una plantilla podría ser: entorno (Processing o Hydra), qué quiero, qué restrinjo, qué expongo como constantes, nombres de variables que digan lo que hacen y comentarios."
-      - "Los objetivos de cada equipo dicen qué entorno necesita."
+      - "Por favor consideren el entorno que va a necesitar su proyecto."
   - n: 6
     titulo: "Asesoría"
     tool: ""
