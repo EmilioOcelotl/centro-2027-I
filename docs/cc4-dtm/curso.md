@@ -90,7 +90,7 @@ sesiones:
       - "¿Qué detecta? ¿Con qué sensor? ¿Qué responde? Entregar un documento sencillo con el resultado"
   - n: 4
     titulo: "Sensores, rangos y umbrales"
-    tool: "Tinkercad"
+    tool: "Tinkercad + Arduino IDE"
     desc:
       - "Configuración de equipos e ideas preliminares de proyectos"
       - "Ssensores que aparecieron"
@@ -99,13 +99,19 @@ sesiones:
       - "Umbrales (if/else): a partir de qué valor pasa algo"
       - "Impresión en consola"
       - "Equivalencias del programa con código escrito"
+      - "Prueba con un circuito real"
   - n: 5
-    titulo: "Del simulador a la placa"
-    tool: "Arduino IDE"
+    titulo: "Valores continuos"
+    tool: "Tinkercad + Arduino IDE"
     desc:
-      - "Implementación de circuitos físicos y sensores"
-      - "Arduino IDE: configuración del flujo de trabajo y de las placas"
-      - "Escritura de programas con aplicaciones de IA generativa"
+      - "Actualización"
+      - "Recordatorio de instalación y uso de Arduino"
+      - "En esta ocasión vamos a hacer un programa con Tinkercad y luego lo vamos a pasar a Arduino"
+      - "Potenciometro y lectura de valores analógicos"
+      - "Sensores que podemos usar en el mundo físico"
+      - "Vamos a tener que adaptar de acuerdo a los sensores"
+      - "Prueba de valores con un led real"
+      - "Mientras hacemos las pruebas: describir el funcionamiento del proyecto parcial"
   - n: 6
     titulo: "Cómputo físico y movimiento"
     tool: "Arduino IDE"
