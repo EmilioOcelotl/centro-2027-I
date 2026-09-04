@@ -104,9 +104,8 @@ sesiones:
       - "Prueba con https://giphy.com/"
       - "De ese sitio podemos descargar los videos o poner el enlace directamente"
       - "Formato para el enlace: https://media.giphy.com/media/<ID>/giphy.mp4 donde id son los últimos caracteres del enlace original"
-      - "Proyecto parcial, elijan alguna opción de las que ya entregaron, todavía pueden cambiar"
-      - "En general, debe tener proyección"
-      - "Concepto, superficie, fuentes/texturas, interacción, riesgos"
+      - "Proyecto parcial, elijan alguna opción de las que ya platicaron. Si quieren cambiar, todavía están a tiempo"
+      - "Concepto, posición de la proyección, superficie, fuentes/texturas, interacción, riesgos"
   - n: 6
     titulo: "Tiempo y reacción"
     tool: "minimapper"
