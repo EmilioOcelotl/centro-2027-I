@@ -97,12 +97,16 @@ sesiones:
       - "Mapeo sobre objetos del salón de clase"
   - n: 5
     titulo: "Definir el proyecto parcial"
-    tool: "Papel y plantilla"
+    tool: "Papel + Minimapper"
     desc:
-      - "Conformación de equipos"
-      - "Plantilla de proyecto: concepto, superficie, fuente, interacción, riesgos"
-      - "Divergir sobre la fotografía del espacio elegido"
-      - "El reto: proyectar sobre una superficie real del campus"
+      - "Continuaremos explicando mini mapper"
+      - "Imágenes, videos y cámara"
+      - "Prueba con https://giphy.com/"
+      - "De ese sitio podemos descargar los videos o poner el enlace directamente"
+      - "Formato para el enlace: https://media.giphy.com/media/<ID>/giphy.mp4 donde id son los últimos caracteres del enlace original"
+      - "Proyecto parcial, elijan alguna opción de las que ya entregaron, todavía pueden cambiar"
+      - "En general, debe tener proyección"
+      - "Concepto, superficie, fuentes/texturas, interacción, riesgos"
   - n: 6
     titulo: "Tiempo y reacción"
     tool: "minimapper"
