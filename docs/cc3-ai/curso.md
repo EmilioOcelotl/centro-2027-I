@@ -113,12 +113,11 @@ sesiones:
       - "Asesorías y preparación del proyecto parcial"
       - "Vamos a revisar los códigos que están preparando"
   - n: 7
-    titulo: "Manipulación de imagen fija"
+    titulo: "Asesorías II"
     tool: "Processing"
     desc:
-      - "Algoritmo de ordenamiento"
-      - "Manipulación de imágenes por hue, brillo y RGB"
-      - "Pixels: loadPixels, pixels[], updatePixels"
+      - "Asesorías y preparación del proyecto parcial"
+      - "Vamos a revisar los códigos que están preparando"
   - n: 8
     titulo: "Entrega parcial"
     tool: ""
