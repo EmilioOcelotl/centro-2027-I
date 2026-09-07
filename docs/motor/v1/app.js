@@ -191,6 +191,22 @@ function todayIndex(dates) {
   return -1;
 }
 
+// ¿esta fecha es literalmente hoy?
+//
+// todayIndex señala «hoy o la próxima», que es lo que se quiere para destacar
+// un nodo o una tarjeta: la sesión vigente. Pero para ESCRIBIR la palabra hay
+// que preguntar aparte, y el motor no lo hacía: la cinta y la tarjeta decían
+// «hoy» sobre clases que todavía no ocurren —el lunes, los tres cursos que se
+// imparten martes, miércoles y viernes se anunciaban «hoy» a la vez—. La
+// portada sí distinguía, así que la misma página se contradecía: «Próxima el 8
+// sep» arriba y «hoy» abajo. Ahora las tres bocas preguntan aquí.
+function esHoy(d) {
+  if (!d) return false;
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const x = new Date(d); x.setHours(0, 0, 0, 0);
+  return x.getTime() === hoy.getTime();
+}
+
 // ubica cada descanso en el hueco entre las dos sesiones que lo rodean
 function computeBreaks(cal, sessions, dates) {
   if (!cal || !cal.descansos || !dates.length) return [];
@@ -319,10 +335,9 @@ function progress(dates, tIdx, n) {
   } else {
     done = tIdx;                                     // sesiones ya cursadas
     const falta = n - tIdx;
-    const next = new Date(dates[tIdx]); next.setHours(0, 0, 0, 0);
     // todayIndex apunta a la sesión de hoy o a la próxima: nombrar cuál de las dos
     // evita leer «sesión 12» como una sesión que ya ocurrió
-    const cuando = next.getTime() === today.getTime() ? "Hoy" : `Próxima el ${fmtDate(dates[tIdx])}`;
+    const cuando = esHoy(dates[tIdx]) ? "Hoy" : `Próxima el ${fmtDate(dates[tIdx])}`;
     line = `<strong>${cuando} · sesión ${pad2(tIdx + 1)} de ${n}</strong> · `
       + (falta === 1 ? "es la última" : `${falta} por cursar`);
   }
@@ -574,6 +589,7 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
     });
   }
 
+  let hoyK = null;                                   // índice local de la sesión de hoy
   local.forEach((s, k) => {
     const gi = idxByN[s.n];                          // índice global (fechas y hoy)
     const isDeliver = entregaDe[s.n] != null;
@@ -602,9 +618,11 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
     // palabra, que es prosa.
     if (isToday && !isDeliver) {
       svg.appendChild(svgEl("line", { class: "today-stem", x1: xi(k), y1: 0, x2: xi(k), y2: CY }));
-      const m = h("span", { class: "mark mark-today" + anchorOf(k) }, "Hoy");
+      const m = h("span", { class: "mark mark-today" + anchorOf(k) },
+        esHoy(dates[gi]) ? "Hoy" : "Próxima");
       m.style.left = leftOf(k);
       marks.appendChild(m);
+      hoyK = k;   // se recuerda para la cola de la marca alzada, más abajo
     }
     if (isDeliver) {
       const ent = entregaDe[s.n];
@@ -622,6 +640,38 @@ function buildIterRibbon(local, idxByN, entregaDe, dates, tIdx, breaks, H, STEP,
     item.style.left = leftOf(k);
     axis.appendChild(item);
   });
+
+  // Dos renglones cuando hoy y una entrega caen en la misma cinta.
+  //
+  // La tira de marcas era un solo renglón y sus rótulos se plantan por 'left'
+  // sin mirarse entre sí, así que se sobreimprimían: la etiqueta de la entrega
+  // va anclada al canto derecho y mide lo que mida su nombre —"Proyecto
+  // parcial · 30%" son 215 de los 704 px de la columna—, de modo que en las
+  // dos últimas sesiones de cada iteración "Hoy" caía dentro de ella y se leía
+  // HOYTRABAJO PARCIAL. No era casualidad de una semana: con 8+8 sesiones y la
+  // entrega en la última, choca en la 6, la 7 y la 15 de los cuatro cursos, y
+  // peor conforme se angosta la columna, porque la cinta se encoge hasta su
+  // piso mientras los rótulos siguen en rem.
+  //
+  // Se resuelve por estructura y no midiendo cajas: si las dos marcas
+  // coinciden en una cinta, la tira crece un renglón y hoy —que es la marca
+  // transitoria, la que se mueve cada semana— se sube. La entrega no se toca:
+  // es la permanente y la que cierra la figura. Al no depender de medir el
+  // texto rendido, vale igual en pantalla, en papel —donde @media print
+  // reescribe los anchos y una medida de pantalla llegaría equivocada— y con
+  // la letra agrandada, que es lo que pide WCAG 1.4.4.
+  if (hoyK != null && marks.querySelector(".mark-deliver")) {
+    marks.classList.add("dos-renglones");
+    marks.querySelector(".mark-today").classList.add("is-raised");
+    // La cola continúa el plumón del SVG a través del renglón que se abrió. Va
+    // en su propio span y no colgada del rótulo: cuando hoy es la primera
+    // sesión de la iteración el rótulo se ancla al canto de la columna (.at-start)
+    // y el nodo no está ahí, así que la cola necesita su propio 'left', el del
+    // nodo y no el del rótulo.
+    const tail = h("span", { class: "mark-stem" });
+    tail.style.left = (xi(hoyK) / VB_W * 100).toFixed(3) + "%";
+    marks.appendChild(tail);
+  }
 
   // Recesos dentro de la iteración: la muesca ya está hecha —la espina se trazó
   // por tramos—, así que aquí sólo van las dos barras que la rematan, que son
@@ -735,7 +785,8 @@ function makeCard(s, entrega, date, isToday) {
   const dateStr = date ? fmtDate(date) : "";
   const topRight = entrega
     ? `<span class="badge">${esc(entrega.etiqueta)}</span>`
-    : `<span>${dateStr || "Sesión"}${isToday ? ' · <span class="hoy">hoy</span>' : ""}</span>`;
+    : `<span>${dateStr || "Sesión"}${isToday
+        ? ` · <span class="cuando">${esHoy(date) ? "hoy" : "próxima"}</span>` : ""}</span>`;
   const numLine = entrega && dateStr ? `S${pad2(s.n)} · ${dateStr}` : `S${pad2(s.n)}`;
   card.innerHTML = `
     <div class="card-top"><span class="card-num">${numLine}</span>${topRight}</div>
