@@ -107,11 +107,11 @@ sesiones:
       - "Plantilla: entorno (Processing, canvas de 800x600), qué quiero (un comportamiento observable), restricción (sin librerías externas, máximo 40 líneas), qué expongo como constantes, nombres de variables que digan lo que hacen y comentarios."
       - "Si da tiempo: iniciar con la escritura de objetivos y su respectivo código" 
   - n: 6
-    titulo: "Asesoría"
-    tool: ""
+    titulo: "Asesorías"
+    tool: "Processing"
     desc:
-      - "Revisión de ejercicios con clases y arreglos de objetos"
-      - "Ejercicios aplicados a conceptos de la carrera"
+      - "Asesorías y preparación del proyecto parcial"
+      - "Vamos a revisar los códigos que están preparando"
   - n: 7
     titulo: "Manipulación de imagen fija"
     tool: "Processing"
