@@ -52,6 +52,8 @@ estructura:
 sesiones:
   # 'desc' admite una lista. Con varios puntos conviene la forma en bloque:
   # las claves de la sesión van sangradas a la columna que abre el guion.
+  # 'codigo' es aparte de 'desc': el código base de la sesión, el que se copia
+  # y se pega. Sale al pie de la tarjeta, frente a 'tool'. Ver la S3 de cine.
   - n: 1
     titulo: "Encuadre y pixeles"
     tool: "Hydra"
@@ -85,8 +87,8 @@ sesiones:
       - "La rejilla que numeramos en la primera sesión, ahora en código: i = x + y * width"
       - "Ejercicio de gradiente: dos colores definidos en variables, uno de cada lado del canvas"
       - "Leer pixeles de la cámara: una columna, y de ahí el slitscan"
-      - {texto: "Código de la sesión: sesion03.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion03/sesion03.pde"}
       - {texto: "Referencia: pixels[]", url: "https://processing.org/reference/pixels.html"}
+    codigo: {texto: "sesion03.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion03/sesion03.pde"}
   - n: 4
     titulo: "Exploración libre con el micrófono y Hydra"
     tool: "Hydra"
@@ -113,18 +115,17 @@ sesiones:
       - "Una plantilla podría ser: entorno (Processing o Hydra), qué quiero, qué restrinjo, qué expongo como constantes, nombres de variables que digan lo que hacen y comentarios."
       - "Por favor consideren el entorno que va a necesitar su proyecto."
   - n: 6
-    titulo: "Asesoría"
-    tool: ""
-    desc:
-      - "Revisión de ejercicios con clases y arreglos de objetos"
-      - "Ejercicios aplicados a conceptos de cine: encuadre, plano y punto de vista"
-  - n: 7
-    titulo: "Manipulación de imagen fija"
+    titulo: "Asesorías"
     tool: "Processing"
     desc:
-      - "Algoritmo de ordenamiento"
-      - "Manipulación de imágenes por hue, brillo y RGB"
-      - "Pixels: loadPixels, pixels[], updatePixels"
+      - "Asesorías y preparación del proyecto parcial"
+      - "Vamos a revisar los códigos que están preparando"
+  - n: 7
+    titulo: "Asesorías II"
+    tool: "Processing"
+    desc:
+      - "Asesorías y preparación del proyecto parcial"
+      - "Vamos a revisar los códigos que están preparando"
   - n: 8
     titulo: "Entrega parcial"
     tool: ""

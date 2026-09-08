@@ -793,8 +793,37 @@ function makeCard(s, entrega, date, isToday) {
     <h3>${esc(s.titulo)}</h3>
     ${entrega && entrega.peso ? `<p class="peso"><strong>${entrega.peso}%</strong> de la calificación</p>` : ""}
     ${prose(s.desc)}
-    ${s.tool && !entrega ? `<span class="tool">${esc(s.tool)}</span>` : ""}`;
+    ${cardFoot(s, entrega)}`;
   return card;
+}
+
+// El pie de la tarjeta es un par: con qué se trabaja —'tool', mudo— y de dónde
+// se parte —'codigo', que sí lleva a algún lado—. Sin ninguno de los dos el
+// envoltorio no sale, y la tarjeta queda como antes de que el par existiera.
+function cardFoot(s, entrega) {
+  const partes = [
+    s.tool && !entrega ? `<span class="tool">${esc(s.tool)}</span>` : "",
+    codeLink(s.codigo),
+  ].filter(x => x !== "");
+  return partes.length ? `<div class="card-foot">${partes.join("")}</div>` : "";
+}
+
+// 'codigo' nombra el código base de la sesión: el gist que se copia y se pega.
+// Admite una cadena, un mapa {texto, url} o una lista de cualquiera de los dos,
+// como el resto del frontmatter. El texto es el nombre del archivo —un id de
+// gist no se lee—, así que sin 'texto' cae en la URL y se nota que falta.
+function codeLink(v) {
+  if (v == null || v === "") return "";
+  const items = (Array.isArray(v) ? v : [v]).filter(x => x != null && x !== "");
+  return items.map(x => {
+    const isMap = x != null && typeof x === "object" && !Array.isArray(x);
+    const texto = isMap ? (x.texto || x.url) : x;
+    const url = isMap ? x.url : null;
+    if (texto == null || texto === "") return "";
+    return url
+      ? `<a class="codigo" href="${escAttr(url)}" rel="noopener">${esc(texto)}</a>`
+      : `<span class="codigo">${esc(texto)}</span>`;
+  }).filter(x => x !== "").join("");
 }
 
 /* ---------- referencias ---------- */

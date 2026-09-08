@@ -53,6 +53,8 @@ estructura:
 sesiones:
   # 'desc' admite una lista. Con varios puntos conviene la forma en bloque:
   # las claves de la sesión van sangradas a la columna que abre el guion.
+  # 'codigo' es aparte de 'desc': el código base de la sesión, el que se copia
+  # y se pega. Sale al pie de la tarjeta, frente a 'tool'. Ver la S3 de cine.
   - n: 1
     titulo: "Encuadre y pixeles"
     tool: "Hydra"
