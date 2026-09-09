@@ -115,12 +115,12 @@ sesiones:
       - "Prueba de valores con un led real"
       - "Mientras hacemos las pruebas: describir el funcionamiento del proyecto parcial"
   - n: 6
-    titulo: "Cómputo físico y movimiento"
+    titulo: "Asesorías"
     tool: "Arduino IDE"
     desc:
-      - "Servos y motores de pasos: activación con Arduino"
-      - "Revisión de casos e implementaciones"
-      - "Diferencias entre la simulación y el mundo físico"
+      - "En esta sesión vamos a revisar pendientes"
+      - "Recordatorio: no vamos a tener sesión la siguiente semana"
+      - "Podemos avanzar con los circuitos en esta clase"
   - n: 7
     titulo: "Servos, sensores y alimentación"
     tool: "Arduino IDE"
