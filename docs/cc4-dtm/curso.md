@@ -122,14 +122,12 @@ sesiones:
       - "Recordatorio: no vamos a tener sesión la siguiente semana"
       - "Podemos avanzar con los circuitos en esta clase"
   - n: 7
-    titulo: "Servos, sensores y alimentación"
+    titulo: "Asesorías II"
     tool: "Arduino IDE"
     desc:
-      - "Servos, controladores y alimentación (fuentes externas y voltaje)"
-      - "Sensores de movimiento"
-      - "Controles para variar el comportamiento de los motores"
-      - "Asesoría técnica"
-  - n: 8
+      - "Asesorías"
+      - "Mecanismos"
+      - "Si da tiempo, podemos empezar a hablar de servos y motores"
     titulo: "Motores de pasos y entrega parcial"
     tool: "Arduino IDE"
     desc:
