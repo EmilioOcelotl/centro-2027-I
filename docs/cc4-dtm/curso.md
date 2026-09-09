@@ -128,19 +128,11 @@ sesiones:
       - "Asesorías"
       - "Mecanismos"
       - "Si da tiempo, podemos empezar a hablar de servos y motores"
-    titulo: "Motores de pasos y entrega parcial"
-    tool: "Arduino IDE"
-    desc:
-      - "Motores de pasos, controladores y alimentación (baterías, pilas y voltaje)"
-      - "Controles"
-      - "Evaluación y diferencias entre motores"
-      - "Asesoría técnica"
-      - "Entrega parcial: ejercicio corto con microcontroladores y sensores en un prototipo de prenda interactiva"
   - n: 9
-    titulo: "Asesoría"
+    titulo: "Últimos detalles"
     tool: ""
     desc:
-      - "Regreso del receso: dónde quedó cada prototipo"
+      - "En esta sesión vamos a comentar los útimos detalles"
       - "Asesorías técnicas"
   - n: 10
     titulo: "Lectura, interpretación y estados"
