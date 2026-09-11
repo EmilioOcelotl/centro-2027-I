@@ -117,7 +117,7 @@ sesiones:
       - "Asesorías para el proyecto final"
       - "Piensen en escalar los proyectos, si es necesario"
       - "La siguiente semana vamos a iniciar con las proyecciones, no olviden los objetos necesarios"
-      - "Podemos hacer pruebas a partir de esta sesión, es importante que busquen / generen sus texturas"
+      - "Es importante que busquen / generen las texturas que van a usar"
   - n: 7
     titulo: "Ensayo con proyector"
     tool: "En sitio"
