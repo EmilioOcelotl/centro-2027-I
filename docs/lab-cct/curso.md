@@ -109,14 +109,15 @@ sesiones:
       - "Proyecto parcial, elijan alguna opción de las que ya platicaron. Si quieren cambiar, todavía están a tiempo"
       - "Concepto, posición de la proyección, superficie, fuentes/texturas, interacción, riesgos"
   - n: 6
-    titulo: "Tiempo y reacción"
+    titulo: "Asesorías / Escenas y modos de reproducción"
     tool: "minimapper"
     desc:
+      - "Recordatorio sobre asistencia"
       - "Escenas con duración y modos de reproducción"
-      - "Micrófono: detección de aplauso y avance de imágenes"
-      - "Audio reactivo con a.fft"
-      - "Prototipo en clase"
-      - "Ejercicio 2: una pieza de tres escenas"
+      - "Asesorías para el proyecto final"
+      - "Piensen en escalar los proyectos, si es necesario"
+      - "La siguiente semana vamos a iniciar con las proyecciones, no olviden los objetos necesarios"
+      - "Podemos hacer pruebas a partir de esta sesión, es importante que busquen / generen sus texturas"
   - n: 7
     titulo: "Ensayo con proyector"
     tool: "En sitio"
