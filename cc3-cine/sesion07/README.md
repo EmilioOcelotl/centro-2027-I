@@ -1,6 +1,13 @@
-# Sesión 07 · Encuadre con las manos
+# Sesión 07 · Encuadre con las manos y montaje
 
 **Código Creativo 3 · Cine · 2027-I**
+
+Dos archivos para pegar en [hydra.ojack.xyz](https://hydra.ojack.xyz/):
+**[`encuadre.js`](encuadre.js)**, el encuadre con las manos, y
+**[`montaje.js`](montaje.js)**, una lista de sketches que pasan uno tras otro
+con corte o con fundido. El montaje está [al final](#montaje).
+
+## Encuadre con las manos
 
 Hydra hace la imagen y ml5 lee las manos en la misma cámara. Con las dos manos
 se arma un encuadre, como el del director, y dentro del encuadre el sketch pasa
@@ -89,3 +96,71 @@ el arranque sólo corre la primera vez.
   [p5 dentro de Hydra](https://hydra.ojack.xyz/docs/docs/learning/extending-hydra/extending-hydra/)
 - [ml5 · handPose](https://docs.ml5js.org/#/reference/handpose): los 21 puntos,
   la punta del pulgar es el 4 y la del índice el 8
+
+---
+
+## Montaje
+
+**[`montaje.js`](montaje.js)** pasa por una lista de escenas de Hydra, cada
+una durante `duracion` segundos, y al terminar vuelve a empezar. Entre una y
+otra hay un fundido de `fundido` segundos; con `fundido = 0` el cambio es un
+corte directo. Se copia y se pega igual que el encuadre.
+
+### Cómo está armado
+
+```
+escena 1, 3, 5… ──► o1 ──┐
+                         ├─► blend(mezcla) ──► o0 (la pantalla)
+escena 2, 4, 6… ──► o2 ──┘
+```
+
+Hay dos buffers y la pantalla es la mezcla de los dos. En cada cambio la escena
+nueva entra al buffer que quedó libre y `mezcla` pasa de uno a otro. Con dos
+buffers alcanza para cualquier número de escenas.
+
+El reloj es el `update` de Hydra, la función que corre en cada cuadro. Como es
+una sola, volver a correr todo la reemplaza y no se acumulan relojes. Volver a
+correr todo también reinicia en la escena 1.
+
+### Las escenas
+
+Cada escena es una función que devuelve una cadena **sin `.out()`**. El
+arranque decide a qué buffer va:
+
+```js
+escenas = [
+  () => osc(20, 0.05, 1.2).kaleid(5),
+  () => noise(3, 0.1).color(1, 0.3, 0.6),
+  (yo) => src(yo).scale(1.01).blend(osc(8), 0.1),   // feedback
+]
+```
+
+Para agregar una escena se agrega una línea a la lista. Con el cursor dentro de
+la lista y `Ctrl+Enter` se cambian las escenas sin reiniciar el ciclo, y el
+cambio se ve en el siguiente corte.
+
+### Las perillas
+
+| variable | qué es |
+|---|---|
+| `duracion` | segundos por escena. Una lista, `[15, 4, 4, 20]`, da una duración a cada una |
+| `fundido` | segundos de la disolvencia. `0` es corte directo |
+| `siguiente()` | escrita sola y con `Ctrl+Enter`, salta a la siguiente escena |
+
+Las perillas se leen en cada cuadro: `fundido = 0` con `Ctrl+Enter` cambia el
+siguiente corte sin reiniciar.
+
+### Tres cosas que suelen confundir
+
+**El feedback va con `yo`, no con `o0`.** `o0` es la mezcla, no la escena. Una
+escena con feedback recibe su buffer como argumento y lo lee con `src(yo)`. Al
+entrar, el buffer todavía trae la escena de hace dos cortes, y por un momento
+se deja ver.
+
+**Una escena con un error se salta.** Si una escena tiene un error, el ciclo
+pasa a la siguiente y el error aparece en la consola. Si una escena nunca
+aparece, hay que revisarla.
+
+**`hush()` detiene todo.** Borra los buffers y también el reloj. Para volver a
+empezar se corre todo otra vez.
+
