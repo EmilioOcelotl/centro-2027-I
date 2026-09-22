@@ -126,7 +126,7 @@ sesiones:
     desc:
       - "Asesorías y preparación del proyecto parcial"
       - "Vamos a revisar los códigos que están preparando"
-    codigo: {texto: "encuadre.js", url: "encuadre/"}
+    codigo: {texto: "encuadre.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion07/encuadre.js"}
   - n: 8
     titulo: "Entrega parcial"
     tool: ""

@@ -7,10 +7,10 @@ se arma un encuadre, como el del director, y dentro del encuadre el sketch pasa
 por un filtro. Con una sola mano el filtro es un círculo entre el pulgar y el
 índice. Los puntos de las manos se ven siempre.
 
-Todo está en un archivo: **[`encuadre.js`](encuadre.js)**. Se abre ya cargado
-en Hydra desde
-[el enlace de la sesión](https://emilioocelotl.github.io/centro-2027-I/cc3-cine/encuadre/),
-o se copia y se pega en [hydra.ojack.xyz](https://hydra.ojack.xyz/).
+Todo está en un archivo: **[`encuadre.js`](encuadre.js)**. Se copia completo
+(el botón de copiar arriba a la derecha del archivo en GitHub) y se pega en
+[hydra.ojack.xyz](https://hydra.ojack.xyz/), en lugar del código que trae el
+editor.
 
 ## Cómo está armado
 
