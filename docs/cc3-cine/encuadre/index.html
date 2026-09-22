@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Encuadre con las manos · Código Creativo 3 · Cine</title>
+  <meta name="description" content="Abre el código base de la sesión 7 en el editor de Hydra." />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <style>
+    .envoltura { max-width: var(--readw); margin: 0 auto; padding: 3rem var(--pad); }
+  </style>
+</head>
+<body>
+  <main class="envoltura">
+    <p id="aviso">Abriendo el código en Hydra…</p>
+  </main>
+  <script>
+    // El código vive en un solo lugar, cc3-cine/sesion07/encuadre.js. Esta página
+    // lo lee del repo y abre Hydra con el código ya cargado: el editor acepta el
+    // código en la URL como base64 de encodeURIComponent. Cambiar el .js y hacer
+    // push basta; raw.githubusercontent tarda unos minutos en refrescar.
+    const archivo = "https://raw.githubusercontent.com/EmilioOcelotl/centro-2027-I/main/cc3-cine/sesion07/encuadre.js";
+    const enGitHub = "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion07/encuadre.js";
+
+    fetch(archivo)
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(codigo => {
+        const b64 = btoa(encodeURIComponent(codigo));
+        location.replace("https://hydra.ojack.xyz/?code=" + encodeURIComponent(b64));
+      })
+      .catch(() => {
+        document.getElementById("aviso").innerHTML =
+          `No se pudo cargar el código. Se puede copiar de <a href="${enGitHub}">encuadre.js</a> ` +
+          `y pegar en <a href="https://hydra.ojack.xyz/">hydra.ojack.xyz</a>.`;
+      });
+  </script>
+</body>
+</html>

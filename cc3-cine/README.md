@@ -8,6 +8,7 @@ El programa, el calendario y las 16 sesiones viven en
 | Carpeta | Sesión | Contenido |
 |---|---|---|
 | [`sesion03/`](sesion03/) | 03 | Iteraciones y pixeles: color sólido, gradiente y slitscan. Un solo sketch con los tres ejercicios |
+| [`sesion07/`](sesion07/) | 07 | Encuadre con las manos: Hydra, ml5 y p5. El encuadre de las dos manos filtra el sketch |
 
 ## Cómo abrir un sketch
 
