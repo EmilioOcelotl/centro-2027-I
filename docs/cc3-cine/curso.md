@@ -129,6 +129,7 @@ sesiones:
     codigo:
       - {texto: "encuadre.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion07/encuadre.js"}
       - {texto: "montaje.js",  url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion07/montaje.js"}
+      - {texto: "datamosh.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion07/datamosh.js"}
   - n: 8
     titulo: "Entrega parcial"
     tool: ""

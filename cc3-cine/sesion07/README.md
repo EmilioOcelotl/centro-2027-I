@@ -1,11 +1,14 @@
-# Sesión 07 · Encuadre con las manos y montaje
+# Sesión 07 · Encuadre, montaje y datamosh
 
 **Código Creativo 3 · Cine · 2027-I**
 
-Dos archivos para pegar en [hydra.ojack.xyz](https://hydra.ojack.xyz/):
-**[`encuadre.js`](encuadre.js)**, el encuadre con las manos, y
-**[`montaje.js`](montaje.js)**, una lista de sketches que pasan uno tras otro
-con corte o con fundido. El montaje está [al final](#montaje).
+Tres archivos para pegar en [hydra.ojack.xyz](https://hydra.ojack.xyz/):
+
+- **[`encuadre.js`](encuadre.js)**: el encuadre con las manos.
+- **[`montaje.js`](montaje.js)**: una lista de sketches que pasan uno tras
+  otro con corte o con fundido. Ver [Montaje](#montaje).
+- **[`datamosh.js`](datamosh.js)**: la cámara pasa por un codificador de
+  video y se derrite. Ver [Datamosh](#datamosh).
 
 ## Encuadre con las manos
 
@@ -163,4 +166,65 @@ aparece, hay que revisarla.
 
 **`hush()` detiene todo.** Borra los buffers y también el reloj. Para volver a
 empezar se corre todo otra vez.
+
+---
+
+## Datamosh
+
+**[`datamosh.js`](datamosh.js)** pasa la cámara por un codificador de video
+con la librería [hydra-datamosh](https://emptyfla.sh/hydra-datamosh/). Se
+copia y se pega igual que los otros dos. Funciona en Chrome.
+
+### Qué es
+
+Un video comprimido casi no guarda imágenes completas. Guarda un cuadro limpio
+(*keyframe*) y después, cuadro por cuadro, sólo lo que se movió y hacia dónde.
+El datamosh rompe esa cadena: aquí cada cuadro de movimiento se aplica dos
+veces o más. El movimiento se suma sobre sí mismo, lo que se mueve arrastra
+los pixeles y lo que está quieto se queda. Un cuadro limpio borra todo.
+
+```
+cámara ──► s0 ──► lienzo 640 ──► VP8 ──► cada cuadro × rapidez ──► mosh
+                                  ▲
+                          limpiar(): cuadro limpio
+```
+
+### Las perillas
+
+| variable | qué es |
+|---|---|
+| `rapidez` | cuántas veces se aplica cada cuadro de movimiento. `1` es limpio, `2` ya se derrite |
+| `cada` | segundos entre cuadros limpios. `0` es nunca |
+| `limpiar()` | escrita sola y con `Ctrl+Enter`, mete un cuadro limpio al momento |
+| `pacman` | `true` para trabajar sin cámara: un pacman que va y viene entra en `s0`. Para cambiarla hay que recargar la página |
+
+Para ver el efecto hay que moverse: con la cámara quieta no pasa nada.
+Moverse lento y dejar el fondo quieto funciona mejor que moverse mucho.
+
+### El sketch
+
+`derretida()` es la cámara ya derretida y `camara()` es la cámara limpia. Las
+dos van en espejo y se combinan como cualquier fuente de Hydra:
+
+```js
+derretida().diff(camara())                      // lo que se separó de la cámara
+camara().modulate(derretida(), 0.2)             // el mosh como desplazamiento
+camara().layer(derretida().mask(shape(4, 0.5, 0.01)))   // sólo dentro de un cuadro
+```
+
+### Cuatro cosas que suelen confundir
+
+**Tarda en arrancar.** La primera vez espera el permiso de la cámara y la
+librería. Mientras tanto la pantalla no cambia.
+
+**Sin cámara.** Con `pacman = true` todo funciona igual, y `camara()` es el
+pacman limpio. El arranque corre una sola vez: para pasar de la cámara al
+pacman, o al revés, hay que recargar la página y pegar de nuevo.
+
+**Después de `hush()` hay que recargar.** `hush()` apaga la cámara y la fuente
+del mosh, y el arranque no se repite porque ya corrió una vez. Recargar la
+página y pegar de nuevo.
+
+**No se derrite.** Con `rapidez = 1` la imagen sale limpia, y con `cada = 1`
+no alcanza a derretirse. Si no se ve nada, probar `rapidez = 3` y `cada = 0`.
 
