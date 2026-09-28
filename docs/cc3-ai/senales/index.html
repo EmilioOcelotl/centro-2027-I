@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Señales · Código Creativo 3 · Arquitectura de Interiores</title>
+  <meta name="description" content="Sesión 09: sinusoide, ruido, modulación y micrófono, graficados en vivo." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <style>
+    /* La página hereda del motor la paleta, la tipografía y la medida de la
+       columna. Aquí sólo va lo que el motor no tiene: las gráficas, los
+       deslizadores y los colores de cada señal. El motor no se toca. */
+    :root {
+      --sine:  #0d7f7a;
+      --noise: #a86a12;
+      --mix:   #000000;
+      --mic:   #5b4fb3;
+    }
+
+    .envoltura { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+
+    .senal {
+      max-width: var(--readw);
+      margin: 0 auto;
+      padding: clamp(1.4rem, 4vw, 2rem) 0;
+      border-top: 1px solid var(--rule);
+    }
+    .senal h2 {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: clamp(1.3rem, 1.1rem + 1vw, 1.7rem);
+      line-height: 1.1;
+      margin: 0 0 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .senal h2 .muestra { width: 1.4rem; height: 0.3rem; flex: none; background: var(--c); }
+    .senal p { margin: 0 0 0.8rem; color: var(--ink-2); font-size: var(--fs-prosa); }
+    .formula, .hydra {
+      font-family: var(--mono);
+      font-size: var(--fs-sec);
+      color: var(--ink);
+      background: var(--paper-2);
+      padding: 0.45rem 0.65rem;
+      margin: 0 0 0.8rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .hydra { border-left: 3px solid var(--c); }
+    .hydra .rotulo {
+      display: block;
+      font-size: var(--fs-rotulo);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      margin-bottom: 0.2rem;
+    }
+
+    .grafica { border: 1px solid var(--rule); background: var(--paper); }
+    canvas { display: block; width: 100%; height: 180px; }
+
+    .deslizador { margin-top: 0.8rem; }
+    .deslizador label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: var(--mono);
+      font-size: var(--fs-sec);
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+    .deslizador output { font-variant-numeric: tabular-nums; }
+    input[type="range"] { width: 100%; accent-color: var(--c); margin: 0.2rem 0; }
+
+    .leyenda { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); margin-top: 0.4rem; }
+    .leyenda span { white-space: nowrap; margin-right: 1rem; }
+    .leyenda i { display: inline-block; width: 1rem; vertical-align: middle; border-top: 2px solid; margin-right: 0.35rem; }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: var(--fs-rotulo);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--ink);
+      padding: 0.42rem 0.8rem;
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--paper-2); }
+    .btn:disabled { opacity: 0.4; cursor: default; }
+    .fila { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 0.8rem; }
+    .estado { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); }
+    .estado[data-error] { color: var(--noise); }
+    .arriba { max-width: var(--readw); margin: 0 auto clamp(1rem, 3vw, 1.6rem); }
+
+    .pie {
+      max-width: var(--readw);
+      margin: 0 auto;
+      padding: clamp(1.6rem, 4vw, 2.4rem) 0 clamp(2.5rem, 6vw, 4rem);
+      border-top: 1px solid var(--rule);
+      font-size: var(--fs-sec);
+      color: var(--ink-2);
+    }
+    .pie p { margin: 0 0 0.6rem; }
+    .pie a { color: var(--ink); }
+    .pie code { font-family: var(--mono); color: var(--ink); }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <p class="eyebrow">Código Creativo 3 · Arquitectura de Interiores · Sesión 09</p>
+    <h1 class="title">Sinusoide, ruido, modulación y micrófono</h1>
+    <p class="lede">
+      Una señal periódica, una señal aleatoria suave, lo que pasa cuando una
+      controla la amplitud de la otra y una señal real que entra por el
+      micrófono. Mueve cada deslizador y mira cómo cambia la onda.
+    </p>
+  </header>
+
+  <main class="envoltura">
+    <div class="arriba">
+      <button id="play" type="button" class="btn">Pausar</button>
+    </div>
+
+    <section class="senal" style="--c:var(--sine)">
+      <h2><span class="muestra"></span>Onda sinusoidal</h2>
+      <div class="formula">s(t) = sen(2π · f · t)</div>
+      <p>Se repite exactamente cada 1/f segundos. La frecuencia dice cuántas vueltas caben en un segundo, que es lo que muestra la ventana.</p>
+      <div class="grafica"><canvas id="c1" aria-label="Gráfica de la onda sinusoidal"></canvas></div>
+      <div class="deslizador">
+        <label for="freq">Frecuencia <output id="freqOut"></output></label>
+        <input id="freq" type="range" min="0.5" max="16" step="0.5" value="4">
+      </div>
+      <div class="hydra"><span class="rotulo">En Hydra</span>osc(4, 0.1, 0).out()</div>
+      <p><code>osc</code> es esta misma sinusoide, pero tendida en la pantalla: cada franja clara es una cresta y cada franja oscura un valle. El primer número es la frecuencia.</p>
+    </section>
+
+    <section class="senal" style="--c:var(--noise)">
+      <h2><span class="muestra"></span>Ruido Perlin</h2>
+      <div class="formula">n(t) = A · perlin(k · t)</div>
+      <p>Valores al azar unidos con suavidad: cambia sin saltos pero nunca se repite. La amplitud A dice qué tan lejos se aleja del cero.</p>
+      <div class="grafica"><canvas id="c2" aria-label="Gráfica de ruido Perlin"></canvas></div>
+      <div class="deslizador">
+        <label for="amp">Amplitud <output id="ampOut"></output></label>
+        <input id="amp" type="range" min="0" max="1" step="0.01" value="0.8">
+      </div>
+      <div class="hydra"><span class="rotulo">En Hydra</span>noise(5, 0.1).out()</div>
+      <p><code>noise</code> es este ruido en dos dimensiones: manchas que se deforman sin repetirse. El primer número es k, cuántas variaciones caben.</p>
+    </section>
+
+    <section class="senal" style="--c:var(--mix)">
+      <h2><span class="muestra"></span>Modulación</h2>
+      <div class="formula">y(t) = s(t) · [(1 − m) + m · n(t)]</div>
+      <p>El ruido hace de envolvente de la sinusoide. Con m = 0 queda la sinusoide sola; con m = 1 es modulación en anillo: la sinusoide multiplicada por el ruido.</p>
+      <div class="grafica"><canvas id="c3" aria-label="Gráfica de la señal modulada"></canvas></div>
+      <div class="deslizador">
+        <label for="mix">Mezcla <output id="mixOut"></output></label>
+        <input id="mix" type="range" min="0" max="1" step="0.01" value="0.6">
+      </div>
+      <div class="leyenda">
+        <span><i style="border-color:var(--mix)"></i>señal modulada</span>
+        <span><i style="border-color:var(--sine);border-top-style:dashed"></i>envolvente ±[(1 − m) + m · n]</span>
+      </div>
+      <div class="hydra"><span class="rotulo">En Hydra</span>osc(4, 0.1, 0).mult(noise(5, 0.1), 0.6).out()
+osc(4, 0.1, 0).modulate(noise(5, 0.1), 0.2).out()</div>
+      <p><code>mult</code> es la cuenta de arriba: el segundo número es m. <code>modulate</code> es otra modulación: el ruido no cambia qué tan brillante es la onda sino dónde está, empuja los pixeles de lugar.</p>
+    </section>
+
+    <section class="senal" style="--c:var(--mic)">
+      <h2><span class="muestra"></span>Micrófono</h2>
+      <div class="formula">x(t) = G · mic(t)</div>
+      <p>Una señal real, en vivo. Silba, canta una nota larga o aplaude y compárala con las de arriba: ¿se parece más a la sinusoide o al ruido? La ganancia G amplifica lo que entra. Ojo: aquí la ventana es de 40 milésimas de segundo, no de un segundo.</p>
+      <div class="grafica"><canvas id="c4" aria-label="Forma de onda del micrófono"></canvas></div>
+      <div class="deslizador">
+        <label for="gain">Ganancia <output id="gainOut"></output></label>
+        <input id="gain" type="range" min="1" max="20" step="0.5" value="4">
+      </div>
+      <div class="fila">
+        <button id="micBtn" type="button" class="btn">Activar micrófono</button>
+        <span id="micStatus" class="estado" role="status">Micrófono apagado. Nada se graba ni se envía.</span>
+      </div>
+      <div class="hydra" style="margin-top:0.8rem"><span class="rotulo">En Hydra</span>a.show()
+shape(4, () => 0.1 + a.fft[0] * 0.5, 0.01).out()</div>
+      <p>Hydra no usa la onda misma sino qué tan fuerte suena cada parte: <code>a.fft[0]</code> son los graves. Se parece más al nivel RMS que aparece abajo a la derecha de la gráfica.</p>
+    </section>
+  </main>
+
+  <footer class="envoltura">
+    <div class="pie">
+      <p>El código de la sesión: <a href="https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-ai/sesion09/ondas.js"><code>ondas.js</code></a>, para pegar en <a href="https://hydra.ojack.xyz/">hydra.ojack.xyz</a>.</p>
+      <p><a href="../">← Código Creativo 3 · Arquitectura de Interiores</a></p>
+    </div>
+  </footer>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- Ruido Perlin 1D (gradientes con tabla de permutación) ----------
+  const perm = new Uint8Array(512);
+  (function sembrar(s) {
+    const p = Array.from({ length: 256 }, (_, i) => i);
+    for (let i = 255; i > 0; i--) {
+      s = (s * 16807) % 2147483647;
+      const j = s % (i + 1);
+      [p[i], p[j]] = [p[j], p[i]];
+    }
+    for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
+  })(1234);
+  const grad = h => ((h & 15) / 7.5) - 1;           // pendiente en [-1, 1]
+  const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+  function perlin(x) {
+    const xi = Math.floor(x), xf = x - xi;
+    const g0 = grad(perm[xi & 255]) * xf;
+    const g1 = grad(perm[(xi + 1) & 255]) * (xf - 1);
+    return 2 * (g0 + (g1 - g0) * fade(xf));          // ≈ [-1, 1]
+  }
+
+  // ---------- Estado ----------
+  const $ = id => document.getElementById(id);
+  const freq = $("freq"), amp = $("amp"), mix = $("mix"), gain = $("gain");
+  const NOISE_SCALE = 5;       // k: cuántas variaciones de ruido por segundo
+  const WINDOW = 1;            // segundos visibles
+  let t0 = 0, last = performance.now();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let playing = !reduce;
+  $("play").textContent = playing ? "Pausar" : "Reproducir";
+
+  function updateOutputs() {
+    $("freqOut").textContent = (+freq.value).toFixed(1) + " Hz";
+    $("ampOut").textContent = (+amp.value).toFixed(2);
+    $("mixOut").textContent = "m = " + (+mix.value).toFixed(2);
+    $("gainOut").textContent = "× " + (+gain.value).toFixed(1);
+  }
+
+  const sine = t => Math.sin(2 * Math.PI * +freq.value * t);
+  const noise = t => +amp.value * perlin(NOISE_SCALE * t);
+  const env = t => (1 - +mix.value) + +mix.value * noise(t);
+  const mod = t => sine(t) * env(t);
+
+  // ---------- Dibujo ----------
+  const canvases = [$("c1"), $("c2"), $("c3"), $("c4")];
+  const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const FONT = '12px "IBM Plex Mono", monospace';
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvases.forEach(c => {
+      const r = c.getBoundingClientRect();
+      c.width = Math.round(r.width * dpr);
+      c.height = Math.round(r.height * dpr);
+      c.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
+    });
+  }
+
+  function frame(c, yRange) {
+    const ctx = c.getContext("2d");
+    const w = c.clientWidth, h = c.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    const pad = 14;
+    const mapY = v => h / 2 - (v / yRange) * (h / 2 - pad);
+    // retícula: décimas de la ventana y niveles ±1
+    ctx.strokeStyle = css("--line"); ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 1; i < 10; i++) {
+      const x = Math.round((i / 10) * w) + 0.5;
+      ctx.moveTo(x, 0); ctx.lineTo(x, h);
+    }
+    [1, -1].forEach(v => { const y = Math.round(mapY(v)) + 0.5; ctx.moveTo(0, y); ctx.lineTo(w, y); });
+    ctx.stroke();
+    ctx.strokeStyle = css("--rule");
+    ctx.beginPath(); ctx.moveTo(0, Math.round(h / 2) + 0.5); ctx.lineTo(w, Math.round(h / 2) + 0.5); ctx.stroke();
+    ctx.fillStyle = css("--ink-2");
+    ctx.font = FONT;
+    ctx.fillText("+1", 4, mapY(1) - 3);
+    ctx.fillText("−1", 4, mapY(-1) + 13);
+    return { ctx, w, h, mapY };
+  }
+
+  function trace(g, fn, color, width, dash) {
+    const { ctx, w, mapY } = g;
+    ctx.strokeStyle = color; ctx.lineWidth = width;
+    ctx.setLineDash(dash || []);
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    const steps = Math.max(200, Math.floor(w * 1.5));
+    for (let i = 0; i <= steps; i++) {
+      const x = (i / steps) * w;
+      const t = t0 + (i / steps) * WINDOW;
+      const y = mapY(fn(t));
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function draw() {
+    trace(frame(canvases[0], 1.2), sine, css("--sine"), 2.5);
+    trace(frame(canvases[1], 1.2), noise, css("--noise"), 2.5);
+
+    const g3 = frame(canvases[2], 1.2);
+    const e = css("--sine");
+    trace(g3, env, e, 1.5, [5, 5]);
+    trace(g3, t => -env(t), e, 1.5, [5, 5]);
+    trace(g3, mod, css("--mix"), 2.5);
+
+    drawMic();
+  }
+
+  // ---------- Micrófono ----------
+  let audioCtx = null, analyser = null, micStream = null, micBuf = null, micFrozen = null, micRms = 0;
+  const MIC_R = 6;          // muestras a cada lado en el promedio móvil (más = más suave)
+  const MIC_MEZCLA = 0.25;  // cuánto pesa cada cuadro nuevo (menos = más suave, más lento)
+  const micBtn = $("micBtn"), micStatus = $("micStatus");
+  function setStatus(msg, err) {
+    micStatus.textContent = msg;
+    err ? micStatus.setAttribute("data-error", "") : micStatus.removeAttribute("data-error");
+  }
+  async function startMic() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setStatus("Este navegador no da acceso al micrófono aquí. La página tiene que abrirse desde https o localhost.", true);
+      return;
+    }
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+      });
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = audioCtx.createMediaStreamSource(micStream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 4096;
+      micBuf = new Float32Array(analyser.fftSize);
+      src.connect(analyser);   // no va a la salida: no hay retroalimentación
+      micBtn.textContent = "Apagar micrófono";
+      setStatus("Escuchando. Nada se graba ni se envía.");
+    } catch (e) {
+      const denied = e && (e.name === "NotAllowedError" || e.name === "SecurityError");
+      setStatus(denied
+        ? "No hay permiso para usar el micrófono. Revisa los permisos del navegador (el candado junto a la dirección)."
+        : "No se encontró un micrófono disponible.", true);
+    }
+  }
+  function stopMic() {
+    if (micStream) micStream.getTracks().forEach(tr => tr.stop());
+    if (audioCtx) audioCtx.close();
+    audioCtx = analyser = micStream = null; micFrozen = null; micRms = 0;
+    micBtn.textContent = "Activar micrófono";
+    setStatus("Micrófono apagado. Nada se graba ni se envía.");
+  }
+  micBtn.addEventListener("click", () => (analyser ? stopMic() : startMic()));
+
+  // si la página está embebida sin permiso de micrófono, avisarlo desde el inicio
+  const policy = document.permissionsPolicy || document.featurePolicy;
+  if (policy && typeof policy.allowsFeature === "function" && !policy.allowsFeature("microphone")) {
+    micBtn.disabled = true;
+    setStatus("Esta página está embebida sin permiso de micrófono. Ábrela en su propia pestaña.", true);
+  }
+
+  function drawMic() {
+    const { ctx, w, h, mapY } = frame(canvases[3], 1.2);
+    if (!analyser) {
+      ctx.fillStyle = css("--ink-2");
+      ctx.font = '15px "IBM Plex Mono", monospace';
+      ctx.textAlign = "center";
+      ctx.fillText("Activa el micrófono para ver la señal", w / 2, h / 2 - 10);
+      ctx.textAlign = "start";
+      return;
+    }
+    // ventana de ~40 ms
+    const win = Math.min(micBuf.length / 2, Math.round(audioCtx.sampleRate * 0.04));
+    if (playing || !micFrozen) {
+      analyser.getFloatTimeDomainData(micBuf);
+      // suavizado en el tiempo de la onda: promedio móvil de MIC_R muestras a cada lado,
+      // quita el siseo agudo y deja la forma
+      const n = micBuf.length, suave = new Float32Array(n);
+      let acc = 0;
+      for (let i = 0; i < n + MIC_R; i++) {
+        if (i < n) acc += micBuf[i];
+        if (i - 2 * MIC_R - 1 >= 0) acc -= micBuf[i - 2 * MIC_R - 1];
+        const c = i - MIC_R;
+        if (c >= 0) suave[c] = acc / (Math.min(n - 1, i) - Math.max(0, c - MIC_R) + 1);
+      }
+      // alineada al primer cruce ascendente por cero para que no baile
+      let start = 0;
+      for (let i = 1; i < n - win; i++) {
+        if (suave[i - 1] < 0 && suave[i] >= 0) { start = i; break; }
+      }
+      // suavizado entre cuadros: cada cuadro nuevo pesa sólo una parte
+      if (!micFrozen || micFrozen.length !== win) micFrozen = suave.slice(start, start + win);
+      else for (let i = 0; i < win; i++) micFrozen[i] += MIC_MEZCLA * (suave[start + i] - micFrozen[i]);
+      let sum = 0;
+      for (let i = 0; i < win; i++) sum += micBuf[start + i] * micBuf[start + i];
+      micRms += MIC_MEZCLA * (Math.sqrt(sum / win) - micRms);
+    }
+    const data = micFrozen;
+    const G = +gain.value;
+    ctx.strokeStyle = css("--mic"); ctx.lineWidth = 2; ctx.lineJoin = "round";
+    ctx.beginPath();
+    for (let i = 0; i < win; i++) {
+      const v = Math.max(-1.2, Math.min(1.2, data[i] * G));
+      const x = (i / (win - 1)) * w, y = mapY(v);
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.stroke();
+    const rms = micRms * G;
+    ctx.fillStyle = css("--ink-2");
+    ctx.font = FONT;
+    ctx.textAlign = "end";
+    ctx.fillText("ventana 40 ms · nivel RMS " + rms.toFixed(2), w - 6, h - 6);
+    ctx.textAlign = "start";
+  }
+
+  function loop(now) {
+    const dt = Math.min(0.1, (now - last) / 1000);
+    last = now;
+    if (playing) t0 += dt * 0.25;   // la ventana avanza a un cuarto de la velocidad real
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  [freq, amp, mix, gain].forEach(el => el.addEventListener("input", updateOutputs));
+  $("play").addEventListener("click", () => {
+    playing = !playing;
+    $("play").textContent = playing ? "Pausar" : "Reproducir";
+  });
+  window.addEventListener("resize", resize);
+
+  updateOutputs();
+  resize();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

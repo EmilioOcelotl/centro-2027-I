@@ -126,13 +126,17 @@ sesiones:
     desc:
       - "Ejercicios de programación orientada a objetos aplicada a la manipulación de imagen fija"
   - n: 9
-    titulo: "Animación: trigonometría I"
-    tool: "Processing"
+    titulo: "Un número que cambia"
+    tool: "Hydra"
     desc:
-      - "Introducción a las funciones trigonométricas"
-      - "Triángulo rectángulo y distancia euclidiana"
-      - "Periodicidad"
+      - "Regreso a Hydra. osc ya era una onda."
       - "Oscilaciones: amplitud, frecuencia y fase"
+      - "Otras formas de cambiar: sierra, escalón, azar y listas"
+      - "El micrófono como una señal de entrada"
+      - "Exploración libre: un estado como señal. Respira, late, tiembla."
+      - {texto: "Página: sinusoide, ruido, modulación y micrófono", url: "senales/"}
+      - {texto: "Referencia: funciones de Hydra", url: "https://hydra.ojack.xyz/api/"}
+    codigo: {texto: "ondas.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-ai/sesion09/ondas.js"}
   - n: 10
     titulo: "Asesoría"
     tool: ""
