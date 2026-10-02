@@ -50,6 +50,7 @@
         <div class="deslizador"><label for="umbral">Umbral <output id="umbralOut"></output></label><input id="umbral" type="range" min="0" max="0.5" step="0.01" value="0.05"></div>
         <div class="deslizador"><label for="subida">Subida <output id="subidaOut"></output></label><input id="subida" type="range" min="0" max="3" step="0.1" value="0.5"></div>
         <div class="deslizador"><label for="bajada">Bajada <output id="bajadaOut"></output></label><input id="bajada" type="range" min="0" max="6" step="0.1" value="2"></div>
+        <div class="deslizador"><label for="nitidez">Nitidez de la orilla <output id="nitidezOut"></output></label><input id="nitidez" type="range" min="0" max="1" step="0.01" value="0.8"></div>
         <div class="deslizador"><label for="aura">Tamaño del aura <output id="auraOut"></output></label><input id="aura" type="range" min="0" max="1" step="0.01" value="0.6"></div>
         <div class="deslizador"><label for="camara">Cámara visible <output id="camaraOut"></output></label><input id="camara" type="range" min="0" max="1" step="0.01" value="0"></div>
       </div>
@@ -57,6 +58,7 @@
       <section class="texto">
         <h2>Qué hace</h2>
         <p>La segmentación contesta, para cada pixel, qué tan seguro está el modelo de que ahí hay una persona. El resultado es una máscara: blanco donde hay cuerpo y negro donde no. Aquí la máscara se pinta de color, se difumina y se pone detrás del cuerpo, que queda en negro. Así el aura rodea a la persona sin caerle encima.</p>
+        <p>El modelo mira la imagen a 256 × 256 pixeles, así que su orilla es blanda y tiembla. La <em>nitidez</em> la corta en el punto donde el modelo duda, a la mitad: en 0 se ve la máscara tal como llega; en 1, un borde seco.</p>
         <p>El sensor es la suma de la máscara, cuánto del cuadro ocupa la persona. Cuando pasa del umbral la rampa sube, y cuando la persona se va baja en el tiempo de la bajada.</p>
         <h2>Para un proyecto</h2>
         <p>Un aura que acompaña al cuerpo, una sombra que no es la propia, una figura que se llena de textura. La máscara también recorta: lo que se proyecta puede aparecer sólo donde está la persona, o sólo donde no está.</p>
@@ -79,15 +81,49 @@
     deslizador("umbral", v => ajuste.umbral = v, v => Math.round(v * 100) + "%")
     deslizador("subida", v => rampa.subida = v, v => v.toFixed(1) + " s")
     deslizador("bajada", v => rampa.bajada = v, v => v.toFixed(1) + " s")
+    deslizador("nitidez", v => ajuste.nitidez = v, v => v.toFixed(2))
     deslizador("aura", v => ajuste.aura = v, v => v.toFixed(2))
     deslizador("camara", v => ajuste.camara = v, v => v.toFixed(2))
 
     let modelo = null, ultimo = -1, presencia = 0
-    const mascara = document.createElement("canvas")      // la máscara blanca
-    const color = document.createElement("canvas")        // la máscara pintada
-    const chico = document.createElement("canvas")        // la máscara reducida: al agrandarla se difumina
+    const mascara = document.createElement("canvas")      // la máscara blanca, con la orilla ya limpia
+    const color = document.createElement("canvas")        // la máscara pintada, a media resolución
     const negra = document.createElement("canvas")        // el cuerpo en negro
-    let pixeles = null
+    const difusa = [document.createElement("canvas"), document.createElement("canvas"), document.createElement("canvas")]
+    const pasos = []                                      // las mitades para difuminar sin ctx.filter
+    let pixeles = null, suave = null
+
+    // Chrome y Firefox difuminan con ctx.filter; en los demás se baja la
+    // imagen a la mitad varias veces y se vuelve a subir, paso por paso.
+    const conFiltro = "filter" in CanvasRenderingContext2D.prototype
+    function difuminar (fuente, destino, radio) {
+      const dc = destino.getContext("2d")
+      dc.clearRect(0, 0, destino.width, destino.height)
+      if (conFiltro) {
+        dc.filter = `blur(${radio}px)`
+        dc.drawImage(fuente, 0, 0)
+        dc.filter = "none"
+        return
+      }
+      const veces = Math.max(1, Math.round(Math.log2(Math.max(radio, 2))))
+      let w = fuente.width, h = fuente.height, anterior = fuente
+      for (let k = 0; k < veces; k++) {
+        w = Math.max(2, w >> 1); h = Math.max(2, h >> 1)
+        const c = pasos[k] || (pasos[k] = document.createElement("canvas"))
+        if (c.width !== w || c.height !== h) { c.width = w; c.height = h }
+        const x = c.getContext("2d")
+        x.clearRect(0, 0, w, h)
+        x.drawImage(anterior, 0, 0, w, h)
+        anterior = c
+      }
+      for (let k = veces - 2; k >= 0; k--) {
+        const c = pasos[k], x = c.getContext("2d")
+        x.clearRect(0, 0, c.width, c.height)
+        x.drawImage(anterior, 0, 0, c.width, c.height)
+        anterior = c
+      }
+      dc.drawImage(anterior, 0, 0, destino.width, destino.height)
+    }
 
     const dibujarGrafica = grafica(document.getElementById("grafica"), [
       { color: "#a86a12", valor: () => presencia * 2 },
@@ -101,7 +137,7 @@
           "/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite",
           { outputConfidenceMasks: true, outputCategoryMask: false }, "CPU")
       },
-      cuadro ({ video, ctx, w, h, dt, t, listo }) {
+      cuadro ({ video, ctx, w, h, dt, t }) {
         ctx.fillStyle = "#000"
         ctx.fillRect(0, 0, w, h)
 
@@ -111,15 +147,25 @@
           const m = r.confidenceMasks[r.confidenceMasks.length - 1]
           const datos = m.getAsFloat32Array()
           if (mascara.width !== m.width || mascara.height !== m.height) {
-            for (const c of [mascara, color, negra]) { c.width = m.width; c.height = m.height }
+            for (const c of [mascara, negra]) { c.width = m.width; c.height = m.height }
+            for (const c of [color, ...difusa]) { c.width = m.width >> 1; c.height = m.height >> 1 }
             pixeles = new ImageData(m.width, m.height)
+            suave = new Float32Array(datos.length)
           }
+          // la orilla: cada máscara se mezcla con la anterior para que no
+          // tiemble, y pasa por un umbral suave alrededor de 0.5. Con
+          // nitidez 0 queda la confianza tal como llega; con 1, un corte seco.
+          const banda = 0.02 + (1 - ajuste.nitidez) * 0.5
+          const a0 = 0.5 - banda, a1 = 0.5 + banda
           let suma = 0
           for (let i = 0; i < datos.length; i++) {
             const a = datos[i]
             suma += a
+            const v = suave[i] = suave[i] * 0.5 + a * 0.5
+            let e = (v - a0) / (a1 - a0)
+            e = e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e)
             pixeles.data[i * 4] = pixeles.data[i * 4 + 1] = pixeles.data[i * 4 + 2] = 255
-            pixeles.data[i * 4 + 3] = a * 255
+            pixeles.data[i * 4 + 3] = e * 255
           }
           presencia = suma / datos.length
           mascara.getContext("2d").putImageData(pixeles, 0, 0)
@@ -143,27 +189,23 @@
             const cc = color.getContext("2d")
             cc.globalCompositeOperation = "source-over"
             cc.clearRect(0, 0, color.width, color.height)
-            cc.drawImage(mascara, 0, 0)
+            cc.drawImage(mascara, 0, 0, color.width, color.height)
             cc.globalCompositeOperation = "source-in"
             cc.fillStyle = `hsl(${tono}, 80%, 60%)`
             cc.fillRect(0, 0, color.width, color.height)
 
-            // el aura: la máscara reducida (entre más chica, más difusa),
-            // dibujada en un anillo alrededor del cuerpo para que crezca
-            ctx.globalCompositeOperation = "lighter"
-            const n = Math.max(6, Math.round(color.width / (2 + ajuste.aura * 14)))
-            chico.width = chico.height = n
-            chico.getContext("2d").drawImage(color, 0, 0, n, n)
+            // el aura: tres capas difusas, de la cercana e intensa a la
+            // amplia y tenue. "screen" las suma sin quemar el color.
+            const R = (0.1 + ajuste.aura) * color.width * 0.06
+            const capas = [[R * 0.4, 1], [R, 0.8], [R * 2.4, 0.6]]
+            ctx.globalCompositeOperation = "screen"
             ctx.imageSmoothingEnabled = true
-            const radio = ajuste.aura * Math.min(w, h) * 0.06
-            const vueltas = [[0, 0], ...Array.from({ length: 8 }, (_, k) => [Math.cos(k * Math.PI / 4), Math.sin(k * Math.PI / 4)])]
-            for (const [dx, dy] of vueltas) {
-              ctx.save()
-              ctx.translate(dx * radio, dy * radio)
-              ctx.globalAlpha = valor * 0.35
-              marco.dibujar(ctx, chico)
-              ctx.restore()
-            }
+            capas.forEach(([radio, alfa], k) => {
+              difuminar(color, difusa[k], radio)
+              ctx.globalAlpha = valor * alfa
+              marco.dibujar(ctx, difusa[k])
+              if (k === 0) marco.dibujar(ctx, difusa[k])   // la capa cercana, dos veces: más luz junto al cuerpo
+            })
             ctx.globalCompositeOperation = "source-over"
             ctx.globalAlpha = 1
 
