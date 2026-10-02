@@ -1,0 +1,96 @@
+/* Las páginas heredan del motor la paleta, la tipografía y la medida de la
+   columna. Aquí va sólo lo que el motor no tiene: el escenario, los números,
+   la gráfica y los deslizadores. El motor no se toca. */
+:root {
+  --c: #0d7f7a;
+  --crudo: #a86a12;
+  --rampa: #0d7f7a;
+}
+
+.envoltura { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+.columna { max-width: var(--readw); margin: 0 auto; }
+
+.escena-caja { position: relative; background: #000; aspect-ratio: 4 / 3; max-height: 80vh; margin: 0 auto; }
+#escena { display: block; width: 100%; height: 100%; background: #000; }
+#escena:fullscreen { width: 100vw; height: 100vh; }
+
+.fila { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin: 0.9rem 0; }
+.btn {
+  font-family: var(--mono);
+  font-size: var(--fs-rotulo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  padding: 0.42rem 0.8rem;
+  cursor: pointer;
+}
+.btn:hover { background: var(--paper-2); }
+label.btn input { display: none; }
+.estado { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); }
+.estado[data-error] { color: var(--crudo); }
+
+.cadena {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin: 1.2rem 0 0.4rem;
+}
+.cadena > div { background: var(--paper); padding: 0.6rem 0.7rem; min-width: 0; }
+.cadena .rotulo {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--fs-rotulo);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 0.25rem;
+}
+.cadena .valor {
+  font-family: var(--mono);
+  font-size: clamp(0.95rem, 0.85rem + 0.6vw, 1.25rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.cadena .nota { display: block; font-size: var(--fs-rotulo); color: var(--ink-2); margin-top: 0.2rem; }
+@media (max-width: 600px) { .cadena { grid-template-columns: repeat(2, 1fr); } }
+
+.grafica { border: 1px solid var(--rule); background: var(--paper); margin-top: 0.6rem; }
+.grafica canvas { display: block; width: 100%; height: 120px; }
+.leyenda { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); margin-top: 0.4rem; }
+.leyenda span { white-space: nowrap; margin-right: 1rem; }
+.leyenda i { display: inline-block; width: 1rem; vertical-align: middle; border-top: 2px solid; margin-right: 0.35rem; }
+
+.deslizadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.4rem 1.6rem; margin-top: 1rem; }
+.deslizador label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: var(--fs-sec);
+  font-weight: 500;
+}
+.deslizador output { font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--c); margin: 0.2rem 0; }
+
+.texto { padding: clamp(1.2rem, 3vw, 1.8rem) 0; border-top: 1px solid var(--rule); margin-top: 1.4rem; }
+.texto h2 { font-family: var(--sans); font-weight: 600; font-size: clamp(1.1rem, 1rem + 0.6vw, 1.4rem); margin: 0 0 0.5rem; }
+.texto p, .texto li { color: var(--ink-2); font-size: var(--fs-prosa); }
+.texto p { margin: 0 0 0.8rem; }
+.texto code { font-family: var(--mono); color: var(--ink); }
+
+.pie {
+  padding: clamp(1.6rem, 4vw, 2.4rem) 0 clamp(2.5rem, 6vw, 4rem);
+  border-top: 1px solid var(--rule);
+  font-size: var(--fs-sec);
+  color: var(--ink-2);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem 1.2rem;
+}
+.pie a { color: var(--ink); }

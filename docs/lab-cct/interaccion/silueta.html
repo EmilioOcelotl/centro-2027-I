@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Silueta · Laboratorio · Sesión 09</title>
+  <meta name="description" content="Interactividad 1 de 5: la cámara separa a la persona del fondo y un aura la rodea." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <link rel="stylesheet" href="comun.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <p class="eyebrow">Laboratorio · Sesión 09 · Interactividad 1 de 5</p>
+    <h1 class="title">Silueta</h1>
+    <p class="lede">
+      El modelo separa a la persona del fondo, pixel por pixel. Con esa
+      máscara se dibuja un aura alrededor del cuerpo. Si no hay nadie, el aura
+      se apaga poco a poco.
+    </p>
+  </header>
+
+  <main class="envoltura">
+    <div class="escena-caja"><canvas id="escena" aria-label="La silueta con su aura"></canvas></div>
+    <div class="columna">
+      <div class="fila">
+        <button id="btnCamara" type="button" class="btn">Encender cámara</button>
+        <label class="btn">Usar un video<input id="archivo" type="file" accept="video/*"></label>
+        <button id="btnCompleta" type="button" class="btn">Pantalla completa</button>
+        <span id="estado" class="estado" role="status">Nada se graba ni se envía.</span>
+      </div>
+
+      <div class="cadena">
+        <div><span class="rotulo">Sensor</span><span class="valor" id="vSensor">—</span><span class="nota">cuánto del cuadro es persona</span></div>
+        <div><span class="rotulo">Evento</span><span class="valor" id="vEvento">—</span><span class="nota">¿pasa del umbral?</span></div>
+        <div><span class="rotulo">Rampa</span><span class="valor" id="vRampa">0.00</span><span class="nota">sube y baja con calma</span></div>
+        <div><span class="rotulo">Parámetro</span><span class="valor" id="vParam">0%</span><span class="nota">brillo del aura</span></div>
+      </div>
+      <div class="grafica"><canvas id="grafica" aria-label="Presencia y rampa en el tiempo"></canvas></div>
+      <div class="leyenda">
+        <span><i style="border-color:var(--crudo)"></i>presencia</span>
+        <span><i style="border-color:var(--rampa)"></i>rampa</span>
+        <span><i style="border-color:var(--rule);border-top-style:dashed"></i>umbral</span>
+      </div>
+
+      <div class="deslizadores">
+        <div class="deslizador"><label for="umbral">Umbral <output id="umbralOut"></output></label><input id="umbral" type="range" min="0" max="0.5" step="0.01" value="0.05"></div>
+        <div class="deslizador"><label for="subida">Subida <output id="subidaOut"></output></label><input id="subida" type="range" min="0" max="3" step="0.1" value="0.5"></div>
+        <div class="deslizador"><label for="bajada">Bajada <output id="bajadaOut"></output></label><input id="bajada" type="range" min="0" max="6" step="0.1" value="2"></div>
+        <div class="deslizador"><label for="aura">Tamaño del aura <output id="auraOut"></output></label><input id="aura" type="range" min="0" max="1" step="0.01" value="0.6"></div>
+        <div class="deslizador"><label for="camara">Cámara visible <output id="camaraOut"></output></label><input id="camara" type="range" min="0" max="1" step="0.01" value="0"></div>
+      </div>
+
+      <section class="texto">
+        <h2>Qué hace</h2>
+        <p>La segmentación contesta, para cada pixel, qué tan seguro está el modelo de que ahí hay una persona. El resultado es una máscara: blanco donde hay cuerpo y negro donde no. Aquí la máscara se pinta de color, se difumina y se pone detrás del cuerpo, que queda en negro. Así el aura rodea a la persona sin caerle encima.</p>
+        <p>El sensor es la suma de la máscara, cuánto del cuadro ocupa la persona. Cuando pasa del umbral la rampa sube, y cuando la persona se va baja en el tiempo de la bajada.</p>
+        <h2>Para un proyecto</h2>
+        <p>Un aura que acompaña al cuerpo, una sombra que no es la propia, una figura que se llena de textura. La máscara también recorta: lo que se proyecta puede aparecer sólo donde está la persona, o sólo donde no está.</p>
+        <h2>Cuidado</h2>
+        <p>El modelo está entrenado con personas de frente y a media distancia, como en una videollamada. Desde arriba, o con el cuerpo completo lejos de la cámara, la máscara se rompe. Y si la cámara ve la proyección, puede confundir la imagen proyectada con alguien.</p>
+      </section>
+
+      <footer class="pie">
+        <a href="./">← Interactividad</a>
+        <a href="donde.html">Dónde estás →</a>
+      </footer>
+    </div>
+  </main>
+
+  <script type="module">
+    import { escenario, tarea, mediapipe, Rampa, deslizador, mostrar, grafica, encuadrar } from "./comun.js"
+
+    const ajuste = {}
+    const rampa = new Rampa()
+    deslizador("umbral", v => ajuste.umbral = v, v => Math.round(v * 100) + "%")
+    deslizador("subida", v => rampa.subida = v, v => v.toFixed(1) + " s")
+    deslizador("bajada", v => rampa.bajada = v, v => v.toFixed(1) + " s")
+    deslizador("aura", v => ajuste.aura = v, v => v.toFixed(2))
+    deslizador("camara", v => ajuste.camara = v, v => v.toFixed(2))
+
+    let modelo = null, ultimo = -1, presencia = 0
+    const mascara = document.createElement("canvas")      // la máscara blanca
+    const color = document.createElement("canvas")        // la máscara pintada
+    const chico = document.createElement("canvas")        // la máscara reducida: al agrandarla se difumina
+    const negra = document.createElement("canvas")        // el cuerpo en negro
+    let pixeles = null
+
+    const dibujarGrafica = grafica(document.getElementById("grafica"), [
+      { color: "#a86a12", valor: () => presencia * 2 },
+      { color: "#0d7f7a", valor: () => rampa.valor },
+    ], () => ajuste.umbral * 2)
+
+    escenario({
+      async preparar () {
+        const { vision } = await mediapipe()
+        modelo = await tarea(vision.ImageSegmenter,
+          "/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite",
+          { outputConfidenceMasks: true, outputCategoryMask: false }, "CPU")
+      },
+      cuadro ({ video, ctx, w, h, dt, t, listo }) {
+        ctx.fillStyle = "#000"
+        ctx.fillRect(0, 0, w, h)
+
+        if (video && modelo && video.currentTime !== ultimo) {
+          ultimo = video.currentTime
+          const r = modelo.segmentForVideo(video, performance.now())
+          const m = r.confidenceMasks[r.confidenceMasks.length - 1]
+          const datos = m.getAsFloat32Array()
+          if (mascara.width !== m.width || mascara.height !== m.height) {
+            for (const c of [mascara, color, negra]) { c.width = m.width; c.height = m.height }
+            pixeles = new ImageData(m.width, m.height)
+          }
+          let suma = 0
+          for (let i = 0; i < datos.length; i++) {
+            const a = datos[i]
+            suma += a
+            pixeles.data[i * 4] = pixeles.data[i * 4 + 1] = pixeles.data[i * 4 + 2] = 255
+            pixeles.data[i * 4 + 3] = a * 255
+          }
+          presencia = suma / datos.length
+          mascara.getContext("2d").putImageData(pixeles, 0, 0)
+          r.close()
+        }
+        if (!video) { presencia = 0 }
+
+        const hay = presencia > ajuste.umbral
+        const valor = rampa.paso(hay && !!video, dt)
+
+        if (video) {
+          const marco = encuadrar(video, w, h)
+          if (ajuste.camara > 0) {
+            ctx.globalAlpha = ajuste.camara
+            marco.dibujar(ctx)
+            ctx.globalAlpha = 1
+          }
+          if (mascara.width && valor > 0) {
+            // la máscara pintada de un color que cambia despacio
+            const tono = (t * 8) % 360
+            const cc = color.getContext("2d")
+            cc.globalCompositeOperation = "source-over"
+            cc.clearRect(0, 0, color.width, color.height)
+            cc.drawImage(mascara, 0, 0)
+            cc.globalCompositeOperation = "source-in"
+            cc.fillStyle = `hsl(${tono}, 80%, 60%)`
+            cc.fillRect(0, 0, color.width, color.height)
+
+            // el aura: la máscara reducida (entre más chica, más difusa),
+            // dibujada en un anillo alrededor del cuerpo para que crezca
+            ctx.globalCompositeOperation = "lighter"
+            const n = Math.max(6, Math.round(color.width / (2 + ajuste.aura * 14)))
+            chico.width = chico.height = n
+            chico.getContext("2d").drawImage(color, 0, 0, n, n)
+            ctx.imageSmoothingEnabled = true
+            const radio = ajuste.aura * Math.min(w, h) * 0.06
+            const vueltas = [[0, 0], ...Array.from({ length: 8 }, (_, k) => [Math.cos(k * Math.PI / 4), Math.sin(k * Math.PI / 4)])]
+            for (const [dx, dy] of vueltas) {
+              ctx.save()
+              ctx.translate(dx * radio, dy * radio)
+              ctx.globalAlpha = valor * 0.35
+              marco.dibujar(ctx, chico)
+              ctx.restore()
+            }
+            ctx.globalCompositeOperation = "source-over"
+            ctx.globalAlpha = 1
+
+            // el cuerpo en negro, encima del aura
+            const nc = negra.getContext("2d")
+            nc.globalCompositeOperation = "source-over"
+            nc.clearRect(0, 0, negra.width, negra.height)
+            nc.drawImage(mascara, 0, 0)
+            nc.globalCompositeOperation = "source-in"
+            nc.fillStyle = "#000"
+            nc.fillRect(0, 0, negra.width, negra.height)
+            ctx.globalAlpha = 1 - ajuste.camara
+            marco.dibujar(ctx, negra)
+            ctx.globalAlpha = 1
+          }
+        }
+
+        mostrar("vSensor", video ? Math.round(presencia * 100) + "%" : "—")
+        mostrar("vEvento", video ? (hay ? "sí" : "no") : "—")
+        mostrar("vRampa", valor.toFixed(2))
+        mostrar("vParam", Math.round(valor * 100) + "%")
+        dibujarGrafica()
+      },
+    })
+  </script>
+</body>
+</html>

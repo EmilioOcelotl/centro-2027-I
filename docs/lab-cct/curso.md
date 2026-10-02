@@ -135,18 +135,21 @@ sesiones:
       - "Entrega de la plantilla y del archivo de sesión"
       - "Retroalimentación colectiva y primer corte de bitácora"
   - n: 9
-    titulo: "Redefinir: ¿qué te falta?"
-    tool: "Plantilla final"
+    titulo: "Interactividad"
+    tool: "Navegador · MediaPipe"
     desc:
-      - "Retrospectiva del parcial"
-      - "Se sube la ambición: el final proyecta sobre un objeto y una superficie"
-      - "Cada equipo nombra el aspecto que su proyecto necesita y no resolvió"
-      - "Ese listado fija el contenido y el orden de las sesiones 10 a 13"
-      - "Menú: geometría compleja, detección de persona, audio reactivo fino, partículas, varias salidas, control externo"
+      - "Qué viene en el segundo bloque: afinar cada proyecto, TouchDesigner y lo que pidan los proyectos"
+      - "Interactividad: sensor → número → evento → rampa → parámetro"
+      - "La cámara como el sensor más fácil de echar a andar. La retomamos de la sesión 3"
+      - "MediaPipe: modelos que corren en el navegador y leen cuerpo, cara y manos"
+      - "Ejercicio: probar cinco ejemplos. Silueta, dónde estás, qué tan cerca, manos y movimiento"
+      - "Escribir en Brightspace: cuando la persona hace ___, en la imagen cambia ___, de golpe o en cuántos segundos, y qué pasa cuando se va"
+      - {texto: "Página: cinco ejemplos de interacción con la cámara", url: "interaccion/"}
   - n: 10
     titulo: "TouchDesigner: traducción"
     tool: "TouchDesigner"
     desc:
+      - "Regreso del receso: qué le falta a cada proyecto, con el documento del parcial y lo escrito en la sesión 9"
       - "Red de operadores: TOP, CHOP, SOP, DAT"
       - "Movie File In, Noise, Feedback"
       - "Salida a proyector: Window COMP y perform mode"

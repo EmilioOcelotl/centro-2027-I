@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Movimiento · Laboratorio · Sesión 09</title>
+  <meta name="description" content="Interactividad 5 de 5: sin inteligencia artificial, la diferencia entre dos cuadros dice dónde hubo movimiento." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <link rel="stylesheet" href="comun.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <p class="eyebrow">Laboratorio · Sesión 09 · Interactividad 5 de 5</p>
+    <h1 class="title">Movimiento</h1>
+    <p class="lede">
+      Sin modelo y sin inteligencia artificial: se compara cada cuadro de la
+      cámara con el anterior. Lo que cambió es movimiento. La imagen se
+      divide en tres zonas, y cada una enciende su propia cascada.
+    </p>
+  </header>
+
+  <main class="envoltura">
+    <div class="escena-caja"><canvas id="escena" aria-label="Tres cascadas que se encienden con el movimiento"></canvas></div>
+    <div class="columna">
+      <div class="fila">
+        <button id="btnCamara" type="button" class="btn">Encender cámara</button>
+        <label class="btn">Usar un video<input id="archivo" type="file" accept="video/*"></label>
+        <button id="btnCompleta" type="button" class="btn">Pantalla completa</button>
+        <span id="estado" class="estado" role="status">Nada se graba ni se envía.</span>
+      </div>
+
+      <div class="cadena">
+        <div><span class="rotulo">Sensor</span><span class="valor" id="vSensor">—</span><span class="nota">movimiento en cada zona, de 0 a 100</span></div>
+        <div><span class="rotulo">Evento</span><span class="valor" id="vEvento">—</span><span class="nota">¿qué zonas pasan del umbral?</span></div>
+        <div><span class="rotulo">Rampa</span><span class="valor" id="vRampa">—</span><span class="nota">una por zona</span></div>
+        <div><span class="rotulo">Parámetro</span><span class="valor" id="vParam">—</span><span class="nota">brillo y caída de cada cascada</span></div>
+      </div>
+      <div class="grafica"><canvas id="grafica" aria-label="Movimiento por zona en el tiempo"></canvas></div>
+      <div class="leyenda">
+        <span><i style="border-color:#3b6fd1"></i>izquierda</span>
+        <span><i style="border-color:#0d7f7a"></i>centro</span>
+        <span><i style="border-color:#a86a12"></i>derecha</span>
+        <span><i style="border-color:var(--rule);border-top-style:dashed"></i>umbral</span>
+      </div>
+
+      <div class="deslizadores">
+        <div class="deslizador"><label for="sensible">Sensibilidad <output id="sensibleOut"></output></label><input id="sensible" type="range" min="0" max="1" step="0.01" value="0.7"></div>
+        <div class="deslizador"><label for="umbral">Umbral de zona <output id="umbralOut"></output></label><input id="umbral" type="range" min="0.02" max="0.9" step="0.01" value="0.15"></div>
+        <div class="deslizador"><label for="subida">Subida <output id="subidaOut"></output></label><input id="subida" type="range" min="0" max="3" step="0.1" value="0.4"></div>
+        <div class="deslizador"><label for="bajada">Bajada <output id="bajadaOut"></output></label><input id="bajada" type="range" min="0" max="8" step="0.1" value="3"></div>
+        <div class="deslizador"><label for="ver">Ver la diferencia <output id="verOut"></output></label><input id="ver" type="range" min="0" max="1" step="0.01" value="0.5"></div>
+      </div>
+
+      <section class="texto">
+        <h2>Qué hace</h2>
+        <p>La cámara se reduce a 80 × 60 pixeles y se pasa a gris. Cada pixel se compara con el mismo pixel del cuadro anterior: si cambió más que cierto margen, cuenta como movimiento. Los puntos blancos sobre la imagen son esos pixeles. La <em>sensibilidad</em> mueve el margen: alta, cualquier parpadeo cuenta; baja, sólo los cambios grandes.</p>
+        <p>Cada zona suma sus pixeles en movimiento. Si la suma pasa del umbral, la rampa de esa zona sube y su cascada se enciende y cae más rápido. Quieto frente a la cámara no pasa nada: lo que se detecta es el cambio, no la presencia.</p>
+        <p>Es la técnica más vieja de las cinco y la más barata. No sabe qué se movió, si una persona, una cortina o una sombra, pero funciona con cualquier ángulo, también desde el techo, y en computadoras lentas.</p>
+        <h2>Para un proyecto</h2>
+        <p>Zonas de un espacio que se activan al cruzarlas; una cortina que responde a quien la roza; un pasillo donde la imagen sigue el paso de la gente. Las zonas pueden ser columnas, como aquí, o una cuadrícula del piso.</p>
+        <h2>Cuidado</h2>
+        <p>Si la cámara ve la proyección, la proyección se mueve y la detección se dispara sola. Hay que apuntar la cámara fuera de la imagen proyectada, o ignorar las zonas donde cae. En un cuarto oscuro la cámara casi no ve, y el ruido del sensor parece movimiento: sube el umbral, o ilumina con una luz que no se proyecte.</p>
+      </section>
+
+      <footer class="pie">
+        <a href="manos.html">← Manos</a>
+        <a href="./">Interactividad</a>
+      </footer>
+    </div>
+  </main>
+
+  <script type="module">
+    import { escenario, Rampa, deslizador, mostrar, grafica, encuadrar, limitar, seguir } from "./comun.js"
+
+    const ajuste = {}
+    const ZONAS = 3
+    const rampas = Array.from({ length: ZONAS }, () => new Rampa())
+    deslizador("sensible", v => ajuste.sensible = v, v => v.toFixed(2))
+    deslizador("umbral", v => ajuste.umbral = v, v => v.toFixed(2))
+    deslizador("subida", v => rampas.forEach(r => r.subida = v), v => v.toFixed(1) + " s")
+    deslizador("bajada", v => rampas.forEach(r => r.bajada = v), v => v.toFixed(1) + " s")
+    deslizador("ver", v => ajuste.ver = v, v => v.toFixed(2))
+
+    const AN = 80, AL = 60
+    const chico = document.createElement("canvas")
+    chico.width = AN; chico.height = AL
+    const cc = chico.getContext("2d", { willReadFrequently: true })
+    const dif = document.createElement("canvas")
+    dif.width = AN; dif.height = AL
+    const dc = dif.getContext("2d")
+    const difDatos = dc.createImageData(AN, AL)
+    let anterior = null, ultimo = -1
+    const mov = new Array(ZONAS).fill(0)
+
+    const COLORES = [210, 175, 35]                  // el tono de cada cascada
+    const gotas = Array.from({ length: ZONAS }, () =>
+      Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), v: 0.3 + Math.random() * 0.7, l: 0.03 + Math.random() * 0.12 })))
+
+    const dibujarGrafica = grafica(document.getElementById("grafica"),
+      ["#3b6fd1", "#0d7f7a", "#a86a12"].map((color, z) => ({ color, valor: () => mov[z] })),
+      () => ajuste.umbral)
+
+    escenario({
+      cuadro ({ video, ctx, w, h, dt }) {
+        if (video && video.currentTime !== ultimo) {
+          ultimo = video.currentTime
+          // la cámara chica, en espejo
+          cc.save(); cc.translate(AN, 0); cc.scale(-1, 1)
+          cc.drawImage(video, 0, 0, AN, AL)
+          cc.restore()
+          const px = cc.getImageData(0, 0, AN, AL).data
+          const gris = new Float32Array(AN * AL)
+          for (let i = 0; i < AN * AL; i++) gris[i] = (px[i * 4] + px[i * 4 + 1] + px[i * 4 + 2]) / 765
+          const margen = 0.02 + (1 - ajuste.sensible) * 0.3
+          const cuenta = new Array(ZONAS).fill(0)
+          for (let i = 0; i < AN * AL; i++) {
+            const cambio = anterior ? Math.abs(gris[i] - anterior[i]) > margen : false
+            if (cambio) cuenta[Math.floor((i % AN) / AN * ZONAS)]++
+            difDatos.data[i * 4] = difDatos.data[i * 4 + 1] = difDatos.data[i * 4 + 2] = 255
+            difDatos.data[i * 4 + 3] = cambio ? 255 : 0
+          }
+          dc.putImageData(difDatos, 0, 0)
+          anterior = gris
+          // de pixeles a 0–1: un 20 % de la zona en movimiento ya es el máximo
+          for (let z = 0; z < ZONAS; z++) mov[z] = seguir(mov[z], limitar(cuenta[z] / (AN * AL / ZONAS) / 0.2), 0.25, dt)
+        }
+        if (!video) { mov.fill(0); anterior = null }
+
+        const activas = mov.map(m => m > ajuste.umbral)
+        const valores = rampas.map((r, z) => r.paso(activas[z], dt))
+
+        // tres cortinas con su cascada
+        ctx.fillStyle = "#000"
+        ctx.fillRect(0, 0, w, h)
+        const hueco = w * 0.02, ancho = (w - hueco * (ZONAS + 1)) / ZONAS
+        ctx.lineCap = "round"
+        for (let z = 0; z < ZONAS; z++) {
+          const x0 = hueco + z * (ancho + hueco), v = valores[z]
+          ctx.fillStyle = `hsla(${COLORES[z]}, 50%, ${6 + v * 10}%, 1)`
+          ctx.fillRect(x0, 0, ancho, h)
+          ctx.strokeStyle = `hsla(${COLORES[z]}, 80%, ${50 + v * 30}%, ${0.15 + v * 0.85})`
+          ctx.lineWidth = (1 + v * 2) * devicePixelRatio
+          ctx.beginPath()
+          for (const g of gotas[z]) {
+            g.y += g.v * dt * (0.08 + v * 0.9)
+            if (g.y - g.l > 1) { g.y = 0; g.x = Math.random() }
+            const x = x0 + g.x * ancho
+            ctx.moveTo(x, (g.y - g.l * (0.4 + v)) * h)
+            ctx.lineTo(x, g.y * h)
+          }
+          ctx.stroke()
+        }
+
+        // lo que se movió, encima
+        if (video && ajuste.ver > 0) {
+          const marco = encuadrar(video, w, h)
+          ctx.globalAlpha = ajuste.ver
+          ctx.imageSmoothingEnabled = false
+          // dif ya está en espejo: se dibuja sin voltear, cubriendo como el video
+          const s = marco.escala, dw = video.videoWidth * s, dh = video.videoHeight * s
+          ctx.drawImage(dif, (w - dw) / 2, (h - dh) / 2, dw, dh)
+          ctx.imageSmoothingEnabled = true
+          ctx.globalAlpha = 1
+        }
+
+        const fmt = a => a.map(x => x.toFixed(1)).join(" · ")
+        mostrar("vSensor", video ? mov.map(m => Math.round(m * 100)).join(" · ") : "—")
+        mostrar("vEvento", video ? activas.map((a, z) => a ? ["izq", "centro", "der"][z] : "–").join(" · ") : "—")
+        mostrar("vRampa", fmt(valores))
+        mostrar("vParam", valores.map(v => Math.round(v * 100)).join(" · ") + " %")
+        dibujarGrafica()
+      },
+    })
+  </script>
+</body>
+</html>

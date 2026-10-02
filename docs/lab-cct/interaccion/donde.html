@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dónde estás · Laboratorio · Sesión 09</title>
+  <meta name="description" content="Interactividad 2 de 5: el modelo encuentra el cuerpo y una luz sigue a la persona." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <link rel="stylesheet" href="comun.css" />
+  <style>
+    .planta-caja { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.6rem; align-items: start; }
+    #planta { display: block; width: 100%; aspect-ratio: 4 / 3; background: #000; }
+    .planta-caja p { margin: 0; font-size: var(--fs-sec); color: var(--ink-2); }
+    @media (max-width: 600px) { .planta-caja { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <p class="eyebrow">Laboratorio · Sesión 09 · Interactividad 2 de 5</p>
+    <h1 class="title">Dónde estás</h1>
+    <p class="lede">
+      El modelo encuentra 33 puntos del cuerpo: hombros, codos, caderas,
+      rodillas. Con el centro de la cadera se sabe dónde está la persona, y
+      una luz la sigue. No basta con saber que alguien se movió: aquí importa
+      la posición.
+    </p>
+  </header>
+
+  <main class="envoltura">
+    <div class="escena-caja"><canvas id="escena" aria-label="Una luz que sigue a la persona"></canvas></div>
+    <div class="columna">
+      <div class="fila">
+        <button id="btnCamara" type="button" class="btn">Encender cámara</button>
+        <label class="btn">Usar un video<input id="archivo" type="file" accept="video/*"></label>
+        <button id="btnCompleta" type="button" class="btn">Pantalla completa</button>
+        <span id="estado" class="estado" role="status">Nada se graba ni se envía.</span>
+      </div>
+
+      <div class="cadena">
+        <div><span class="rotulo">Sensor</span><span class="valor" id="vSensor">—</span><span class="nota">centro de la cadera, x · y</span></div>
+        <div><span class="rotulo">Evento</span><span class="valor" id="vEvento">—</span><span class="nota">¿hay un cuerpo?</span></div>
+        <div><span class="rotulo">Rampa</span><span class="valor" id="vRampa">0.00</span><span class="nota">la luz aparece y se apaga</span></div>
+        <div><span class="rotulo">Parámetro</span><span class="valor" id="vParam">—</span><span class="nota">dónde va la luz, ya suavizado</span></div>
+      </div>
+
+      <div class="planta-caja">
+        <canvas id="planta" aria-label="Vista de planta estimada"></canvas>
+        <p><strong>Vista de planta, estimada.</strong> Lo mismo visto desde arriba: de izquierda a derecha es la x del cuerpo, y la distancia a la cámara sale del ancho de los hombros. Entre más cerca, más abajo. Es lo que se proyectaría en el piso.</p>
+      </div>
+
+      <div class="deslizadores">
+        <div class="deslizador"><label for="seguir">Seguimiento <output id="seguirOut"></output></label><input id="seguir" type="range" min="0.01" max="1" step="0.01" value="0.12"></div>
+        <div class="deslizador"><label for="tamano">Tamaño de la luz <output id="tamanoOut"></output></label><input id="tamano" type="range" min="0.05" max="0.6" step="0.01" value="0.25"></div>
+        <div class="deslizador"><label for="subida">Subida <output id="subidaOut"></output></label><input id="subida" type="range" min="0" max="3" step="0.1" value="0.5"></div>
+        <div class="deslizador"><label for="bajada">Bajada <output id="bajadaOut"></output></label><input id="bajada" type="range" min="0" max="6" step="0.1" value="2"></div>
+        <div class="deslizador"><label for="camara">Cámara visible <output id="camaraOut"></output></label><input id="camara" type="range" min="0" max="1" step="0.01" value="0.3"></div>
+      </div>
+
+      <section class="texto">
+        <h2>Qué hace</h2>
+        <p>Los puntos blancos son lo que el modelo encuentra. La luz no va directo al cuerpo: cada cuadro avanza una parte del camino, y esa parte es el <em>seguimiento</em>. Con 1 la luz salta junto con la persona y tiembla con ella; con 0.05 llega tarde y flota. Esa diferencia cambia por completo cómo se siente la pieza.</p>
+        <p>Si nadie está, la luz se queda donde vio a la persona por última vez y se apaga en el tiempo de la bajada.</p>
+        <h2>Para un proyecto</h2>
+        <p>Una luz, una mancha o una textura que acompaña a quien camina; una zona del piso que se enciende cuando alguien la pisa; una imagen que se corre para no dejarse alcanzar. Con dos números, x y distancia, se puede dividir el cuarto en zonas.</p>
+        <h2>Cuidado</h2>
+        <p>Este modelo también espera ver a la persona de frente o de lado. Una cámara en el techo, mirando hacia abajo, ve cabezas y hombros, y ahí el modelo casi no encuentra nada. Para proyectar en el piso conviene poner la cámara en diagonal desde una esquina, o usar la <a href="movimiento.html">diferencia entre cuadros</a>, que no necesita reconocer un cuerpo.</p>
+      </section>
+
+      <footer class="pie">
+        <a href="silueta.html">← Silueta</a>
+        <a href="./">Interactividad</a>
+        <a href="cerca.html">Qué tan cerca →</a>
+      </footer>
+    </div>
+  </main>
+
+  <script type="module">
+    import { escenario, tarea, mediapipe, Rampa, seguir, limitar, deslizador, mostrar, encuadrar } from "./comun.js"
+
+    const ajuste = {}
+    const rampa = new Rampa()
+    deslizador("seguir", v => ajuste.seguir = v, v => v.toFixed(2))
+    deslizador("tamano", v => ajuste.tamano = v, v => v.toFixed(2))
+    deslizador("subida", v => rampa.subida = v, v => v.toFixed(1) + " s")
+    deslizador("bajada", v => rampa.bajada = v, v => v.toFixed(1) + " s")
+    deslizador("camara", v => ajuste.camara = v, v => v.toFixed(2))
+
+    let modelo = null, ultimo = -1, puntos = null
+    const meta = { x: 0.5, y: 0.5, d: 0.5 }      // lo que dice el modelo, 0–1 en espejo
+    const luz = { x: 0.5, y: 0.5, d: 0.5 }       // lo que se dibuja, suavizado
+    const planta = document.getElementById("planta")
+    const pc = planta.getContext("2d")
+    const rastro = []
+
+    escenario({
+      async preparar () {
+        const { vision } = await mediapipe()
+        modelo = await tarea(vision.PoseLandmarker,
+          "/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task",
+          { numPoses: 1 })
+      },
+      cuadro ({ video, ctx, w, h, dt, t }) {
+        ctx.fillStyle = "#000"
+        ctx.fillRect(0, 0, w, h)
+        if (!video) { puntos = null }
+
+        if (video && modelo && video.currentTime !== ultimo) {
+          ultimo = video.currentTime
+          const r = modelo.detectForVideo(video, performance.now())
+          puntos = r.landmarks[0] || null
+          if (puntos) {
+            // el centro de la cadera; si no se ve, el de los hombros
+            const visible = i => (puntos[i].visibility ?? 1) > 0.5
+            const [a, b] = visible(23) && visible(24) ? [23, 24] : [11, 12]
+            meta.x = limitar(1 - (puntos[a].x + puntos[b].x) / 2)
+            meta.y = limitar((puntos[a].y + puntos[b].y) / 2)
+            // la distancia: entre más anchos se ven los hombros, más cerca
+            meta.d = limitar(Math.abs(puntos[11].x - puntos[12].x) / 0.45)
+          }
+        }
+
+        const hay = !!puntos
+        const valor = rampa.paso(hay, dt)
+        if (hay) for (const c of ["x", "y", "d"]) luz[c] = seguir(luz[c], meta[c], ajuste.seguir, dt)
+
+        if (video) {
+          const marco = encuadrar(video, w, h)
+          ctx.globalAlpha = ajuste.camara
+          marco.dibujar(ctx)
+          ctx.globalAlpha = 1
+
+          // la luz
+          if (valor > 0) {
+            const cx = luz.x * w, cy = luz.y * h
+            const r = ajuste.tamano * Math.min(w, h) * (0.8 + Math.sin(t * 1.3) * 0.08)
+            const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r)
+            g.addColorStop(0, `rgba(255, 220, 160, ${0.95 * valor})`)
+            g.addColorStop(0.4, `rgba(255, 140, 90, ${0.5 * valor})`)
+            g.addColorStop(1, "rgba(255, 80, 60, 0)")
+            ctx.globalCompositeOperation = "lighter"
+            ctx.fillStyle = g
+            ctx.fillRect(0, 0, w, h)
+            ctx.globalCompositeOperation = "source-over"
+          }
+
+          // los puntos del cuerpo
+          if (puntos) {
+            ctx.fillStyle = "rgba(255,255,255,0.8)"
+            const rr = 3 * devicePixelRatio
+            for (const p of puntos) {
+              const q = marco.punto(p.x, p.y)
+              ctx.beginPath()
+              ctx.arc(q.x, q.y, rr, 0, Math.PI * 2)
+              ctx.fill()
+            }
+          }
+        }
+
+        // la vista de planta
+        const pw = planta.width = planta.clientWidth * devicePixelRatio
+        const ph = planta.height = planta.clientHeight * devicePixelRatio
+        pc.fillStyle = "#000"
+        pc.fillRect(0, 0, pw, ph)
+        pc.strokeStyle = "#333"
+        pc.strokeRect(0.5, 0.5, pw - 1, ph - 1)
+        pc.fillStyle = "#666"
+        pc.font = `${11 * devicePixelRatio}px "IBM Plex Mono", monospace`
+        pc.fillText("cámara", pw / 2 - 22 * devicePixelRatio, ph - 6 * devicePixelRatio)
+        if (hay) rastro.push({ x: luz.x, d: luz.d })
+        if (rastro.length > 90) rastro.shift()
+        rastro.forEach((p, i) => {
+          pc.fillStyle = `rgba(255, 140, 90, ${(i / rastro.length) * 0.5 * valor})`
+          pc.beginPath()
+          pc.arc(p.x * pw, (0.1 + p.d * 0.75) * ph, 4 * devicePixelRatio, 0, Math.PI * 2)
+          pc.fill()
+        })
+        if (valor > 0) {
+          pc.fillStyle = `rgba(255, 220, 160, ${valor})`
+          pc.beginPath()
+          pc.arc(luz.x * pw, (0.1 + luz.d * 0.75) * ph, 9 * devicePixelRatio, 0, Math.PI * 2)
+          pc.fill()
+        }
+
+        mostrar("vSensor", hay ? `${meta.x.toFixed(2)} · ${meta.y.toFixed(2)}` : "—")
+        mostrar("vEvento", video ? (hay ? "sí" : "no") : "—")
+        mostrar("vRampa", valor.toFixed(2))
+        mostrar("vParam", `${luz.x.toFixed(2)} · ${luz.y.toFixed(2)}`)
+      },
+    })
+  </script>
+</body>
+</html>

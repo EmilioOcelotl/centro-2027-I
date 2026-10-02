@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interactividad · Laboratorio · Sesión 09</title>
+  <meta name="description" content="Sesión 09: la cámara como sensor y cinco ejemplos con MediaPipe para probar en el navegador." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <link rel="stylesheet" href="comun.css" />
+  <style>
+    .pasos { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 0.6rem 0 1rem; }
+    .pasos > div { background: var(--paper); padding: 0.6rem 0.7rem; }
+    .pasos b { display: block; font-family: var(--mono); font-weight: 500; font-size: var(--fs-sec); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem; }
+    .pasos span { font-size: var(--fs-rotulo); color: var(--ink-2); }
+    @media (max-width: 640px) { .pasos { grid-template-columns: 1fr; } }
+
+    .ejemplos { list-style: none; margin: 0.4rem 0 0; padding: 0; counter-reset: ej; }
+    .ejemplos li { border-top: 1px solid var(--rule); padding: 0.9rem 0; display: grid; grid-template-columns: 2.4rem 1fr; gap: 0 0.6rem; counter-increment: ej; }
+    .ejemplos li::before { content: counter(ej, decimal-leading-zero); font-family: var(--mono); font-size: var(--fs-sec); color: var(--ink-2); padding-top: 0.25rem; }
+    .ejemplos a { font-family: var(--sans); font-weight: 600; font-size: clamp(1.1rem, 1rem + 0.5vw, 1.3rem); color: var(--ink); }
+    .ejemplos p { margin: 0.2rem 0 0; font-size: var(--fs-sec); color: var(--ink-2); }
+    .ejemplos .lee { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink); }
+
+    .plantilla { font-family: var(--mono); font-size: var(--fs-sec); background: var(--paper-2); border-left: 3px solid var(--c); padding: 0.8rem 0.9rem; margin: 0.4rem 0 1rem; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <p class="eyebrow">Laboratorio de ciencia, creatividad y tecnología · Sesión 09</p>
+    <h1 class="title">Interactividad</h1>
+    <p class="lede">
+      La cámara es el sensor más fácil de echar a andar: ya está en la
+      computadora y no hay que conectar nada. Cinco ejemplos de lo que se
+      puede leer con ella y de cómo esa lectura cambia una imagen.
+    </p>
+  </header>
+
+  <main class="envoltura">
+    <div class="columna">
+      <section class="texto" style="border-top:0;margin-top:0">
+        <h2>Una interacción es una cadena</h2>
+        <p>En el parcial casi todos escribieron "una cámara o un sensor que detecte a la persona". Eso dice qué escucha la pieza, pero no qué hace con lo que escucha. Cada ejemplo de hoy muestra la cadena completa:</p>
+        <div class="pasos">
+          <div><b>Sensor</b><span>lo que se mide: una cámara, un micrófono</span></div>
+          <div><b>Número</b><span>lo que sale: una posición, una distancia, una cantidad</span></div>
+          <div><b>Evento</b><span>el número pasa de un umbral, o aparece un gesto</span></div>
+          <div><b>Rampa</b><span>el cambio sube, se sostiene y baja con un tiempo</span></div>
+          <div><b>Parámetro</b><span>lo que cambia en la imagen: brillo, posición, escena</span></div>
+        </div>
+        <p>La rampa es lo que más se olvida. Sin ella, la imagen sigue al sensor tal como llega: tiembla, salta, se prende y se apaga. Con ella, la respuesta tiene un ritmo, y ese ritmo es una decisión de diseño tanto como el color.</p>
+      </section>
+
+      <section class="texto">
+        <h2>Cinco ejemplos</h2>
+        <ol class="ejemplos">
+          <li><div><a href="silueta.html">Silueta</a><p><span class="lee">segmentación de cuerpo</span> · separa a la persona del fondo, pixel por pixel. Un aura rodea el cuerpo.</p></div></li>
+          <li><div><a href="donde.html">Dónde estás</a><p><span class="lee">pose, 33 puntos</span> · la posición de la persona en el cuadro. Una luz la sigue, con una vista de planta.</p></div></li>
+          <li><div><a href="cerca.html">Qué tan cerca</a><p><span class="lee">detección de cara</span> · el tamaño de la cara dice la distancia. Al acercarse, la comida del plato se desvanece.</p></div></li>
+          <li><div><a href="manos.html">Manos</a><p><span class="lee">manos y gestos</span> · dónde está cada mano y qué gesto hace. Las manos empujan y agitan una corriente.</p></div></li>
+          <li><div><a href="movimiento.html">Movimiento</a><p><span class="lee">diferencia entre cuadros, sin modelo</span> · dónde cambió la imagen. Tres zonas, tres cascadas.</p></div></li>
+        </ol>
+        <p>Las cuatro primeras usan <a href="https://ai.google.dev/edge/mediapipe/solutions/guide">MediaPipe</a>, una colección de modelos de Google que corren dentro del navegador. La quinta no usa inteligencia artificial: es una resta entre dos imágenes.</p>
+      </section>
+
+      <section class="texto">
+        <h2>Antes de abrirlos</h2>
+        <ul>
+          <li>Funcionan mejor en Chrome. La primera vez el navegador pide permiso para la cámara.</li>
+          <li>El modelo tarda unos segundos en llegar la primera vez; después carga más rápido.</li>
+          <li>Nada se graba ni se envía: todo pasa en tu computadora.</li>
+          <li>Sin cámara, <em>Usar un video</em> abre cualquier video tuyo, por ejemplo uno grabado con el teléfono.</li>
+          <li><em>Pantalla completa</em> deja sólo la imagen, para proyectarla.</li>
+        </ul>
+      </section>
+
+      <section class="texto">
+        <h2>Escribe</h2>
+        <p>Después de probar los cinco, elige el que más se acerque a tu proyecto final y escribe en Brightspace una o dos frases con esta forma:</p>
+        <div class="plantilla">Cuando ______________ (qué hace la persona),<br>______________ (qué cambia en la imagen)<br>______________ (de golpe, o en cuántos segundos),<br>y cuando se va, ______________.</div>
+        <p>Agrega cuál de los cinco usarías, o si ninguno alcanza, qué le falta. Si tu proyecto responde al sonido y no a la cámara, escribe lo mismo con el micrófono como sensor.</p>
+      </section>
+
+      <section class="texto">
+        <h2>Después</h2>
+        <p>Los mismos modelos existen dentro de TouchDesigner con el complemento <a href="https://github.com/torinmb/mediapipe-touchdesigner">MediaPipe TouchDesigner</a>. Lo que hoy es un número en una página allá es un canal de un CHOP, y la rampa es un Lag, un Filter o un Trigger.</p>
+      </section>
+
+      <footer class="pie">
+        <a href="../">← Laboratorio de ciencia, creatividad y tecnología</a>
+        <a href="silueta.html">Empezar: Silueta →</a>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>
