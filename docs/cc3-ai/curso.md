@@ -138,10 +138,14 @@ sesiones:
       - {texto: "Referencia: funciones de Hydra", url: "https://hydra.ojack.xyz/api/"}
     codigo: {texto: "ondas.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-ai/sesion09/ondas.js"}
   - n: 10
-    titulo: "Asesoría"
-    tool: ""
+    titulo: "Interfaces con controlP5"
+    tool: "Processing · controlP5"
     desc:
-      - "Revisión de ejercicios de oscilación"
+      - "Interfaces en Processing con la biblioteca controlP5."
+      - "Vamos a revisar el ejemplo de matrix: Archivo → Ejemplos → Contributed Libraries → ControlP5 → ControlP5matrix."
+      - "Después: una versión modificada para reproducir audio. La comparto por Brightspace."
+      - "Reflexión: la relación entre interfaz y eventos."
+      - "Si nos da tiempo: inicio de Strudel."
   - n: 11
     titulo: "Animación: trigonometría II"
     tool: "Processing"
