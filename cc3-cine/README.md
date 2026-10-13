@@ -9,6 +9,7 @@ El programa, el calendario y las 16 sesiones viven en
 |---|---|---|
 | [`sesion03/`](sesion03/) | 03 | Iteraciones y pixeles: color sólido, gradiente y slitscan. Un solo sketch con los tres ejercicios |
 | [`sesion07/`](sesion07/) | 07 | Encuadre con las manos: Hydra, ml5 y p5. El encuadre de las dos manos filtra el sketch. Montaje: sketches de Hydra en el tiempo, con corte o fundido. Datamosh con la cámara |
+| [`sesion10/`](sesion10/) | 10 | Introducción a Strudel: mininotación, efectos, `stack` y tres escenas con `arrange`. Se pega en [strudel.cc](https://strudel.cc/) |
 
 ## Cómo abrir un sketch
 

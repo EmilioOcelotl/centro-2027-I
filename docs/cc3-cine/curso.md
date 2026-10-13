@@ -40,10 +40,10 @@ calendario:
 # 4 · ESTRUCTURA — define la forma del diagrama y la evaluación
 estructura:
   iteraciones:
-    - {nombre: "Pixeles e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos, manipulación de imagen fija y una primera entrada al audio."}
-    - {nombre: "Imágenes en movimiento",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
+    - {nombre: "Pixeles e imagen fija", sesiones: [1, 9],  nota: "Transformaciones, vectores, programación orientada a objetos, manipulación de imagen fija y una primera entrada al audio."}
+    - {nombre: "Imágenes en movimiento",   sesiones: [10, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
   entregas:                         # caen en una sesión y cierran la iteración
-    - {sesion: 8,  etiqueta: "Trabajo parcial", peso: 30}
+    - {sesion: 9,  etiqueta: "Trabajo parcial", peso: 30}
     - {sesion: 16, etiqueta: "Trabajo final",             peso: 40}
   continuas:                        # se califican sin fecha fija
     - {etiqueta: "Actividades", peso: 30}
@@ -131,23 +131,28 @@ sesiones:
       - {texto: "montaje.js",  url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion07/montaje.js"}
       - {texto: "datamosh.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion07/datamosh.js"}
   - n: 8
+    titulo: "Asesorías III"
+    tool: ""
+    desc:
+      - "Asesorías y preparación del proyecto parcial"
+  - n: 9
     titulo: "Entrega parcial"
     tool: ""
     desc:
-      - "Ejercicios de programación orientada a objetos aplicada a la manipulación de imagen fija"
-  - n: 9
-    titulo: "Animación: trigonometría I"
-    tool: "Processing"
-    desc:
-      - "Introducción a las funciones trigonométricas"
-      - "Triángulo rectángulo y distancia euclidiana"
-      - "Periodicidad"
-      - "Oscilaciones: amplitud, frecuencia y fase"
+      - "Presentación del proyecto parcial"
   - n: 10
-    titulo: "Asesoría"
-    tool: ""
+    titulo: "Introducción a Strudel: ritmo y escenas"
+    tool: "Strudel"
     desc:
-      - "Revisión de ejercicios de oscilación"
+      - {texto: "Punto de partida: el ejemplo de Strudel para modificar", url: "https://strudel.cc/workshop/getting-started/"}
+      - "Mininotación: el ciclo, silencios, subdivisiones, repeticiones y alternancias"
+      - "Efectos: volumen, velocidad, filtros, reverberación, eco"
+      - "stack: varias capas al mismo tiempo, cada una con sus efectos"
+      - "arrange: secciones una tras otra, medidas en ciclos"
+      - "Ejercicio libre: tres escenas con stack y arrange"
+      - {texto: "Referencia: primeros sonidos", url: "https://strudel.cc/workshop/first-sounds/"}
+      - {texto: "Referencia: primeros efectos", url: "https://strudel.cc/workshop/first-effects/"}
+    codigo: {texto: "strudel.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion10/strudel.js"}
   - n: 11
     titulo: "Animación: trigonometría II"
     tool: "Processing"
