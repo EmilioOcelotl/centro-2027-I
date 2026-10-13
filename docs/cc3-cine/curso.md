@@ -144,13 +144,13 @@ sesiones:
     titulo: "Introducción a Strudel: ritmo y escenas"
     tool: "Strudel"
     desc:
-      - {texto: "Punto de partida: el ejemplo de Strudel para modificar", url: "https://strudel.cc/workshop/getting-started/"}
+      - {texto: "Primero: probar y modificar el ejemplo principal", url: "https://strudel.cc/workshop/getting-started/"}
+      - {texto: "Después: el tutorial de primeros sonidos", url: "https://strudel.cc/workshop/first-sounds/"}
       - "Mininotación: el ciclo, silencios, subdivisiones, repeticiones y alternancias"
       - "Efectos: volumen, velocidad, filtros, reverberación, eco"
       - "stack: varias capas al mismo tiempo, cada una con sus efectos"
       - "arrange: secciones una tras otra, medidas en ciclos"
       - "Ejercicio libre: tres escenas con stack y arrange"
-      - {texto: "Referencia: primeros sonidos", url: "https://strudel.cc/workshop/first-sounds/"}
       - {texto: "Referencia: primeros efectos", url: "https://strudel.cc/workshop/first-effects/"}
     codigo: {texto: "strudel.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion10/strudel.js"}
   - n: 11
