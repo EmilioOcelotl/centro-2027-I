@@ -41,7 +41,7 @@ calendario:
 estructura:
   iteraciones:
     - {nombre: "Pixeles e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos, manipulación de imagen fija y una primera entrada al audio."}
-    - {nombre: "Imágenes en movimiento",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
+    - {nombre: "Audio",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
   entregas:                         # caen en una sesión y cierran la iteración
     - {sesion: 9,  etiqueta: "Trabajo parcial", peso: 30}
     - {sesion: 16, etiqueta: "Trabajo final",             peso: 40}
