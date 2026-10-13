@@ -154,7 +154,7 @@ sesiones:
       - {texto: "Referencia: primeros efectos", url: "https://strudel.cc/workshop/first-effects/"}
     codigo: {texto: "strudel.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion10/strudel.js"}
   - n: 11
-    titulo: "Animación: trigonometría II"
+    titulo: "Animación: trigonometría I"
     tool: "Processing"
     desc:
       - "Coordenadas polares y cartesianas"
