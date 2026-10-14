@@ -134,13 +134,15 @@ sesiones:
     desc:
       - "Asesorías"
   - n: 9
-    titulo: "Últimos detalles y servos"
+    titulo: "Últimos detalles, servos y NeoPixel"
     tool: "Arduino IDE"
     desc:
       - "¿Qué revisaron con la otra clase?"
       - "Revisión del avance de cada proyecto"
       - "Si hay pendientes: asesorías técnicas"
-      - "Si ya terminaron: servomotores. Qué son, cómo se conectan y cómo se controla el ángulo"
+      - {texto: "Si ya terminaron: servomotores. Qué son, cómo se conectan y cómo se controla el ángulo", url: "https://projecthub.arduino.cc/hockey1alex/servo-sweep-1a24d6"}
+      - {texto: "Si ya terminaron: tiras NeoPixel. Conexión básica, resistencia en la señal y alimentación", url: "https://learn.adafruit.com/adafruit-neopixel-uberguide/basic-connections"}
+      - {texto: "Advertencia: servos y NeoPixel en el mismo proyecto necesitan fuente externa con tierra compartida, y las dos librerías chocan: el servo puede temblar cuando cambian los LEDs", url: "https://learn.adafruit.com/neopixels-and-servos"}
   - n: 10
     titulo: "Lectura, interpretación y estados"
     tool: "Arduino IDE"
@@ -192,6 +194,9 @@ referencias:
   - {texto: "Tinkercad — simulador de circuitos en el navegador", url: "https://www.tinkercad.com/"}
   - {texto: "Wokwi — otro simulador, con placas que Tinkercad no incluye (Nano, ESP32)", url: "https://wokwi.com"}
   - {texto: "Arduino — referencia del lenguaje", url: "https://docs.arduino.cc/language-reference/"}
+  - {texto: "Servo sweep — conexión y barrido básico de un servomotor", url: "https://projecthub.arduino.cc/hockey1alex/servo-sweep-1a24d6"}
+  - {texto: "Adafruit NeoPixel Überguide — conexiones básicas", url: "https://learn.adafruit.com/adafruit-neopixel-uberguide/basic-connections"}
+  - {texto: "Adafruit — NeoPixel y servos en el mismo proyecto", url: "https://learn.adafruit.com/neopixels-and-servos"}
   - {texto: "Unit Electronics (tienda)", url: "https://uelectronics.com"}
   - {texto: "Steren (tienda)", url: "https://www.steren.com.mx"}
 
