@@ -43,7 +43,7 @@ estructura:
     - {nombre: "Circuitos, simulación y movimiento", sesiones: [1, 8],  nota: "De la simulación en Tinkercad al circuito físico: componentes, sensores, servos, motores de pasos y alimentación."}
     - {nombre: "Datos, interfaz y proyecto final",   sesiones: [9, 16], nota: "Comunicación serial, calibración y prototipado web, e iteración del proyecto compartido con Diseño de moda y tecnología portable."}
   entregas:                         # caen en una sesión y cierran la iteración
-    - {sesion: 8,  etiqueta: "Proyecto parcial", peso: 30}
+    - {sesion: 9,  etiqueta: "Proyecto parcial", peso: 30}
     - {sesion: 16, etiqueta: "Proyecto final",                   peso: 40}
   continuas:                        # se califican sin fecha fija
     - {etiqueta: "Ejercicios de electrónica y código en Arduino", peso: 30}
@@ -83,11 +83,11 @@ sesiones:
     desc:
       - "¿Qué han revisado en la otra clase?"
       - "Repaso del encendido de LED. Escritura sin lectura"
-      - "Botón comoentrada digital, dos estados"
+      - "Botón como entrada digital, dos estados"
       - "Potenciómetro como entrada analógica, un rango de valores"
       - "Monitor serial para ver los números que entran"
       - "Agregar un LED a los dos ejemplos de lectura con variable para guardar el valor, condicional para el botón y mapeo para el potenciómetro"
-      - "Actividad: investigación individual sobre sensores. 
+      - "Actividad: investigación individual sobre sensores."
       - "¿Qué se puede medir del cuerpo o del ambiente que le importe a tu proyecto?"
       - "¿Qué detecta? ¿Con qué sensor? ¿Qué responde? Entregar un documento sencillo con el resultado"
   - n: 4
@@ -95,7 +95,7 @@ sesiones:
     tool: "Tinkercad + Arduino IDE"
     desc:
       - "Configuración de equipos e ideas preliminares de proyectos"
-      - "Ssensores que aparecieron"
+      - "Sensores que aparecieron"
       - "Programación de sensores en Tinkercad"
       - "Rangos y calibración: el mínimo y el máximo de cada sensor"
       - "Umbrales (if/else): a partir de qué valor pasa algo"
@@ -128,12 +128,19 @@ sesiones:
       - "Asesorías"
       - "Mecanismos"
       - "Si da tiempo, podemos empezar a hablar de servos y motores"
-  - n: 9
-    titulo: "Últimos detalles"
-    tool: ""
+  - n: 8
+    titulo: "Asesorías III"
+    tool: "Arduino IDE"
     desc:
-      - "En esta sesión vamos a comentar los útimos detalles"
-      - "Asesorías técnicas"
+      - "Asesorías"
+  - n: 9
+    titulo: "Últimos detalles y servos"
+    tool: "Arduino IDE"
+    desc:
+      - "¿Qué revisaron con la otra clase?"
+      - "Revisión del avance de cada proyecto"
+      - "Si hay pendientes: asesorías técnicas"
+      - "Si ya terminaron: servomotores. Qué son, cómo se conectan y cómo se controla el ángulo"
   - n: 10
     titulo: "Lectura, interpretación y estados"
     tool: "Arduino IDE"
