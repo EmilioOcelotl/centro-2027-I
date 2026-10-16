@@ -150,19 +150,17 @@ sesiones:
     tool: "minimapper · control"
     desc:
       - "Regreso del receso. Seguimos en minimapper: la interacción se resuelve en el navegador"
-      - "Antes de empezar, recarga forzada de minimapper. Chrome: Ctrl+Shift+R en Windows, Cmd+Shift+R en Mac. Safari: Cmd+Option+R"
-      - "Sistema: entrada → proceso → salida. La cadena de la sesión 9 cabe en las tres cajas"
+      - {texto: "Sesión 9: cinco ejemplos de interacción con la cámara", url: "interaccion/"}
+      - "Recarga forzada. Chrome: Ctrl+Shift+R en Windows, Cmd+Shift+R en Mac. Safari: Cmd+Option+R"
+      - "Sistema: entrada → proceso → salida."
       - "¿Qué ve cada entrada? Cambio, máscara, posición, cara, gesto"
-      - "Salida: calibración. Hydra se calibra con código; video, imagen y cámara, con nivel, saturación y tinte en cada quad"
+      - "Salida: calibración. Video, imagen y cámara, con nivel, saturación y tinte en cada quad"
       - "Actividad: calibrar las fuentes del proyecto y guardar la sesión"
-      - "Entrada: control en otra ventana, como el video de YouTube con Pantalla. La cercanía de la cara llega a minimapper como número"
-      - "Proceso: conectar la señal a un quad. Destino (nivel, saturación o tinte), subida, bajada, invertir"
+      - "Entrada: control en otra ventana. La cercanía de la cara llega a minimapper como número"
+      - "Proceso: conectar la señal a un quad. Destino (nivel, saturación o tinte) e invertir. La salida sigue a la lectura, sin suavizado"
       - "En Hydra: () => sensor.cercania"
-      - "Montaje: dos pantallas en modo extendido, control a la vista en la laptop y minimapper en el proyector"
-      - "Actividad: el sistema del proyecto final. Entrada, proceso, salida y qué pasa cuando no hay nadie. Subir a Brightspace"
       - {texto: "minimapper", url: "https://emilioocelotl.github.io/minimapper/"}
       - {texto: "control", url: "https://emilioocelotl.github.io/minimapper/control/"}
-      - {texto: "Sesión 9: cinco ejemplos de interacción con la cámara", url: "interaccion/"}
   - n: 11
     titulo: "Geometría que minimapper no da"
     tool: "TouchDesigner · Kantan Mapper"
