@@ -146,14 +146,23 @@ sesiones:
       - "Escribir en Brightspace: cuando la persona hace ___, en la imagen cambia ___, de golpe o en cuántos segundos, y qué pasa cuando se va"
       - {texto: "Página: cinco ejemplos de interacción con la cámara", url: "interaccion/"}
   - n: 10
-    titulo: "TouchDesigner: traducción"
-    tool: "TouchDesigner"
+    titulo: "Sistema: entrada, proceso, salida"
+    tool: "minimapper · control"
     desc:
-      - "Regreso del receso: qué le falta a cada proyecto, con el documento del parcial y lo escrito en la sesión 9"
-      - "Red de operadores: TOP, CHOP, SOP, DAT"
-      - "Movie File In, Noise, Feedback"
-      - "Salida a proyector: Window COMP y perform mode"
-      - "Ejercicio: rehacer en TD algo que ya funciona en minimapper"
+      - "Regreso del receso. Seguimos en minimapper: la interacción se resuelve en el navegador"
+      - "Antes de empezar, recarga forzada de minimapper. Chrome: Ctrl+Shift+R en Windows, Cmd+Shift+R en Mac. Safari: Cmd+Option+R"
+      - "Sistema: entrada → proceso → salida. La cadena de la sesión 9 cabe en las tres cajas"
+      - "¿Qué ve cada entrada? Cambio, máscara, posición, cara, gesto"
+      - "Salida: calibración. Hydra se calibra con código; video, imagen y cámara, con nivel, saturación y tinte en cada quad"
+      - "Actividad: calibrar las fuentes del proyecto y guardar la sesión"
+      - "Entrada: control en otra ventana, como el video de YouTube con Pantalla. La cercanía de la cara llega a minimapper como número"
+      - "Proceso: conectar la señal a un quad. Destino (nivel, saturación o tinte), subida, bajada, invertir"
+      - "En Hydra: () => sensor.cercania"
+      - "Montaje: dos pantallas en modo extendido, control a la vista en la laptop y minimapper en el proyector"
+      - "Actividad: el sistema del proyecto final. Entrada, proceso, salida y qué pasa cuando no hay nadie. Subir a Brightspace"
+      - {texto: "minimapper", url: "https://emilioocelotl.github.io/minimapper/"}
+      - {texto: "control", url: "https://emilioocelotl.github.io/minimapper/control/"}
+      - {texto: "Sesión 9: cinco ejemplos de interacción con la cámara", url: "interaccion/"}
   - n: 11
     titulo: "Geometría que minimapper no da"
     tool: "TouchDesigner · Kantan Mapper"
