@@ -8,3 +8,4 @@ El programa, el calendario y las 16 sesiones viven en
 | Carpeta | Sesión | Contenido |
 |---|---|---|
 | [`sesion09/`](sesion09/) | 09 | Un número que cambia: seno, azar, listas y micrófono moviendo parámetros en Hydra |
+| [`sesion12/`](sesion12/) | 12 | Análisis de audio en Processing: amplitud, forma de onda y FFT del mismo sonido (`lecturas`); tres bandas que mueven el dibujo (`analisis`) |

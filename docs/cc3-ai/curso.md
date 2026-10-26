@@ -147,19 +147,28 @@ sesiones:
       - "Reflexión: la relación entre interfaz y eventos."
       - "Si nos da tiempo: inicio de Strudel."
   - n: 11
-    titulo: "Animación: trigonometría II"
-    tool: "Processing"
+    titulo: "Introducción a Strudel"
+    tool: "Strudel"
     desc:
-      - "Coordenadas polares y cartesianas"
-      - "Parametrización de un círculo"
-      - "Seno y coseno"
-      - "Lerp"
+      - {texto: "Probar y modificar el ejemplo principal", url: "https://strudel.cc/workshop/getting-started/"}
+      - {texto: "Tutorial de primeros sonidos", url: "https://strudel.cc/workshop/first-sounds/"}
+      - "Mininotación, efectos y capas con stack"
   - n: 12
-    titulo: "Asesoría"
-    tool: ""
+    titulo: "Análisis de audio y proyecto final"
+    tool: "Processing · Sound"
     desc:
-      - "Revisión de ejercicios de trigonometría"
-      - "Ejercicios interactivos aplicados a conceptos de la carrera"
+      - "Primera mitad: cerramos el tema de audio con análisis."
+      - "El mismo sonido entra a tres analizadores y cada uno lo lee de otra forma."
+      - "Amplitud: qué tan fuerte suena. Un solo número para el tamaño, el brillo o la opacidad."
+      - "Forma de onda: cómo se mueve en el tiempo. Muchos números entre -1 y 1."
+      - "FFT: qué frecuencias contiene. Una barra por banda, de graves a agudos."
+      - "Micrófono o archivo: se cambia con usarMicrofono. El archivo va en la carpeta data del sketch."
+      - "Suavizado con lerp: el mismo ajuste que en Hydra con el micrófono."
+      - "Para seguir: analisis.pde junta las bandas en graves, medios y agudos, y cada una mueve algo distinto."
+      - "Segunda mitad: retomamos el proyecto final."
+    codigo:
+      - {texto: "lecturas.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-ai/sesion12/lecturas/lecturas.pde"}
+      - {texto: "analisis.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-ai/sesion12/analisis/analisis.pde"}
   - n: 13
     titulo: "Animación: ruido"
     tool: "Processing"
@@ -175,13 +184,11 @@ sesiones:
       - "Revisión de ejercicios con ruido"
       - "Avances del trabajo final"
   - n: 15
-    titulo: "Animación: sonido y análisis de audio"
-    tool: "Processing · sound"
+    titulo: "Asesoría"
+    tool: ""
     desc:
-      - "Ondas y codificación digital del sonido (sound file y audio sample)"
-      - "Generación de audio: osciladores y ruido"
-      - "Modificación de audio: efectos y filtros"
-      - "Análisis de audio: FFT y amplitud"
+      - "Avances del trabajo final"
+      - "Revisión de los códigos antes de la entrega"
   - n: 16
     titulo: "Entrega final"
     tool: ""
