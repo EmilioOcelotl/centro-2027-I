@@ -33,7 +33,7 @@ calendario:
   inicio: 2026-08-03                # primer día del semestre: la 1ª sesión es el
                                     # primer martes a partir de esta fecha
   dias: [martes]                    # [lunes, miercoles] si son dos por semana
-  festivos: []                      # ningún festivo cae en martes este semestre
+  festivos: [2026-10-20]            # no hubo clase; el programa se recorre una semana
   descansos:
     - {de: 2026-10-05, a: 2026-10-09, etiqueta: "Receso"}
 
@@ -41,7 +41,7 @@ calendario:
 estructura:
   iteraciones:
     - {nombre: "Pixeles e imagen fija", sesiones: [1, 8],  nota: "Transformaciones, vectores, programación orientada a objetos, manipulación de imagen fija y una primera entrada al audio."}
-    - {nombre: "Audio",   sesiones: [9, 16], nota: "Trigonometría, ruido y sonido aplicados a la animación."}
+    - {nombre: "Audio",   sesiones: [9, 16], nota: "Sonido, formas sinusoidales y ruido aplicados a la animación."}
   entregas:                         # caen en una sesión y cierran la iteración
     - {sesion: 9,  etiqueta: "Trabajo parcial", peso: 30}
     - {sesion: 16, etiqueta: "Trabajo final",             peso: 40}
@@ -154,23 +154,35 @@ sesiones:
       - {texto: "Referencia: primeros efectos", url: "https://strudel.cc/workshop/first-effects/"}
     codigo: {texto: "strudel.js", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion10/strudel.js"}
   - n: 11
-    titulo: "Animación: trigonometría I"
-    tool: "Processing"
+    titulo: "Análisis de audio y proyecto final"
+    tool: "Processing · Sound"
     desc:
-      - "Coordenadas polares y cartesianas"
-      - "Parametrización de un círculo"
-      - "Seno y coseno"
-      - "Lerp"
+      - "Primera mitad: análisis de audio. En la S4 lo hicimos con a.fft en Hydra; ahora lo vemos con más detalle en Processing."
+      - "El mismo sonido entra a tres analizadores y cada uno lo lee de otra forma."
+      - "Amplitud: qué tan fuerte suena. Un solo número para el tamaño, el brillo o la opacidad."
+      - "Forma de onda: cómo se mueve en el tiempo. Muchos números entre -1 y 1."
+      - "FFT: qué frecuencias contiene. Una barra por banda, de graves a agudos."
+      - "Micrófono o archivo: se cambia con usarMicrofono. El archivo va en la carpeta data del sketch."
+      - "Suavizado con lerp: lo mismo que a.setSmooth en Hydra."
+      - "Para seguir: analisis.pde junta las bandas en graves, medios y agudos, y cada una mueve algo distinto."
+      - "Segunda mitad: proyecto final. Recuperamos el proyecto parcial y pensamos qué modificaciones lleva."
+      - "Hydra, Processing o Strudel: el entorno lo decide el proyecto."
+    codigo:
+      - {texto: "lecturas.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion11/lecturas/lecturas.pde"}
+      - {texto: "analisis.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion11/analisis/analisis.pde"}
   - n: 12
-    titulo: "Asesoría"
-    tool: ""
+    titulo: "Análisis de audio y proyecto final (segundo grupo)"
+    tool: "Processing · Sound"
     desc:
-      - "Revisión de ejercicios de trigonometría"
-      - "Ejercicios interactivos aplicados a conceptos de cine: movimiento de cámara, ritmo y montaje"
+      - "Misma sesión que la S11. Uno de los grupos no tiene clase en la semana de la S11 y el otro en la de la S12; con las dos sesiones, ambos se ponen al corriente."
+    codigo:
+      - {texto: "lecturas.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion11/lecturas/lecturas.pde"}
+      - {texto: "analisis.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-cine/sesion11/analisis/analisis.pde"}
   - n: 13
-    titulo: "Animación: ruido"
+    titulo: "Animación: formas sinusoidales y ruido"
     tool: "Processing"
     desc:
+      - "Ejemplo de formas sinusoidales: seno y coseno para dibujar y mover formas"
       - "Introducción al ruido"
       - "Diferencia entre ruido y azar"
       - "Espacios de sampleo"
