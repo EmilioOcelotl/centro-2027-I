@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alimentación · Código Creativo 4 · Diseño Textil y Moda</title>
+  <meta name="description" content="Sesión 11: placa, sensor, actuador y batería. Arma la lista, el diagrama y la cuenta de consumo de tu proyecto." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../motor/v1/styles.css" />
+  <style>
+    /* La página hereda del motor la paleta, la tipografía y la medida de la
+       columna. Aquí sólo va lo que el motor no tiene: los selectores, el
+       diagrama y los colores de cada voltaje. El motor no se toca. */
+    :root {
+      --bat: #a86a12;   /* 3.7 V de la batería */
+      --v5:  #b3261e;   /* 5 V del módulo */
+      --v33: #5b4fb3;   /* 3.3 V de la placa */
+      --sig: #0d7f7a;   /* señal */
+      --gnd: #000000;
+    }
+
+    .envoltura { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--pad); }
+
+    .bloque {
+      max-width: var(--readw);
+      margin: 0 auto;
+      padding: clamp(1.4rem, 4vw, 2rem) 0;
+      border-top: 1px solid var(--rule);
+    }
+    .bloque h2 {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: clamp(1.3rem, 1.1rem + 1vw, 1.7rem);
+      line-height: 1.1;
+      margin: 0 0 0.6rem;
+    }
+    .bloque h3 {
+      font-family: var(--mono);
+      font-weight: 500;
+      font-size: var(--fs-rotulo);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      margin: 1.2rem 0 0.4rem;
+    }
+    .bloque p { margin: 0 0 0.8rem; color: var(--ink-2); font-size: var(--fs-prosa); }
+    .bloque code { font-family: var(--mono); font-size: 0.92em; color: var(--ink); }
+
+    /* Placas */
+    .placas { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0.5rem; }
+    .placas label {
+      display: block;
+      border: 1px solid var(--rule);
+      padding: 0.55rem 0.7rem;
+      cursor: pointer;
+      background: var(--paper);
+    }
+    .placas label:hover { background: var(--paper-2); }
+    .placas input { position: absolute; opacity: 0; pointer-events: none; }
+    .placas label:has(input:checked) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+    .placas label:has(input:focus-visible) { outline: 2px solid var(--sig); outline-offset: 2px; }
+    .placas b { display: block; font-family: var(--sans); font-weight: 600; }
+    .placas span { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); }
+
+    /* Filas con contador */
+    .filas { border-top: 1px solid var(--line); }
+    .fila {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .fila[hidden] { display: none; }
+    .fila .nombre { font-size: var(--fs-sec); }
+    .fila .nombre small { display: block; font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); }
+    .contador { display: flex; align-items: center; flex: none; }
+    .contador button {
+      font-family: var(--mono);
+      width: 2rem; height: 2rem;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .contador button:hover { background: var(--paper-2); }
+    .contador output {
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
+      min-width: 2.4rem;
+      text-align: center;
+    }
+    .contador[data-cero] output { color: var(--ink-2); }
+
+    select {
+      font-family: var(--mono);
+      font-size: var(--fs-sec);
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      padding: 0.3rem 0.4rem;
+    }
+
+    /* Diagrama */
+    .diagrama { border: 1px solid var(--rule); background: var(--paper); }
+    .diagrama svg { display: block; width: 100%; height: auto; }
+    .diagrama .caja { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+    .diagrama .caja.vacia { stroke: var(--rule); stroke-dasharray: 4 3; }
+    .diagrama text { font-family: var(--sans); font-size: 12px; fill: var(--ink); }
+    .diagrama text.t { font-weight: 600; font-size: 13px; }
+    .diagrama text.s { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-2); }
+    .diagrama text.r { font-family: var(--mono); font-size: 10.5px; }
+    .diagrama .l { fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .diagrama .bat { stroke: var(--bat); } .diagrama text.bat { fill: var(--bat); stroke: none; }
+    .diagrama .v5  { stroke: var(--v5); }  .diagrama text.v5  { fill: var(--v5); stroke: none; }
+    .diagrama .v33 { stroke: var(--v33); } .diagrama text.v33 { fill: var(--v33); stroke: none; }
+    .diagrama .sig { stroke: var(--sig); stroke-dasharray: 5 4; } .diagrama text.sig { fill: var(--sig); stroke: none; }
+    .diagrama .gnd { stroke: var(--gnd); stroke-width: 1.6; } .diagrama text.gnd { fill: var(--gnd); stroke: none; }
+    .leyenda { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); margin-top: 0.5rem; }
+    .leyenda span { white-space: nowrap; margin-right: 1rem; display: inline-block; }
+    .leyenda i { display: inline-block; width: 1rem; vertical-align: middle; border-top: 2.4px solid; margin-right: 0.35rem; }
+
+    /* Cifras */
+    .cifras { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 0.5rem; margin-bottom: 0.8rem; }
+    .cifra { border: 1px solid var(--rule); padding: 0.6rem 0.7rem; }
+    .cifra span { display: block; font-family: var(--mono); font-size: var(--fs-rotulo); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+    .cifra b { display: block; font-family: var(--sans); font-weight: 600; font-size: 1.5rem; font-variant-numeric: tabular-nums; margin-top: 0.15rem; }
+    .cifra small { display: block; font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); }
+    .nota { font-size: var(--fs-sec) !important; }
+
+    /* Listas */
+    .lista { margin: 0; padding-left: 1.2rem; font-size: var(--fs-sec); }
+    .lista li { margin: 0 0 0.35rem; }
+    .lista li::marker { color: var(--ink-2); }
+    .avisos { list-style: none; margin: 0; padding: 0; }
+    .avisos li {
+      font-size: var(--fs-sec);
+      border-left: 3px solid var(--bat);
+      background: var(--paper-2);
+      padding: 0.5rem 0.7rem;
+      margin: 0 0 0.5rem;
+    }
+    .avisos li[data-nivel="alto"] { border-left-color: var(--v5); }
+    .avisos li[data-nivel="info"] { border-left-color: var(--sig); }
+    .avisos li b { font-weight: 600; }
+
+    .compartir { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 0.4rem; }
+    .btn {
+      font-family: var(--mono);
+      font-size: var(--fs-rotulo);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--paper);
+      border: 1px solid var(--ink);
+      padding: 0.42rem 0.8rem;
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--paper-2); }
+    .estado { font-family: var(--mono); font-size: var(--fs-rotulo); color: var(--ink-2); }
+
+    .pie {
+      max-width: var(--readw);
+      margin: 0 auto;
+      padding: clamp(1.6rem, 4vw, 2.4rem) 0 clamp(2.5rem, 6vw, 4rem);
+      border-top: 1px solid var(--rule);
+      font-size: var(--fs-sec);
+      color: var(--ink-2);
+    }
+    .pie p { margin: 0 0 0.6rem; }
+    .pie a { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <p class="eyebrow">Código Creativo 4 · Diseño Textil y Moda · Sesión 11</p>
+    <h1 class="title">Placa, sensor, actuador y batería</h1>
+    <p class="lede">
+      Casi todos los proyectos llevan lo mismo: una placa, uno o varios
+      sensores, algo que se mueve o se enciende y una batería que no dependa de
+      la computadora. Elige lo que usa tu proyecto y la página arma el
+      diagrama, la lista, los pines y la cuenta de cuánto dura la batería.
+    </p>
+  </header>
+
+  <main class="envoltura">
+
+    <section class="bloque">
+      <h2>1 · La placa</h2>
+      <div class="placas" id="placas"></div>
+      <p class="nota" id="placaNota" style="margin-top:0.8rem"></p>
+    </section>
+
+    <section class="bloque">
+      <h2>2 · Sensores</h2>
+      <div class="filas" id="sensores"></div>
+    </section>
+
+    <section class="bloque">
+      <h2>3 · Actuadores</h2>
+      <div class="filas" id="actuadores"></div>
+    </section>
+
+    <section class="bloque">
+      <h2>4 · Batería</h2>
+      <p id="fuenteNota"></p>
+      <div class="filas">
+        <div class="fila">
+          <label class="nombre" for="fuente">Tipo<small>de dónde sale la energía</small></label>
+          <select id="fuente">
+            <option value="lipo">LiPo con módulo TP4056</option>
+            <option value="pb">Power bank USB</option>
+            <option value="aa">Portapilas AA</option>
+          </select>
+        </div>
+        <div class="fila" id="filaBaterias" hidden>
+          <label class="nombre" for="baterias">Cuántas baterías<small>con LilyPad y actuadores de 5 V</small></label>
+          <select id="baterias">
+            <option value="2">Dos: la placa aparte</option>
+            <option value="1">Una: todo desde el módulo</option>
+          </select>
+        </div>
+        <div class="fila" id="filaMah">
+          <label class="nombre" for="mah">Capacidad<small id="mahRol">la que alimenta todo el circuito</small></label>
+          <select id="mah"></select>
+        </div>
+        <div class="fila" id="filaMah2" hidden>
+          <label class="nombre" for="mah2">Capacidad, segunda batería<small>la de los actuadores, en el módulo</small></label>
+          <select id="mah2"></select>
+        </div>
+        <div class="fila" id="filaMahPb" hidden>
+          <label class="nombre" for="mahPb">Capacidad del power bank<small>la que dice la etiqueta</small></label>
+          <select id="mahPb"></select>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <h2>Diagrama</h2>
+      <div class="diagrama"><svg id="svg" role="img" aria-label="Diagrama de conexiones"></svg></div>
+      <div class="leyenda">
+        <span><i style="border-color:var(--bat)"></i>3.7 V batería</span>
+        <span><i style="border-color:var(--v5)"></i>5 V</span>
+        <span><i style="border-color:var(--v33)"></i>3.3 V placa</span>
+        <span><i style="border-color:var(--gnd);border-top-width:1.6px"></i>GND</span>
+        <span><i style="border-color:var(--sig);border-top-style:dashed"></i>señal</span>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <h2>Consumo y autonomía</h2>
+      <div class="cifras" id="cifras"></div>
+      <p class="nota">Son cuentas aproximadas con consumos típicos. El pico supone que todo exige al mismo tiempo: servos atorados, tira en blanco a todo brillo. La autonomía usa el 80 % de la batería y el 90 % de eficiencia del módulo.</p>
+    </section>
+
+    <section class="bloque">
+      <h2>Avisos</h2>
+      <ul class="avisos" id="avisos"></ul>
+    </section>
+
+    <section class="bloque">
+      <h2>Lista</h2>
+      <ul class="lista" id="lista"></ul>
+      <h3>Conexiones</h3>
+      <ol class="lista" id="conexiones"></ol>
+      <div class="compartir">
+        <button id="copiar" type="button" class="btn">Copiar enlace</button>
+        <span id="copiarEstado" class="estado" role="status">El enlace guarda esta combinación.</span>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <h2>Antes de conectar</h2>
+      <ol class="lista" id="antes"></ol>
+    </section>
+  </main>
+
+  <footer class="envoltura">
+    <div class="pie">
+      <p>El módulo: <a href="https://uelectronics.com/producto/tp4056-con-boost-step-up-cargador-de-baterias-li-ion-li-po/">TP4056 con Boost Step Up</a> en Unit Electronics. Carga a 1 A, salida ajustable de 4 a 27 V, hasta 2 A (con disipador arriba de 1 A).</p>
+      <p><a href="../">← Código Creativo 4 · Diseño Textil y Moda</a></p>
+    </div>
+  </footer>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+
+  // ---------- Datos ----------
+  // t: consumo típico en mA, p: pico. Los pines van en orden de preferencia;
+  // el reparto toma el primero libre de cada lista.
+  const PLACAS = {
+    uno: {
+      nombre: "Arduino Uno", corto: "Uno", logica: 5, t: 50, p: 60,
+      entrada: "pin 5V", entradaCorta: "5V", sensorV: "5V", sensorRiel: "v5",
+      nota: "Lógica de 5 V. La salida del módulo entra por el pin 5V, no por VIN: VIN necesita de 7 a 12 V.",
+      pines: {
+        analog: ["A0", "A1", "A2", "A3"], i2c: ["A4", "A5"],
+        digital: ["7", "8", "4", "2", "12", "13"],
+        servo: ["9", "10", "7", "8", "4", "2"], tira: ["6", "7", "8", "4", "2"], pwm: ["3", "5", "6", "11"]
+      }
+    },
+    nano: {
+      nombre: "Arduino Nano", corto: "Nano", logica: 5, t: 25, p: 35,
+      entrada: "pin 5V", entradaCorta: "5V", sensorV: "5V", sensorRiel: "v5",
+      nota: "Lógica de 5 V, igual que el Uno pero más chico. La salida del módulo entra por el pin 5V, no por VIN.",
+      pines: {
+        analog: ["A0", "A1", "A2", "A3"], i2c: ["A4", "A5"],
+        digital: ["7", "8", "4", "2", "12", "13"],
+        servo: ["9", "10", "7", "8", "4", "2"], tira: ["6", "7", "8", "4", "2"], pwm: ["3", "5", "6", "11"]
+      }
+    },
+    esp32: {
+      nombre: "ESP32", corto: "ESP32", logica: 3.3, t: 100, p: 250,
+      entrada: "pin 5V / VIN", entradaCorta: "5V/VIN", sensorV: "3V3", sensorRiel: "v33",
+      nota: "Lógica de 3.3 V. La salida del módulo entra por el pin 5V (en algunas placas se llama VIN) y la placa la baja a 3.3 V. Con WiFi encendido consume bastante más.",
+      pines: {
+        analog: ["34", "35", "32", "33"], i2c: ["21", "22"],
+        digital: ["18", "19", "23", "4", "5"],
+        servo: ["13", "27", "26", "25", "23", "19"], tira: ["14", "18", "19", "23"], pwm: ["25", "26", "27", "16", "17"]
+      }
+    },
+    lilypad: {
+      nombre: "LilyPad Arduino USB", corto: "LilyPad", logica: 3.3, t: 15, p: 20,
+      entrada: "conector JST", entradaCorta: "JST", sensorV: "+ (3.3 V)", sensorRiel: "v33",
+      nota: "Lógica de 3.3 V. Trae conector JST y cargador propio: la LiPo se conecta directo y se carga por el USB, sin módulo. Lo que necesita 5 V (servos, tiras, motores DC) va con el módulo: con otra batería, o con una sola que alimente todo y entre a la placa por el USB.",
+      pines: {
+        analog: ["A2", "A3", "A4", "A5"], i2c: ["2", "3"],
+        digital: ["2", "3", "9", "10", "11"],
+        servo: ["9", "10", "11", "2", "3"], tira: ["2", "3", "9", "10", "11"], pwm: ["11", "10", "9", "3"]
+      }
+    }
+  };
+
+  const SENSORES = [
+    { id: "analog", nombre: "Sensor analógico", detalle: "potenciómetro, LDR, presión (FSR), flex", corto: "Analógico", t: 1, p: 1, tipo: "analog", max: 4,
+      extra: "resistencia de 10 kΩ por cada LDR, FSR o flex (divisor de voltaje)" },
+    { id: "pulso", nombre: "Sensor de pulso", detalle: "Pulse Sensor, analógico", corto: "Pulso", t: 4, p: 5, tipo: "analog", max: 2 },
+    { id: "sonido", nombre: "Módulo de micrófono", detalle: "sensor de sonido, analógico", corto: "Micrófono", t: 5, p: 6, tipo: "analog", max: 2 },
+    { id: "mpu", nombre: "Acelerómetro MPU6050", detalle: "movimiento e inclinación, I2C", corto: "MPU6050", t: 4, p: 5, tipo: "i2c", max: 1 },
+    { id: "ultra", nombre: "Ultrasónico HC-SR04", detalle: "distancia, dos pines digitales", corto: "Ultrasónico", t: 15, p: 15, tipo: "ultra", max: 2 },
+    { id: "gestos", nombre: "Gestos y rostros SEN0626", detalle: "DFRobot, I2C, 42 × 32 mm", corto: "SEN0626", t: 100, p: 100, tipo: "i2c", max: 1 }
+  ];
+
+  // riel: "v5" va al módulo; "pin" sale directo de un pin; "vib" depende de la placa.
+  const ACTUADORES = [
+    { id: "servo", nombre: "Servo SG90", detalle: "un pin por servo", corto: "Servo", t: 150, p: 650, pool: "servo", riel: "v5", max: 4,
+      extra: "capacitor de 470 µF entre + y GND junto a los servos (opcional: ayuda con los temblores)" },
+    { id: "tira", nombre: "Tira NeoPixel (WS2812)", detalle: "cuántos LEDs; una tira en un pin", corto: "Tira", t: 20, p: 60, pool: "tira", riel: "v5", max: 60, paso: 1,
+      extra: "resistencia de 300 a 500 Ω en la entrada de datos (DIN) y capacitor de 1000 µF entre + y GND de la tira" },
+    { id: "vibra", nombre: "Motor de vibración (3 V)", detalle: "con transistor, nunca directo al pin", corto: "Vibración", t: 75, p: 100, pool: "pwm", riel: "vib", max: 4,
+      extra: "por motor: transistor NPN 2N2222, diodo 1N4007 y resistencia de 1 kΩ" },
+    { id: "dc", nombre: "Motor DC chico", detalle: "N20 o de juguete, con transistor", corto: "Motor DC", t: 200, p: 600, pool: "pwm", riel: "v5", max: 2,
+      extra: "por motor: transistor TIP120 (o MOSFET IRLZ44N), diodo 1N4007 y resistencia de 1 kΩ; si tiene que girar en los dos sentidos, un driver DRV8833" },
+    { id: "led", nombre: "LED simple", detalle: "directo al pin con resistencia", corto: "LED", t: 15, p: 20, pool: "pwm", riel: "pin", max: 6,
+      extra: "resistencia de 220 Ω por LED" }
+  ];
+
+  const CAPACIDADES = [300, 500, 1000, 1200, 2000, 3000];
+  const CAP_PB = [2500, 5000, 10000, 20000];
+  const MAH_AA = 2000;   // una AA, recargable o alcalina, con consumos de decenas de mA
+  const FUENTES = {
+    lipo: "LiPo de 3.7 V con protección integrada. Para empezar, 1000 mAh: el módulo carga a 1 A y una batería más chica se calienta.",
+    pb: "Un power bank de celular: da 5 V por USB, se carga solo y no hay que ajustar nada. Pesa más que una LiPo y muchos se apagan solos si el consumo es bajo.",
+    aa: "Portapilas de 4 AA recargables (NiMH, 4.8 V) o de 3 AA alcalinas (4.5 V). Sin módulo y sin cargar nada; pesa más. La cuenta usa 2000 mAh."
+  };
+  const V_BAT = 3.7, V_MOD = 5, EFIC = 0.9, USO = 0.8, CARGA_MA = 1000;
+
+  // ---------- Estado (también vive en el enlace) ----------
+  const estado = { placa: "uno", fuente: "lipo", mah: 1000, mah2: 1000, mahPb: 5000, una: false, s: {}, a: {} };
+  SENSORES.forEach(x => estado.s[x.id] = 0);
+  ACTUADORES.forEach(x => estado.a[x.id] = 0);
+
+  function leerHash() {
+    const q = new URLSearchParams(location.hash.slice(1));
+    if (PLACAS[q.get("p")]) estado.placa = q.get("p");
+    const m = +q.get("b"), m2 = +q.get("b2");
+    if (CAPACIDADES.includes(m)) estado.mah = m;
+    if (CAPACIDADES.includes(m2)) estado.mah2 = m2;
+    estado.una = q.get("u") === "1";
+    estado.fuente = FUENTES[q.get("f")] ? q.get("f") : "lipo";
+    if (CAP_PB.includes(+q.get("bp"))) estado.mahPb = +q.get("bp");
+    const pares = (txt, lista, destino) => (txt || "").split(",").forEach(par => {
+      const [k, v] = par.split(":");
+      const def = lista.find(x => x.id === k);
+      if (def) destino[k] = Math.max(0, Math.min(def.max, parseInt(v, 10) || 0));
+    });
+    pares(q.get("s"), SENSORES, estado.s);
+    pares(q.get("a"), ACTUADORES, estado.a);
+  }
+  function escribirHash() {
+    const lista = o => Object.entries(o).filter(([, v]) => v > 0).map(([k, v]) => k + ":" + v).join(",");
+    const q = new URLSearchParams({ p: estado.placa, b: estado.mah });
+    if (esDoble()) q.set("b2", estado.mah2);
+    if (esUna()) q.set("u", "1");
+    if (!esLipo()) q.set("f", estado.fuente);
+    if (estado.fuente === "pb") q.set("bp", estado.mahPb);
+    if (lista(estado.s)) q.set("s", lista(estado.s));
+    if (lista(estado.a)) q.set("a", lista(estado.a));
+    history.replaceState(null, "", "#" + q.toString().replace(/%2C/g, ",").replace(/%3A/g, ":"));
+  }
+
+  // ---------- Reglas ----------
+  const placa = () => PLACAS[estado.placa];
+  const esLily = () => estado.placa === "lilypad";
+  // En la LilyPad el motor de vibración sale del + de la placa; en el ESP32 del
+  // pin 3V3; en Uno y Nano del módulo a 5 V con PWM moderado.
+  const rielDe = a => a.riel === "vib" ? (estado.placa === "uno" || estado.placa === "nano" ? "v5" : "v33") : a.riel;
+  const piden5V = () => ACTUADORES.filter(a => estado.a[a.id] > 0 && rielDe(a) === "v5");
+  // Con LilyPad y actuadores de 5 V hay dos caminos: otra batería para el
+  // módulo, o una sola en el módulo que entra a la placa por el USB.
+  const esLipo = () => estado.fuente === "lipo";
+  const lilyCon5V = () => esLipo() && esLily() && piden5V().length > 0;
+  const esDoble = () => lilyCon5V() && !estado.una;
+  const esUna = () => lilyCon5V() && estado.una;
+  const usaModulo = () => esLipo() && (!esLily() || lilyCon5V());
+  // El power bank entra siempre por el USB; el portapilas por el pin 5V,
+  // salvo en la LilyPad, que no tiene entrada de 5 V más que el USB.
+  const entrada = () => esUna() || estado.fuente === "pb" || (estado.fuente === "aa" && esLily())
+    ? { larga: "USB", corta: "USB" }
+    : { larga: placa().entrada, corta: placa().entradaCorta };
+  // De dónde toman los 5 V los actuadores
+  function fuente5V() {
+    if (estado.fuente === "aa") return "rojo del portapilas";
+    if (estado.fuente === "pb") return esLily() ? "5 V del power bank (segundo puerto, cable cortado)" : `pin ${estado.placa === "esp32" ? "5V/VIN" : "5V"} de la placa`;
+    return "5 V del módulo";
+  }
+
+  function repartirPines() {
+    const P = placa().pines, usados = new Set(), faltan = [];
+    const tomar = (pool, quien) => {
+      const pin = (P[pool] || []).find(x => !usados.has(x));
+      if (pin === undefined) { faltan.push(quien); return "?"; }
+      usados.add(pin); return pin;
+    };
+    const res = { s: {}, a: {}, i2c: null, faltan };
+    if (SENSORES.some(x => x.tipo === "i2c" && estado.s[x.id] > 0)) {
+      P.i2c.forEach(x => usados.add(x));
+      res.i2c = P.i2c;
+    }
+    SENSORES.forEach(x => {
+      const n = estado.s[x.id]; if (!n) return;
+      if (x.tipo === "analog") res.s[x.id] = Array.from({ length: n }, () => tomar("analog", x.nombre));
+      else if (x.tipo === "ultra") res.s[x.id] = Array.from({ length: n }, () => tomar("digital", x.nombre) + "/" + tomar("digital", x.nombre));
+      else res.s[x.id] = P.i2c;
+    });
+    ACTUADORES.forEach(x => {
+      const n = estado.a[x.id]; if (!n) return;
+      const cuantos = x.id === "tira" ? 1 : n;
+      res.a[x.id] = Array.from({ length: cuantos }, () => tomar(x.pool, x.nombre));
+    });
+    return res;
+  }
+
+  function cuentas() {
+    const pl = placa();
+    let logT = pl.t, logP = pl.p, actT = 0, actP = 0;   // logT: placa + sensores + lo que cuelga de la placa
+    SENSORES.forEach(x => { logT += x.t * estado.s[x.id]; logP += x.p * estado.s[x.id]; });
+    ACTUADORES.forEach(x => {
+      const n = estado.a[x.id]; if (!n) return;
+      if (rielDe(x) === "v5") { actT += x.t * n; actP += x.p * n; }
+      else { logT += x.t * n; logP += x.p * n; }
+    });
+    const desdeModulo = i => i * V_MOD / (V_BAT * EFIC);   // corriente que sale de la batería
+    if (!esLipo()) {
+      // Una sola fuente para todo; el power bank sube 3.7 V a 5 V como el módulo
+      const t = logT + actT, p = logP + actP, pb = estado.fuente === "pb";
+      return { externa: { t, p, act: actP, bat: pb ? desdeModulo(t) : t, mah: pb ? estado.mahPb : MAH_AA }, modulo: null, directa: null };
+    }
+    if (!esLily() || esUna()) {
+      const t = logT + actT, p = logP + actP;
+      return { modulo: { t, p, bat: desdeModulo(t), mah: estado.mah }, directa: null };
+    }
+    return {
+      directa: { t: logT, p: logP, bat: logT, mah: estado.mah },
+      modulo: esDoble() ? { t: actT, p: actP, bat: desdeModulo(actT), mah: estado.mah2 } : null
+    };
+  }
+
+  const horas = (mah, ma) => ma > 0 ? mah * USO / ma : Infinity;
+  function fmtHoras(h) {
+    if (!isFinite(h)) return "—";
+    if (h < 1) return Math.round(h * 60) + " min";
+    if (h >= 24) return Math.round(h) + " h";
+    return h.toFixed(1).replace(".0", "") + " h";
+  }
+  const fmtmA = x => Math.round(x) + " mA";
+
+  // ---------- Controles ----------
+  function construirPlacas() {
+    const cont = $("placas");
+    Object.entries(PLACAS).forEach(([id, pl]) => {
+      const l = document.createElement("label");
+      l.innerHTML = `<input type="radio" name="placa" value="${id}"><b>${pl.nombre}</b><span>lógica ${pl.logica} V · ${pl.entrada}</span>`;
+      l.querySelector("input").addEventListener("change", () => { estado.placa = id; actualizar(); });
+      cont.appendChild(l);
+    });
+  }
+
+  function construirFilas(contId, lista, destino) {
+    const cont = $(contId);
+    lista.forEach(x => {
+      const f = document.createElement("div");
+      f.className = "fila";
+      f.innerHTML = `<span class="nombre">${x.nombre}<small>${x.detalle}</small></span>
+        <span class="contador"><button type="button" aria-label="Menos ${x.nombre}">−</button><output aria-live="polite"></output><button type="button" aria-label="Más ${x.nombre}">+</button></span>`;
+      const [menos, mas] = f.querySelectorAll("button");
+      const paso = x.paso || 1;
+      const cambiar = d => { destino[x.id] = Math.max(0, Math.min(x.max, destino[x.id] + d)); actualizar(); };
+      menos.addEventListener("click", () => cambiar(-paso));
+      mas.addEventListener("click", () => cambiar(x.id === "tira" && destino[x.id] === 0 ? 8 : paso));
+      f.dataset.id = x.id;
+      cont.appendChild(f);
+    });
+  }
+
+  function construirSelect(id, clave, lista = CAPACIDADES) {
+    const s = $(id);
+    lista.forEach(c => { const o = document.createElement("option"); o.value = c; o.textContent = c + " mAh"; s.appendChild(o); });
+    s.addEventListener("change", () => { estado[clave] = +s.value; actualizar(); });
+  }
+
+  function pintarControles() {
+    document.querySelectorAll('#placas input').forEach(i => i.checked = i.value === estado.placa);
+    const conFuente = estado.fuente === "pb" ? " Con power bank, todo entra por el USB."
+      : estado.fuente === "aa" ? (esLily() ? " Con portapilas, por el USB con un cable cortado." : " Con portapilas, el rojo va al mismo pin.") : "";
+    $("placaNota").textContent = placa().nota + conFuente;
+    const pinta = (contId, lista, origen) => lista.forEach(x => {
+      const f = document.querySelector(`#${contId} [data-id="${x.id}"]`);
+      const n = origen[x.id], c = f.querySelector(".contador");
+      f.querySelector("output").textContent = n;
+      if (n) delete c.dataset.cero; else c.dataset.cero = "";
+    });
+    pinta("sensores", SENSORES, estado.s);
+    pinta("actuadores", ACTUADORES, estado.a);
+    $("mah").value = estado.mah;
+    $("mah2").value = estado.mah2;
+    $("fuente").value = estado.fuente;
+    $("fuenteNota").textContent = FUENTES[estado.fuente];
+    $("filaMah").hidden = !esLipo();
+    $("filaMahPb").hidden = estado.fuente !== "pb";
+    $("mahPb").value = estado.mahPb;
+    $("filaBaterias").hidden = !lilyCon5V();
+    $("baterias").value = estado.una ? "1" : "2";
+    $("filaMah2").hidden = !esDoble();
+    $("mahRol").textContent = esLily() && !esUna()
+      ? "la de la placa, en el conector JST"
+      : "la que alimenta todo el circuito, en el módulo";
+  }
+
+  // ---------- Diagrama ----------
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+  function diagrama(pines) {
+    const pl = placa(), out = [];
+    const W = 420, COL = { s: 10, p: 150, a: 290 }, CW = 120;
+    const caja = (x, y, h, titulo, lineas, vacia) => {
+      out.push(`<rect class="caja${vacia ? " vacia" : ""}" x="${x}" y="${y}" width="${CW}" height="${h}" rx="3"/>`);
+      out.push(`<text class="t" x="${x + 8}" y="${y + 18}">${esc(titulo)}</text>`);
+      lineas.forEach((l, i) => out.push(`<text class="s" x="${x + 8}" y="${y + 34 + i * 14}">${esc(l)}</text>`));
+    };
+    const linea = (cls, pts) => out.push(`<polyline class="l ${cls}" points="${pts.map(p => p.join(",")).join(" ")}"/>`);
+    const rotulo = (cls, x, y, txt, ancla) => out.push(`<text class="r ${cls}" x="${x}" y="${y}"${ancla ? ` text-anchor="${ancla}"` : ""}>${esc(txt)}</text>`);
+
+    // Contenido de las cajas de abajo
+    const lSens = [], lAct = [];
+    SENSORES.forEach(x => {
+      const n = estado.s[x.id]; if (!n) return;
+      const ps = pines.s[x.id];
+      lSens.push((n > 1 ? n + "× " : "") + x.corto);
+      lSens.push("  → " + (x.tipo === "i2c" ? ps.join("/") : ps.join(", ")));
+    });
+    ACTUADORES.forEach(x => {
+      const n = estado.a[x.id]; if (!n) return;
+      lAct.push(x.id === "tira" ? `Tira ${n} LEDs` : (n > 1 ? n + "× " : "") + x.corto);
+      lAct.push("  → " + pines.a[x.id].join(", "));
+    });
+    const lPlaca = ["lógica " + pl.logica + " V", "entra por " + entrada().corta];
+    const altoAbajo = Math.max(70, 30 + Math.max(lSens.length, lAct.length, lPlaca.length) * 14);
+
+    const doble = esDoble(), lily = esLily() && !esUna(), mod = usaModulo() || !esLipo();
+    const Y_BAT = 12, Y_MOD = 96, H = 52;
+    const Y_ABAJO = 212, Y_GND = Y_ABAJO + altoAbajo + 26;
+    const cxP = COL.p + CW / 2, cxA = COL.a + CW / 2, cxS = COL.s + CW / 2;
+    const hay5V = piden5V().length > 0;
+    const haySens = lSens.length > 0, hayAct = lAct.length > 0;
+
+    // Arriba: baterías y módulo
+    if (!esLipo()) {
+      const pb = estado.fuente === "pb";
+      caja(COL.p, Y_MOD, H, pb ? "Power bank" : "Portapilas AA", [pb ? "5 V · " + estado.mahPb + " mAh" : "4.5–4.8 V"]);
+      linea("v5", [[cxP, Y_MOD + H], [cxP, Y_ABAJO]]);
+      rotulo("v5", cxP + 6, Y_MOD + H + 24, (pb ? "5 V" : "4.8 V") + (entrada().corta === "USB" ? " → USB" : ""));
+      if (hay5V) linea("v5", [[cxP, Y_MOD + H + 34], [cxA, Y_MOD + H + 34], [cxA, Y_ABAJO]]);
+      linea("gnd", [[COL.p, Y_MOD + H / 2], [4, Y_MOD + H / 2], [4, Y_GND]]);
+    } else if (!lily) {
+      caja(COL.p, Y_BAT, H, "Batería LiPo", ["3.7 V · " + estado.mah + " mAh"]);
+      linea("bat", [[cxP, Y_BAT + H], [cxP, Y_MOD]]);
+      rotulo("bat", cxP + 6, Y_BAT + H + 22, "3.7 V");
+      caja(COL.p, Y_MOD, H, "TP4056 + boost", ["salida: 5.0 V"]);
+      // 5 V a la placa y, si hace falta, a los actuadores
+      linea("v5", [[cxP, Y_MOD + H], [cxP, Y_ABAJO]]);
+      rotulo("v5", cxP + 6, Y_MOD + H + 24, esUna() ? "5 V → USB" : "5 V");
+      if (hay5V) linea("v5", [[cxP, Y_MOD + H + 34], [cxA, Y_MOD + H + 34], [cxA, Y_ABAJO]]);
+      // GND del módulo baja por el borde izquierdo, sin cruzar las señales
+      linea("gnd", [[COL.p, Y_MOD + H / 2], [4, Y_MOD + H / 2], [4, Y_GND]]);
+    } else {
+      caja(COL.p, Y_MOD, H, "Batería LiPo", ["3.7 V · " + estado.mah + " mAh"]);
+      linea("bat", [[cxP, Y_MOD + H], [cxP, Y_ABAJO]]);
+      rotulo("bat", cxP + 6, Y_MOD + H + 24, "JST 3.7 V");
+      if (doble) {
+        caja(COL.a, Y_BAT, H, "Batería LiPo 2", ["3.7 V · " + estado.mah2 + " mAh"]);
+        linea("bat", [[cxA, Y_BAT + H], [cxA, Y_MOD]]);
+        rotulo("bat", cxA + 6, Y_BAT + H + 22, "3.7 V");
+        caja(COL.a, Y_MOD, H, "TP4056 + boost", ["salida: 5.0 V"]);
+        linea("v5", [[cxA, Y_MOD + H], [cxA, Y_ABAJO]]);
+        rotulo("v5", cxA + 6, Y_MOD + H + 24, "5 V");
+        linea("gnd", [[COL.a + CW, Y_MOD + H / 2], [W - 4, Y_MOD + H / 2], [W - 4, Y_GND]]);
+      }
+    }
+
+    // Abajo: sensores, placa, actuadores
+    caja(COL.s, Y_ABAJO, altoAbajo, "Sensores", haySens ? lSens : ["sin sensor"], !haySens);
+    caja(COL.p, Y_ABAJO, altoAbajo, pl.corto, lPlaca);
+    caja(COL.a, Y_ABAJO, altoAbajo, "Actuadores", hayAct ? lAct : ["sin actuador"], !hayAct);
+
+    // Placa ↔ sensores: alimentación y señal por el hueco de 20 px
+    const yPw = Y_ABAJO + 22, ySig = Y_ABAJO + altoAbajo - 18;
+    if (haySens) {
+      linea(pl.sensorRiel, [[COL.p, yPw], [COL.s + CW, yPw]]);
+      linea("sig", [[COL.p, ySig], [COL.s + CW, ySig]]);
+    }
+    if (hayAct) {
+      linea("sig", [[COL.p + CW, ySig], [COL.a, ySig]]);
+      if (ACTUADORES.some(a => estado.a[a.id] > 0 && rielDe(a) === "v33")) linea("v33", [[COL.p + CW, yPw], [COL.a, yPw]]);
+    }
+
+    // Tierra común
+    const bajadas = [cxP];
+    if (haySens) bajadas.push(cxS);
+    if (hayAct) bajadas.push(cxA);
+    bajadas.forEach(x => linea("gnd", [[x, Y_ABAJO + altoAbajo], [x, Y_GND]]));
+    const xs = bajadas.concat(mod ? [doble ? W - 4 : 4] : []);
+    linea("gnd", [[Math.min(...xs), Y_GND], [Math.max(...xs), Y_GND]]);
+    rotulo("gnd", W / 2, Y_GND + 16, "GND común", "middle");
+
+    const svg = $("svg");
+    // Sin módulo arriba, el diagrama empieza en la fila de la batería
+    const y0 = !esLipo() || (lily && !doble) ? Y_MOD - 12 : 0;
+    svg.setAttribute("viewBox", `0 ${y0} ${W} ${Y_GND + 26 - y0}`);
+    svg.innerHTML = out.join("");
+  }
+
+  // ---------- Textos ----------
+  function avisos(pines, c) {
+    const pl = placa(), A = [];
+    const add = (nivel, html) => A.push(`<li data-nivel="${nivel}">${html}</li>`);
+    const n = estado.a, s = estado.s;
+    const mod = c.modulo;
+
+    if (mod) {
+      if (mod.p > 2000) add("alto", `<b>El pico pasa de 2 A (${fmtmA(mod.p)}).</b> Es el máximo del módulo. Menos servos, menos LEDs, o una fuente aparte para una parte de los actuadores.`);
+      else if (mod.p > 1000) add("medio", `<b>El pico pasa de 1 A (${fmtmA(mod.p)}).</b> El módulo lo aguanta pero necesita disipador; si no lo trae, pégale uno chico.`);
+      if (mod.mah < 1000) add("medio", `<b>Batería chica para el módulo.</b> Carga a 1 A, más de lo que conviene a una LiPo de ${mod.mah} mAh. Mejor de 1000 mAh o más.`);
+      if (horas(mod.mah, mod.bat) < 1) add("medio", `<b>Dura menos de una hora.</b> Sube la capacidad o baja el consumo de los actuadores.`);
+    }
+    const ext = c.externa;
+    if (ext && estado.fuente === "pb") {
+      if (ext.t < 100) add("medio", `<b>El power bank puede apagarse solo.</b> Muchos se apagan cuando el consumo baja de 50 a 100 mA, porque creen que no hay nada conectado, y este circuito gasta ${fmtmA(ext.t)}. Pruébalo antes con el tuyo; algunos tienen un modo de baja corriente.`);
+      if (esLily() && piden5V().length) add("info", `<b>La LilyPad no tiene salida de 5 V.</b> Su + es de 3.3 V. Los actuadores toman los 5 V de un segundo puerto del power bank con un cable USB cortado.`);
+      else if (piden5V().length && ext.act > 500) add("medio", `<b>Los actuadores pasan por la placa.</b> Cuando entra por USB, del pin 5V salen como mucho unos 500 mA y el pico de los actuadores es de ${fmtmA(ext.act)}. Con un servo que se mueve libre suele funcionar; si la placa se reinicia, saca los 5 V de los actuadores directo del power bank con un cable USB cortado.`);
+      add("info", `<b>Para programar</b>, desconecta el power bank y conecta la computadora: es el mismo puerto.`);
+    }
+    if (ext && estado.fuente === "aa") {
+      add("alto", `<b>Nunca 4 alcalinas.</b> Nuevas dan más de 6 V y la placa no los aguanta. 4 recargables (NiMH, 4.8 V) o 3 alcalinas (4.5 V).`);
+      if (estado.placa === "esp32") add("medio", `<b>El ESP32 se queda corto.</b> Su regulador necesita un poco más de 4 V para dar 3.3 V. Conforme bajan las pilas se reinicia, sobre todo con WiFi. Mejor recargables: se mantienen en 1.2 V por pila casi hasta el final.`);
+      if (ext.p > 1000) add("medio", `<b>Pico de ${fmtmA(ext.p)}.</b> Con picos altos las alcalinas bajan de voltaje; las recargables aguantan mejor.`);
+      if (horas(ext.mah, ext.bat) < 1) add("medio", `<b>Dura menos de una hora.</b> Baja el consumo de los actuadores.`);
+      add("info", `<b>Pesa.</b> Cuatro AA con su portapilas andan por los 100 g. Para probar en mesa es lo más práctico; en la prenda, piensa dónde va.`);
+      add("info", esLily()
+        ? `<b>Para programar</b>, desconecta el cable del portapilas y conecta la computadora: es el mismo puerto.`
+        : `<b>Para programar</b>, apaga el portapilas: la placa no debe recibir el USB y el pin 5V al mismo tiempo.`);
+    }
+    if (c.directa && horas(c.directa.mah, c.directa.bat) < 1) add("medio", `<b>La batería de la placa dura menos de una hora.</b> Sube la capacidad.`);
+
+    if (esDoble()) add("info", `<b>Dos baterías, una tierra.</b> La LiPo de la LilyPad alimenta placa y sensores; el módulo, con su propia LiPo, alimenta ${piden5V().map(a => a.corto.toLowerCase()).join(", ")}. Une los GND o las señales no funcionan.`);
+    else if (esUna()) {
+      add("medio", `<b>Una batería: los 5 V entran por el USB.</b> La salida del módulo llega a la LilyPad por un cable micro-USB cortado. <b>Nunca por el pétalo +</b>: es el riel de 3.3 V y se daña la placa. El JST queda vacío y se carga por el módulo.`);
+      const fuerte = mod.p > 1000;
+      add(fuerte ? "alto" : "medio", `<b>La placa puede reiniciarse.</b> Cuando los actuadores jalan mucha corriente, el voltaje cae para todos, placa incluida. Aquí el capacitor junto a los actuadores no es opcional, y los cables, cortos. ${fuerte ? `Con un pico de ${fmtmA(mod.p)} es lo más probable: mejor dos baterías.` : "Si se sigue reiniciando, vuelve a dos baterías."}`);
+    }
+    else if (esLily() && esLipo()) add("info", `<b>Sin módulo.</b> La LiPo va directo al JST de la LilyPad y se carga conectando el USB. Si agregas servos, tiras o motores DC, necesitarás el módulo.`);
+
+    if (n.servo && n.tira) add("alto", `<b>Servos y NeoPixel juntos.</b> Las dos librerías chocan: el servo puede temblar cuando cambian los LEDs. Ver la <a href="https://learn.adafruit.com/neopixels-and-servos">guía de Adafruit</a>.`);
+    if (estado.placa === "esp32" && n.servo) add("info", `<b>En ESP32 la librería es otra.</b> Instala <code>ESP32Servo</code> y usa <code>#include &lt;ESP32Servo.h&gt;</code> en lugar de <code>Servo.h</code>.`);
+    if (pl.logica === 3.3 && n.tira) add("medio", `<b>Datos a 3.3 V.</b> La tira espera una señal de 5 V. Con tiras cortas casi siempre funciona; si parpadea o da colores raros, un convertidor de nivel 74AHCT125 en la línea de datos.`);
+    if (estado.placa === "esp32" && SENSORES.some(x => x.tipo !== "i2c" && s[x.id])) add("medio", `<b>Entradas de 3.3 V.</b> Los pines del ESP32 no aguantan 5 V: alimenta los sensores desde 3V3, no desde 5V.`);
+    if (pl.logica === 3.3 && s.ultra) add("medio", `<b>Ultrasónico a 3.3 V.</b> El HC-SR04 normal necesita 5 V y su pin ECHO devuelve 5 V. Usa la versión HC-SR04P, que funciona a 3.3 V.`);
+    if (n.vibra && (estado.placa === "uno" || estado.placa === "nano")) add("medio", `<b>El motor de vibración es de 3 V.</b> Le llegan 5 V: limita la potencia con <code>analogWrite(pin, 150)</code> como máximo.`);
+    if (n.tira > 30) add("info", `<b>Brillo.</b> Con ${n.tira} LEDs, baja el brillo con <code>strip.setBrightness(60)</code>: dura más la batería y la tira no se calienta.`);
+    if (s.gestos) add("info", `<b>El SEN0626 consume 100 mA y mide 42 × 32 mm.</b> Es el sensor que más pesa en la cuenta y en el tamaño de la pieza.`);
+    if (pines.faltan.length) add("alto", `<b>No alcanzan los pines</b> para ${[...new Set(pines.faltan)].join(", ")}. Quita algo o revisa si dos cosas pueden compartir pin.`);
+    if (!A.length) add("info", "Nada que advertir con esta combinación. Igual revisa la lista de abajo antes de conectar.");
+    $("avisos").innerHTML = A.join("");
+  }
+
+  function lista(pines, c) {
+    const pl = placa(), L = [], C = [];
+    const li = (arr, html) => arr.push(`<li>${html}</li>`);
+
+    li(L, `<b>${pl.nombre}</b>`);
+    if (estado.fuente === "pb") {
+      li(L, `Power bank USB de ${estado.mahPb} mAh${esLily() && piden5V().length ? ", de preferencia con dos puertos" : ""}`);
+      li(L, `Cable USB para la placa`);
+      if (esLily() && piden5V().length) li(L, `Cable USB que se pueda cortar, para los 5 V de los actuadores`);
+    }
+    if (estado.fuente === "aa") {
+      li(L, `Portapilas de 4 AA con interruptor y 4 pilas recargables NiMH (o portapilas de 3 AA con alcalinas)`);
+      if (esLily()) li(L, `Cable micro-USB que se pueda cortar`);
+    }
+    if (esLily() && esLipo() && !esUna()) li(L, `LiPo 3.7 V de ${estado.mah} mAh con protección y conector JST`);
+    if (usaModulo()) {
+      li(L, `LiPo 3.7 V de ${esDoble() ? estado.mah2 : estado.mah} mAh con protección integrada`);
+      li(L, `Módulo TP4056 con boost, salida ajustada a 5.0 V`);
+      li(L, `Interruptor deslizable entre el módulo y el circuito`);
+      if (esUna()) li(L, `Cable micro-USB que se pueda cortar`);
+    }
+    SENSORES.forEach(x => { const n = estado.s[x.id]; if (n) li(L, `${n} × ${x.nombre}${x.extra ? " · " + x.extra : ""}`); });
+    ACTUADORES.forEach(x => {
+      const n = estado.a[x.id]; if (!n) return;
+      li(L, (x.id === "tira" ? `Tira NeoPixel de ${n} LEDs` : `${n} × ${x.nombre}`) + (x.extra ? " · " + x.extra : ""));
+    });
+    li(L, "Multímetro, cables y cinta o termofit para aislar");
+
+    // Conexiones
+    if (estado.fuente === "pb") {
+      li(C, `Power bank → puerto USB de la placa, con su cable.`);
+      if (esLily() && piden5V().length) li(C, `Segundo puerto del power bank → cable USB cortado: rojo al + de los actuadores, negro a GND. Confirma los colores con el multímetro.`);
+    } else if (estado.fuente === "aa") {
+      if (esLily()) li(C, `Portapilas → <b>USB</b> de la LilyPad con el cable micro-USB cortado: rojo al rojo, negro al negro. Confirma los colores con el multímetro. Nunca al pétalo +.`);
+      else li(C, `Portapilas: rojo → <b>${entrada().larga}</b> de la placa, negro → GND.${estado.placa === "esp32" ? "" : " No por VIN ni por el jack: necesitan 7 V o más."}`);
+    } else if (esUna()) {
+      li(C, `Batería → entrada de batería del módulo (B+ / B−). El JST de la LilyPad queda vacío.`);
+      li(C, `Salida del módulo → <b>USB</b> de la LilyPad con el cable micro-USB cortado: OUT+ (5.0 V) al rojo, OUT− al negro. Confirma los colores con el multímetro antes de conectar. Nunca al pétalo +.`);
+    } else if (!esLily()) {
+      li(C, `Batería → entrada de batería del módulo (B+ / B−).`);
+      li(C, `Salida del módulo (OUT+, a 5.0 V) → <b>${entrada().larga}</b> de la placa; OUT− → GND.`);
+    } else {
+      li(C, `Batería → conector JST de la LilyPad.`);
+      if (esDoble()) li(C, `Segunda batería → módulo; salida del módulo (5.0 V) → + de los actuadores; OUT− → GND de la LilyPad.`);
+    }
+    SENSORES.forEach(x => {
+      const n = estado.s[x.id]; if (!n) return;
+      const ps = pines.s[x.id];
+      const alim = `VCC → ${pl.sensorV}, GND → GND`;
+      if (x.tipo === "analog") li(C, `${x.nombre}: ${alim}, señal → ${ps.join(", ")}.`);
+      else if (x.tipo === "ultra") li(C, `${x.nombre}: ${alim}, TRIG/ECHO → ${ps.join(" y ")}.`);
+      else li(C, `${x.nombre}: ${alim}, SDA → ${ps[0]}, SCL → ${ps[1]}.`);
+    });
+    ACTUADORES.forEach(x => {
+      const n = estado.a[x.id]; if (!n) return;
+      const ps = pines.a[x.id].join(", ");
+      const r = rielDe(x);
+      const fuente = r === "v5" ? "+ al " + fuente5V() : r === "v33" ? `+ al ${estado.placa === "esp32" ? "3V3" : "+"} de la placa` : "";
+      if (x.id === "servo") li(C, `Servo: rojo ${fuente.replace("+ ", "")}, café a GND, naranja (señal) → ${ps}.`);
+      else if (x.id === "tira") li(C, `Tira: 5V ${fuente.replace("+ ", "")}, GND a GND, DIN → resistencia → ${ps}.`);
+      else if (x.id === "led") li(C, `LED: pin ${ps} → resistencia de 220 Ω → pata larga; pata corta a GND.`);
+      else li(C, `${x.corto}: ${fuente}, − al colector del transistor; base → 1 kΩ → ${ps}; emisor a GND; diodo en paralelo al motor (raya hacia +).`);
+    });
+    li(C, `Todos los GND juntos.`);
+    $("lista").innerHTML = L.join("");
+    $("conexiones").innerHTML = C.join("");
+  }
+
+  // La lista de "Antes de conectar" cambia con el tipo de batería
+  function antes() {
+    const f = estado.fuente, A = [];
+    const li = html => A.push(`<li>${html}</li>`);
+    const cortado = esUna() || (f === "aa" && esLily()) || (f === "pb" && esLily() && piden5V().length > 0);
+    if (usaModulo()) li(`<b>Mide la salida del módulo.</b> No viene fija en 5 V: se ajusta con un tornillito (preset) entre 4 y 27 V. Sin nada conectado, con el multímetro en voltaje DC, gira el preset hasta leer 5.0 V.`);
+    if (f === "lipo") li(`<b>Revisa la polaridad del conector de la batería.</b> Rojo al +, negro al −. Hay baterías con el conector al revés${usaModulo() ? " y el módulo no tiene protección contra polaridad invertida" : ""}.`);
+    if (f === "aa") li(`<b>Revisa las pilas.</b> Todas del mismo tipo y con la misma carga: no mezcles nuevas con usadas ni recargables con alcalinas. Mide el portapilas antes de conectar: entre 4.5 y 5.6 V. Si pasa de 6 V, sobra una pila.`);
+    if (cortado) li(`<b>Mide el cable cortado.</b> Los colores no siempre son rojo para + y negro para −. Con el multímetro, confirma cuál da el voltaje antes de soldar o empalmar.`);
+    li(usaModulo()
+      ? `<b>Nada de cortocircuitos.</b> El módulo tampoco tiene protección: si + y − de la salida se tocan, algo se quema.`
+      : `<b>Nada de cortocircuitos.</b> Aísla cada empalme con cinta o termofit: si + y − se tocan, los cables se calientan.`);
+    li(`<b>Une todas las tierras.</b> GND de la placa, ${usaModulo() ? "del módulo" : f === "pb" ? "del power bank" : f === "aa" ? "del portapilas" : "de la batería"}, de los sensores y de los actuadores van juntos. Sin tierra común, las señales no se entienden.`);
+    if (usaModulo() && !esUna()) li(`<b>No conectes la batería y el USB de la computadora al mismo tiempo</b>${esLily() ? " en la placa que recibe los 5 V del módulo" : ""}. Pon un interruptor entre el módulo y el circuito y apágalo para programar.`);
+    if (f === "lipo") li(`<b>Cuida la LiPo.</b> No la dobles, no la perfores, no la cargues sin nadie cerca. Si se infla, deja de usarla.`);
+    if (f === "pb") li(`<b>Prueba el power bank solo con la placa</b> antes de agregar actuadores: si se apaga a los pocos segundos, es el apagado por bajo consumo.`);
+    $("antes").innerHTML = A.join("");
+  }
+
+  function cifras(c) {
+    const T = [];
+    const tile = (et, val, sub) => T.push(`<div class="cifra"><span>${et}</span><b>${val}</b><small>${sub}</small></div>`);
+    if (c.modulo) {
+      const m = c.modulo, h = horas(m.mah, m.bat);
+      const quien = esDoble() ? "actuadores" : "todo el circuito";
+      tile("Consumo a 5 V", fmtmA(m.t), quien + ", típico");
+      tile("Pico a 5 V", fmtmA(m.p), m.p > 2000 ? "pasa el máximo de 2 A" : m.p > 1000 ? "necesita disipador" : "dentro del módulo");
+      tile(esDoble() ? "Autonomía, batería 2" : "Autonomía", fmtHoras(h), `${m.mah} mAh · ${fmtmA(m.bat)} desde la batería`);
+      tile("Carga", fmtHoras(m.mah / CARGA_MA * 1.2), "con el módulo a 1 A");
+    }
+    if (c.externa) {
+      const e = c.externa, pb = estado.fuente === "pb";
+      tile("Consumo", fmtmA(e.t), "todo el circuito, típico");
+      tile("Pico", fmtmA(e.p), pb ? "un puerto da de 1 a 2 A" : "todo exigiendo a la vez");
+      tile("Autonomía", fmtHoras(horas(e.mah, e.bat)), pb ? `${e.mah} mAh · ${fmtmA(e.bat)} desde las celdas` : `AA de ${e.mah} mAh`);
+    }
+    if (c.directa) {
+      const d = c.directa;
+      tile("Consumo placa", fmtmA(d.t), "placa y sensores, típico");
+      tile(esDoble() ? "Autonomía, batería 1" : "Autonomía", fmtHoras(horas(d.mah, d.bat)), `${d.mah} mAh en el JST`);
+    }
+    $("cifras").innerHTML = T.join("");
+  }
+
+  function actualizar() {
+    pintarControles();
+    const pines = repartirPines(), c = cuentas();
+    diagrama(pines);
+    cifras(c);
+    avisos(pines, c);
+    lista(pines, c);
+    antes();
+    escribirHash();
+  }
+
+  $("copiar").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      $("copiarEstado").textContent = "Copiado. Pégalo donde quieras guardar la combinación.";
+    } catch (e) {
+      $("copiarEstado").textContent = "No se pudo copiar: copia la dirección de la barra del navegador.";
+    }
+  });
+
+  construirPlacas();
+  construirFilas("sensores", SENSORES, estado.s);
+  construirFilas("actuadores", ACTUADORES, estado.a);
+  construirSelect("mah", "mah");
+  construirSelect("mah2", "mah2");
+  construirSelect("mahPb", "mahPb", CAP_PB);
+  $("fuente").addEventListener("change", e => { estado.fuente = e.target.value; actualizar(); });
+  $("baterias").addEventListener("change", e => { estado.una = e.target.value === "1"; actualizar(); });
+  if (location.hash.length > 1) leerHash();
+  else { estado.s.analog = 1; estado.a.servo = 1; }   // el caso base: un sensor y un motor
+  window.addEventListener("hashchange", () => { leerHash(); actualizar(); });
+  actualizar();
+})();
+</script>
+</body>
+</html>

@@ -144,20 +144,23 @@ sesiones:
       - {texto: "Si ya terminaron: tiras NeoPixel. Conexión básica, resistencia en la señal y alimentación", url: "https://learn.adafruit.com/adafruit-neopixel-uberguide/basic-connections"}
       - {texto: "Advertencia: servos y NeoPixel en el mismo proyecto necesitan fuente externa con tierra compartida, y las dos librerías chocan: el servo puede temblar cuando cambian los LEDs", url: "https://learn.adafruit.com/neopixels-and-servos"}
   - n: 10
-    titulo: "Lectura, interpretación y estados"
+    titulo: "Servomotores y asesorías"
     tool: "Arduino IDE"
     desc:
-      - "Comunicación serial"
-      - "Impresión de información en consola"
-      - "Calibración y mapeo de valores"
-      - "Umbrales II: estados complejos"
+      - "Primera parte: servomotores. Qué son, cómo se conectan y cómo se controla el ángulo"
+      - {texto: "Ejemplo: sweep, el barrido básico de un servo", url: "https://projecthub.arduino.cc/hockey1alex/servo-sweep-1a24d6"}
+      - "Segunda parte: asesorías con los detalles específicos de cada proyecto"
   - n: 11
-    titulo: "Prototipado web para wearables"
-    tool: "HTML · JavaScript"
+    titulo: "Alimentación: placa, sensor, actuador y batería"
+    tool: "Arduino IDE · multímetro"
     desc:
-      - "Servidor web simple en Arduino (con WiFi o simulado)"
-      - "Mostrar datos de sensores en una página local"
-      - "Dashboard conceptual: estilo y resolución de problemas comunes"
+      - "Lo que casi todos los proyectos comparten: una placa, un sensor, un actuador y una alimentación que no dependa de la computadora"
+      - "Baterías LiPo: 3.7 V, capacidad en mAh, protección integrada y polaridad del conector. Para empezar, 1000 mAh"
+      - "El módulo TP4056 con elevador: carga a 1 A y salida ajustable de 4 a 27 V. Hay que medir 5 V con multímetro antes de conectar"
+      - "Combinaciones por placa: Uno y Nano entran por el pin 5V, ESP32 por 5V/VIN, LilyPad Arduino USB con la LiPo directa al JST"
+      - "Tierra común, consumo y cuánto dura la batería"
+      - {texto: "Página: arma el diagrama, la lista y los pines de tu proyecto", url: "alimentacion/"}
+      - {texto: "Ficha del módulo TP4056 con boost", url: "https://uelectronics.com/producto/tp4056-con-boost-step-up-cargador-de-baterias-li-ion-li-po/"}
   - n: 12
     titulo: "Dashboard y definición del proyecto final"
     tool: "HTML · JavaScript"
