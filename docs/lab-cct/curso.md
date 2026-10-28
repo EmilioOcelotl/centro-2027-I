@@ -159,6 +159,7 @@ sesiones:
       - "Entrada: control en otra ventana. La cercanía de la cara llega a minimapper como número"
       - "Proceso: conectar la señal a un quad. Destino (nivel, saturación o tinte) e invertir. La salida sigue a la lectura, sin suavizado"
       - "En Hydra: () => sensor.cercania"
+      - "Concepto importante: pantalla de control y pantalla de proyección"
       - {texto: "minimapper", url: "https://emilioocelotl.github.io/minimapper/"}
       - {texto: "control", url: "https://emilioocelotl.github.io/minimapper/control/"}
   - n: 11

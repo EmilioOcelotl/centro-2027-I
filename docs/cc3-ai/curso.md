@@ -34,7 +34,7 @@ calendario:
                                     # primer lunes a partir de esta fecha
   dias: [lunes]                     # [lunes, miercoles] si son dos por semana
   festivos: [2026-11-16]            # Revolución (se recorre al 3er lunes)
-  # - 2026-11-02 (Día de Muertos) también cae en lunes: añádelo si no hay clase
+  # - 2026-11-02 (Día de Muertos) cae en lunes, pero sí hay clase
   descansos:
     - {de: 2026-10-05, a: 2026-10-09, etiqueta: "Receso"}
 
@@ -170,13 +170,15 @@ sesiones:
       - {texto: "lecturas.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-ai/sesion12/lecturas/lecturas.pde"}
       - {texto: "analisis.pde", url: "https://github.com/EmilioOcelotl/centro-2027-I/blob/main/cc3-ai/sesion12/analisis/analisis.pde"}
   - n: 13
-    titulo: "Animación: ruido"
-    tool: "Processing"
+    titulo: "Audioreactividad, partículas, muestras y filtros"
+    tool: "Processing · Sound · Strudel"
     desc:
-      - "Introducción al ruido"
-      - "Diferencia entre ruido y azar"
-      - "Espacios de sampleo"
-      - "Detalle de ruido y semilla"
+      - "Audioreactividad: lo que leímos en la S12 ahora mueve algo. Detección de golpes con BeatDetector."
+      - "Sistemas de partículas: muchos objetos de la misma clase. Regresa la programación orientada a objetos."
+      - "Ruido para mover las partículas: diferencia entre ruido y azar, espacios de sampleo, detalle y semilla."
+      - "Strudel con muestras propias: cargar sonidos personalizados."
+      - "Procesamiento de una imagen como filtro: recorrer los pixeles y cambiarlos, como en la S4."
+      - "Ondas visuales con trigonometría: seno y coseno para dibujar y mover formas."
   - n: 14
     titulo: "Asesoría"
     tool: ""
